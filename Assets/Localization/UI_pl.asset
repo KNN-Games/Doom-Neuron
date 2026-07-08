@@ -38,6 +38,62 @@ MonoBehaviour:
     m_Localized: Autorzy
     m_Metadata:
       m_Items: []
+  - m_Id: 780140632399872
+    m_Localized: Nowa gra
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780277593202688
+    m_Localized: "powr\xF3t do menu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780457377849344
+    m_Localized: "Przywr\xF3\u0107 ustawienia domy\u015Blne"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781273992060928
+    m_Localized: "Og\xF3lne"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781381601124352
+    m_Localized: "D\u017Awi\u0119k"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781659767365632
+    m_Localized: Sterowanie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782165642371072
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 og\xF3lna"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782548691378176
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 muzyki"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782659655884800
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 efekt\xF3w"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782957958979584
+    m_Localized: "Masz niezapisane zmiany.\nCzy chcesz je zapisa\u0107?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783311522029568
+    m_Localized: "Potwierd\u017A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783386381967360
+    m_Localized: "Odrzu\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783963010686976
+    m_Localized: Anuluj
+    m_Metadata:
+      m_Items: []
+  - m_Id: 785232882360320
+    m_Localized: "J\u0119zyk"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

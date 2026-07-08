@@ -35,6 +35,62 @@ MonoBehaviour:
     m_Key: CREDITS
     m_Metadata:
       m_Items: []
+  - m_Id: 780140632399872
+    m_Key: NEW GAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780277593202688
+    m_Key: BACK TO MENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780457377849344
+    m_Key: RESET SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781273992060928
+    m_Key: GENERAL SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781381601124352
+    m_Key: AUDIO SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781659767365632
+    m_Key: CONTROLS SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782165642371072
+    m_Key: MASTER VOLUME SETTING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782548691378176
+    m_Key: MUSIC VOLUME SETTING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782659655884800
+    m_Key: SFX VOLUME SETTING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782957958979584
+    m_Key: SAVE CHANGES PROMPT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783311522029568
+    m_Key: CONFIRM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783386381967360
+    m_Key: DISCARD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783963010686976
+    m_Key: CANCEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 785232882360320
+    m_Key: LANGUAGE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

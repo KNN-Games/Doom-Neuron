@@ -38,6 +38,62 @@ MonoBehaviour:
     m_Localized: Credits
     m_Metadata:
       m_Items: []
+  - m_Id: 780140632399872
+    m_Localized: New game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780277593202688
+    m_Localized: Back to menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 780457377849344
+    m_Localized: Restore default settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781273992060928
+    m_Localized: General
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781381601124352
+    m_Localized: Audio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781659767365632
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782165642371072
+    m_Localized: Master volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782548691378176
+    m_Localized: Music volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782659655884800
+    m_Localized: Sound effects volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 782957958979584
+    m_Localized: "You have unsaved changes. \nDo you want to save them?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783311522029568
+    m_Localized: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783386381967360
+    m_Localized: Discard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783963010686976
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 785232882360320
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
