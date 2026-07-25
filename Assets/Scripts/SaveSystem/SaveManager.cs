@@ -1,37 +1,55 @@
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
     //individual saves are divided to slots, each slot corresponds to a save file
     public static SaveManager Instance;
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
+    //THERE ARE 6 SLOTS: 0,1,2,3,4,5
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Debug.LogWarning("Multiple instances of SaveManager detected. Destroying duplicate.");
-            Destroy(gameObject);
-        }
+        Instance = this;
         Debug.Log($"Save folder path: {SaveFolder}");
-
         // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
         Directory.CreateDirectory(SaveFolder);
-        // Optionally, you can log the number of save files found
-        int saveCount = GetSaveCount();
-        Debug.Log($"Number of save files found: {saveCount}");
     }
 
-    public void Save(int slot, SaveData data)
+    public void Save(int slot)
     {
+        //collect save data
+        SaveData data = new()
+        {
+            difficulty = GameManager.Instance.difficulty,
+            playTime = GameManager.Instance.playTime,
+            lastPlayed = System.DateTime.Now,
+            sceneName = SceneManager.GetActiveScene().name,
+
+        };
+        //save to a json file
         string json = JsonUtility.ToJson(data, true);
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");
         File.WriteAllText(path, json);
         Debug.Log($"Game saved to {path} in slot {slot}");
+    }
+    public void LoadGame(int slot)
+    {
+        SaveData data = Load(slot);
+        if (data != null) //data found
+        {
+            // Load the game state from the save data
+            GameManager.Instance.playTime = data.playTime;
+            GameManager.Instance.difficulty = data.difficulty;
+
+            // Load the scene
+            SceneManager.LoadScene(data.sceneName);
+            Debug.Log($"Game loaded from slot {slot}");
+        }
+        else //start new game
+        {
+            MainMenu.Instance.OpenNewGameConfiguration(slot);
+        }
     }
     public SaveData Load(int slot)
     {
@@ -43,13 +61,8 @@ public class SaveManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Save file not found at {path}");
             return null;
         }
-    }
-    public int GetSaveCount()
-    {
-        return Directory.GetFiles(SaveFolder, "save_*.json").Length;
     }
     public void DeleteSave(int slot)
     {
@@ -63,11 +76,8 @@ public class SaveManager : MonoBehaviour
             Debug.LogWarning($"Save file not found at {path}");
         }
     }
-    public void StartNewGame()
+    public int GetSaveCount()
     {
-        SaveData newGameData = new();
-        int slot = GetSaveCount() + 1; // Determine the next available save slot
-        // Initialize new game data here
-        Save(slot, newGameData);
+        return Directory.GetFiles(SaveFolder, "save_*.json").Length;
     }
 }

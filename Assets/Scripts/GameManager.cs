@@ -2,9 +2,16 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public static GameManager Instance;
+    public float playTime; // Total playtime in seconds
+    public int difficulty; // current difficulty level
     void Start()
     {
+        Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+    void Update()
+    {
+        playTime += Time.deltaTime;
     }
 }

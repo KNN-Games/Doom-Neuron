@@ -90,6 +90,42 @@ MonoBehaviour:
     m_Localized: "J\u0119zyk"
     m_Metadata:
       m_Items: []
+  - m_Id: 7004468009033728
+    m_Localized: Wybierz zapis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004672141615104
+    m_Localized: "Poziom trudno\u015Bci:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004911179194368
+    m_Localized: "\u0141atwy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004981547032576
+    m_Localized: "\u015Aredni"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005056570548224
+    m_Localized: Trudny
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005178343776256
+    m_Localized: 'Czas gry:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005255581884416
+    m_Localized: 'Ostatnia rozgrywka:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7006308993916928
+    m_Localized: Slot zapisu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7012950745604096
+    m_Localized: (brak zapisu)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

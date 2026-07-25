@@ -87,6 +87,42 @@ MonoBehaviour:
     m_Key: LANGUAGE
     m_Metadata:
       m_Items: []
+  - m_Id: 7004468009033728
+    m_Key: SELECT SAVE FILE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004672141615104
+    m_Key: DIFFICULTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004911179194368
+    m_Key: EASY DIFFICULTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004981547032576
+    m_Key: MEDIUM DIFFICULTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005056570548224
+    m_Key: HARD DIFFICULTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005178343776256
+    m_Key: TIME PLAYED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005255581884416
+    m_Key: LAST PLAYED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7006308993916928
+    m_Key: SAVE FILE NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7012950745604096
+    m_Key: NO SAVE FILE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -90,6 +90,42 @@ MonoBehaviour:
     m_Localized: Language
     m_Metadata:
       m_Items: []
+  - m_Id: 7004468009033728
+    m_Localized: Select save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004672141615104
+    m_Localized: 'Difficulty:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004911179194368
+    m_Localized: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7004981547032576
+    m_Localized: Medium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005056570548224
+    m_Localized: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005178343776256
+    m_Localized: 'Time played:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7005255581884416
+    m_Localized: 'Last played:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7006308993916928
+    m_Localized: Save file
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7012950745604096
+    m_Localized: (no save file)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
