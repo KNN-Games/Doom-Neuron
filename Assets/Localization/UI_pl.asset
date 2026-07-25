@@ -22,10 +22,6 @@ MonoBehaviour:
     m_Localized: Pauza
     m_Metadata:
       m_Items: []
-  - m_Id: 7431937908736
-    m_Localized: Kontynuuj
-    m_Metadata:
-      m_Items: []
   - m_Id: 7507301163008
     m_Localized: Opcje
     m_Metadata:
@@ -39,7 +35,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 780140632399872
-    m_Localized: Nowa gra
+    m_Localized: Graj
     m_Metadata:
       m_Items: []
   - m_Id: 780277593202688

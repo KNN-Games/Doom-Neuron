@@ -22,10 +22,6 @@ MonoBehaviour:
     m_Localized: Pause
     m_Metadata:
       m_Items: []
-  - m_Id: 7431937908736
-    m_Localized: Continue
-    m_Metadata:
-      m_Items: []
   - m_Id: 7507301163008
     m_Localized: Options
     m_Metadata:
@@ -39,7 +35,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 780140632399872
-    m_Localized: New game
+    m_Localized: Start Game
     m_Metadata:
       m_Items: []
   - m_Id: 780277593202688

@@ -4,15 +4,10 @@ public class MainMenu : MonoBehaviour
 {
     public GameObject mainMenuPanel; // Reference to the main menu panel GameObject
     public GameObject creditsPanel; // Reference to the credits panel GameObject
-    
-    public void ContinueGame()
-    {
-        
-    }
-    public void StartNewGame()
+    public void StartGame()
     {
         //CHANGE THIS WHEN TUTORIAL LEVEL IS DONE
-        UnityEngine.SceneManagement.SceneManager.LoadScene("TestArena");
+        //UnityEngine.SceneManagement.SceneManager.LoadScene("TestArena");
     }
     public void OpenSettings()
     {

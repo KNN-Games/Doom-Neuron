@@ -19,10 +19,6 @@ MonoBehaviour:
     m_Key: PAUSE
     m_Metadata:
       m_Items: []
-  - m_Id: 7431937908736
-    m_Key: CONTINUE
-    m_Metadata:
-      m_Items: []
   - m_Id: 7507301163008
     m_Key: OPTIONS
     m_Metadata:
@@ -36,7 +32,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 780140632399872
-    m_Key: NEW GAME
+    m_Key: START GAME
     m_Metadata:
       m_Items: []
   - m_Id: 780277593202688
