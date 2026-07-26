@@ -126,6 +126,14 @@ MonoBehaviour:
     m_Localized: (no save file)
     m_Metadata:
       m_Items: []
+  - m_Id: 7238303913140224
+    m_Localized: Delete Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7248984565669888
+    m_Localized: Are you sure you want to delete this save slot?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

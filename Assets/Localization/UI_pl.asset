@@ -126,6 +126,14 @@ MonoBehaviour:
     m_Localized: (brak zapisu)
     m_Metadata:
       m_Items: []
+  - m_Id: 7238303913140224
+    m_Localized: "Usu\u0144 zapis"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7248984565669888
+    m_Localized: "Czy na pewno chcesz usun\u0105\u0107 ten slot zapisu?"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

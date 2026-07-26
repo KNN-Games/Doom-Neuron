@@ -8,7 +8,7 @@ public class SaveData
     //ADD HERE: lowest difficulty in save file (for achievements)
     public int difficulty; // Difficulty level of the game
     public float playTime; // Total playtime in seconds
-    public DateTime lastPlayed; // Last time the game was played
+    public long lastPlayed; // Last time the game was played in ticks
     //game state information
     public string sceneName; // Current scene
     public Vector3 playerPosition;

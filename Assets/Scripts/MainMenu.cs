@@ -1,26 +1,25 @@
 using UnityEngine;
-using UnityEngine.Localization.Components;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    //MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> (if new game)INTRO -> GAME
+    //loading game is in "SaveManager.cs"
+    //opening settings is in "OptionsMenu.cs"
     public static MainMenu Instance;
-    public GameObject mainMenuPanel; // Reference to the main menu panel GameObject
-    public GameObject creditsPanel; // Reference to the credits panel GameObject
+    public GameObject mainMenuPanel;
+    public GameObject creditsPanel;
     public GameObject saveSlotPanel;
     public GameObject newGameConfigPanel;
-    public Button[] difficultyButtons; // Array of difficulty buttons
-    public GameObject[] noSaveText;
-    public GameObject[] yesSaveText;
-    public LocalizeStringEvent[] difficultyText;
-    private int selectedSlot = -1; // Track the selected save slot
-    private int selectedDifficulty = 2; // Track the selected difficulty level (default to 1)
+    public Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
+    public GameObject[] saveSlots;
+    private int selectedSlot = -1; // Track the selected save slot, -1 means none
+    private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
 
-    //MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> INTRO -> GAME
     void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
         }
@@ -33,7 +32,7 @@ public class MainMenu : MonoBehaviour
     public void StartGame() //open slot selection menu
     {
         //if 0 save files exist start new game immediately for dramatic effect.
-        if(SaveManager.Instance.GetSaveCount() == 0)
+        if (SaveManager.Instance.GetSaveCount() == 0)
         {
             OpenNewGameConfiguration(0);
         }
@@ -41,44 +40,17 @@ public class MainMenu : MonoBehaviour
         {
             saveSlotPanel.SetActive(true);
             mainMenuPanel.SetActive(false);
-            for(int i = 0; i <= 5; i++) //check if save exists
-            {
-                SaveData data = SaveManager.Instance.Load(i);
-                if(data != null)
-                {
-                    yesSaveText[i].SetActive(true);
-                    noSaveText[i].SetActive(false);
-                    // Update the difficulty text based on the loaded save data
-                    switch (data.difficulty)
-                    {
-                        case 1:
-                            difficultyText[i].StringReference.TableEntryReference = "EASY DIFFICULTY";
-                            break;
-                        case 2:
-                            difficultyText[i].StringReference.TableEntryReference = "MEDIUM DIFFICULTY";
-                            break;
-                        case 3:
-                            difficultyText[i].StringReference.TableEntryReference = "HARD DIFFICULTY";
-                            break;
-                        default:
-                            Debug.LogWarning($"Unknown difficulty level {data.difficulty} in save slot {i}. DELETING FAULTY SAVE");
-                            SaveManager.Instance.DeleteSave(i);
-                            break;
-                    }
-                    //Update time played text
-
-                    //Update last played text
-
-                } else
-                {
-                    noSaveText[i].SetActive(true);
-                    yesSaveText[i].SetActive(false);
-                }
-            }
+            UpdateSaveSlotUI();
         }
     }
-    //loading game is in "SaveManager.cs"
-    //opening settings is in "OptionsMenu.cs"
+    public void UpdateSaveSlotUI() //update every slot
+    {
+        for (int i = 0; i <= 5; i++)
+        {
+            SaveData data = SaveManager.Instance.Load(i);
+            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
+        }
+    }
     public void StartCreditsSequence()
     {
         // Start the credits sequence
@@ -87,11 +59,23 @@ public class MainMenu : MonoBehaviour
 
 
     }
-    public void ExitGame()
+    public void ExitGame() // Exit the game
     {
-        // Exit the game
         Debug.Log("This would exit the game");
         Application.Quit();
+    }
+    public void ReturnToMainMenu() //move 1 step backwards
+    {
+        if(newGameConfigPanel.activeSelf)
+        {
+            //move back to slots
+            newGameConfigPanel.SetActive(false);
+            StartGame();
+        } else //assume saveSlotPanel is active
+        {
+            mainMenuPanel.SetActive(true);
+            saveSlotPanel.SetActive(false);
+        }
     }
     //--- New Game configuration functions ---
     public void OpenNewGameConfiguration(int slot)
@@ -100,8 +84,10 @@ public class MainMenu : MonoBehaviour
         mainMenuPanel.SetActive(false);
         saveSlotPanel.SetActive(false);
         newGameConfigPanel.SetActive(true);
+        difficultyButtons[1].image.color = Color.red; //highlight medium difficulty button, because it's the default difficulty
+        selectedDifficulty = 2;
     }
-    public void ConfirmGame()
+    public void ConfirmGame() //play intro
     {
         // Reset game data
         GameManager.Instance.playTime = 0f;
@@ -113,12 +99,13 @@ public class MainMenu : MonoBehaviour
     }
     public void SetNewGameDifficulty(int difficulty)
     {
-        for(int i = 1; i >= 3; i++)
+        for (int i = 0; i < difficultyButtons.Length; i++)
         {
-            if(i == difficulty)
+            if (i + 1 == difficulty)
             {
                 difficultyButtons[i].image.color = Color.red;
-            } else
+            }
+            else
             {
                 difficultyButtons[i].image.color = Color.white;
             }

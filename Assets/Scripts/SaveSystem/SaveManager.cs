@@ -23,10 +23,11 @@ public class SaveManager : MonoBehaviour
         {
             difficulty = GameManager.Instance.difficulty,
             playTime = GameManager.Instance.playTime,
-            lastPlayed = System.DateTime.Now,
+            lastPlayed = System.DateTime.Now.Ticks,
             sceneName = SceneManager.GetActiveScene().name,
 
         };
+        Debug.Log(System.DateTime.Now);
         //save to a json file
         string json = JsonUtility.ToJson(data, true);
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");
@@ -41,6 +42,11 @@ public class SaveManager : MonoBehaviour
             // Load the game state from the save data
             GameManager.Instance.playTime = data.playTime;
             GameManager.Instance.difficulty = data.difficulty;
+
+            //DEBUG: print all save data info
+            Debug.Log(data.difficulty);
+            Debug.Log(data.playTime);
+            Debug.Log(data.lastPlayed);
 
             // Load the scene
             SceneManager.LoadScene(data.sceneName);
@@ -75,6 +81,7 @@ public class SaveManager : MonoBehaviour
         {
             Debug.LogWarning($"Save file not found at {path}");
         }
+        MainMenu.Instance.UpdateSaveSlotUI();
     }
     public int GetSaveCount()
     {
