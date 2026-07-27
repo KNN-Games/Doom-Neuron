@@ -15,6 +15,7 @@ public class OptionsMenu : MonoBehaviour
     //4. modify BackToMenu() to check if the setting has changed
     //5. modify SaveChanges() to & DiscardChanges() to save/discard the setting
     //6. modify ResetSettings() to reset the setting to default value
+    public static OptionsMenu Instance;
     public AudioMixer audioMixer;
     [Header("UI References")]
     //the whole canvas
@@ -40,6 +41,18 @@ public class OptionsMenu : MonoBehaviour
     private float savedsfxVolume;
     private string savedLanguage;
 
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogWarning("Multiple instances of OptionsMenu detected. Destroying duplicate.");
+            Destroy(gameObject);
+        }
+    }
     public void Start()
     {
         //load variables

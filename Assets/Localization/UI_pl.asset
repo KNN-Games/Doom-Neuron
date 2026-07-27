@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7561160220672
-    m_Localized: "Wyjd\u017A do menu"
+    m_Localized: "Wyjd\u017A z gry"
     m_Metadata:
       m_Items: []
   - m_Id: 10463278850048
@@ -130,8 +130,20 @@ MonoBehaviour:
     m_Localized: "Usu\u0144 zapis"
     m_Metadata:
       m_Items: []
-  - m_Id: 7248984565669888
-    m_Localized: "Czy na pewno chcesz usun\u0105\u0107 ten slot zapisu?"
+  - m_Id: 7588559121080320
+    m_Localized: "Czy chcesz wr\xF3ci\u0107 do menu?\nZapisano:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7581975573749760
+    m_Localized: Kontynuuj
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7582605583376384
+    m_Localized: Wczytaj ostatni zapis
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7589101964681216
+    m_Localized: temu
     m_Metadata:
       m_Items: []
   references:

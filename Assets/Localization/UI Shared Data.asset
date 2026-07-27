@@ -24,7 +24,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7561160220672
-    m_Key: EXIT
+    m_Key: EXIT GAME
     m_Metadata:
       m_Items: []
   - m_Id: 10463278850048
@@ -127,8 +127,20 @@ MonoBehaviour:
     m_Key: DELETE SAVE
     m_Metadata:
       m_Items: []
-  - m_Id: 7248984565669888
-    m_Key: DELETE SAVE CONFIRM
+  - m_Id: 7581975573749760
+    m_Key: CONTINUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7582605583376384
+    m_Key: BACK TO CHECKPOINT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7588559121080320
+    m_Key: RETURN TO MAIN MENU PROMPT 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7589101964681216
+    m_Key: RETURN TO MAIN MENU PROMPT 2
     m_Metadata:
       m_Items: []
   m_Metadata:

@@ -27,7 +27,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7561160220672
-    m_Localized: Exit to menu
+    m_Localized: Exit game
     m_Metadata:
       m_Items: []
   - m_Id: 10463278850048
@@ -130,8 +130,22 @@ MonoBehaviour:
     m_Localized: Delete Save
     m_Metadata:
       m_Items: []
-  - m_Id: 7248984565669888
-    m_Localized: Are you sure you want to delete this save slot?
+  - m_Id: 7588559121080320
+    m_Localized: 'Do you want to return to the main menu?
+
+      Last saved:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7581975573749760
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7582605583376384
+    m_Localized: Load last save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7589101964681216
+    m_Localized: ago
     m_Metadata:
       m_Items: []
   references:

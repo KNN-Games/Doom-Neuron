@@ -87,7 +87,7 @@ public class MainMenu : MonoBehaviour
         difficultyButtons[1].image.color = Color.red; //highlight medium difficulty button, because it's the default difficulty
         selectedDifficulty = 2;
     }
-    public void ConfirmGame() //play intro
+    public void ConfirmGame() //play intro (not implemented yet)
     {
         // Reset game data
         GameManager.Instance.playTime = 0f;
