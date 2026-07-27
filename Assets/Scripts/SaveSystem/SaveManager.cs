@@ -8,9 +8,20 @@ public class SaveManager : MonoBehaviour
     public static SaveManager Instance;
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
     //THERE ARE 6 SLOTS: 0,1,2,3,4,5
-    private void Awake()
+    void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogWarning("Multiple instances of SaveManager detected. Destroying duplicate.");
+            Destroy(gameObject);
+        }
+    }
+    void Start()
+    {
         Debug.Log($"Save folder path: {SaveFolder}");
         // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
         Directory.CreateDirectory(SaveFolder);
