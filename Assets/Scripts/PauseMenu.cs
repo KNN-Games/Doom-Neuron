@@ -51,7 +51,7 @@ public class PauseMenu : Singleton<PauseMenu>
     //opening settings is in "OptionsMenu.cs"
     public void BackToCheckpoint()
     {
-        //possibly unnessesary
+        SaveManager.Instance.LoadGame(GameManager.Instance.saveSlot);
     }
     public void OpenBackToMainMenuPrompt()
     {
