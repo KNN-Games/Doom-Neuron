@@ -30,6 +30,8 @@ public class SaveManager : Singleton<SaveManager>
         string json = JsonUtility.ToJson(data, true);
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");
         File.WriteAllText(path, json);
+
+        GameManager.Instance.lastSaved = 0;
         Debug.Log($"Game saved to {path} in slot {slot}");
     }
     public void LoadGame(int slot)

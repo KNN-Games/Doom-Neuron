@@ -13053,6 +13053,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
   pauseMenu: {fileID: 1689810202}
   backToMainMenuPrompt: {fileID: 1341380309}
+  lastSavedText: {fileID: 2078447546}
   isPaused: 0
   hud: {fileID: 0}
 --- !u!114 &1963227110
@@ -13814,6 +13815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   playTime: 0
+  lastSaved: 0
   difficulty: 0
   saveSlot: 0
 --- !u!1 &2093365967
