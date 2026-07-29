@@ -52,6 +52,7 @@ public class PauseMenu : Singleton<PauseMenu>
     }
     public void ConfirmReturn()
     {
+        ClosePauseMenu();
         SceneManager.LoadScene("MainMenu");
     }
     public void CancelReturn()

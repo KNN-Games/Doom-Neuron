@@ -143,6 +143,10 @@ MonoBehaviour:
     m_Key: RETURN TO MAIN MENU PROMPT 2
     m_Metadata:
       m_Items: []
+  - m_Id: 8437757961887744
+    m_Key: INTERACT
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

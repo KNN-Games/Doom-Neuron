@@ -7,7 +7,7 @@ public class SaveManager : Singleton<SaveManager>
     //individual saves are divided to slots, each slot corresponds to a save file
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
     //THERE ARE 6 SLOTS: 0,1,2,3,4,5
-    
+
     void Start()
     {
         Debug.Log($"Save folder path: {SaveFolder}");
@@ -15,7 +15,7 @@ public class SaveManager : Singleton<SaveManager>
         Directory.CreateDirectory(SaveFolder);
     }
 
-    public void Save(int slot)
+    public void Save(int slot) //over-writes the save slot with new save
     {
         //collect save data
         SaveData data = new()
@@ -26,7 +26,6 @@ public class SaveManager : Singleton<SaveManager>
             sceneName = SceneManager.GetActiveScene().name,
 
         };
-        Debug.Log(System.DateTime.Now);
         //save to a json file
         string json = JsonUtility.ToJson(data, true);
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");
@@ -41,11 +40,13 @@ public class SaveManager : Singleton<SaveManager>
             // Load the game state from the save data
             GameManager.Instance.playTime = data.playTime;
             GameManager.Instance.difficulty = data.difficulty;
+            GameManager.Instance.saveSlot = slot; //this part is technically not from data
 
             //DEBUG: print all save data info
-            Debug.Log(data.difficulty);
-            Debug.Log(data.playTime);
-            Debug.Log(data.lastPlayed);
+            //Debug.Log(data.difficulty);
+            //Debug.Log(data.playTime);
+            //Debug.Log(data.lastPlayed);
+            Debug.Log(data.sceneName);
 
             // Load the scene
             SceneManager.LoadScene(data.sceneName);

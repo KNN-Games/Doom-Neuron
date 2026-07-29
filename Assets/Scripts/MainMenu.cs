@@ -6,7 +6,6 @@ public class MainMenu : Singleton<MainMenu>
 {
     //MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> (if new game)INTRO -> GAME
     //loading game is in "SaveManager.cs"
-    //opening settings is in "OptionsMenu.cs"
     public GameObject mainMenuPanel;
     public GameObject creditsPanel;
     public GameObject saveSlotPanel;
@@ -15,8 +14,9 @@ public class MainMenu : Singleton<MainMenu>
     public GameObject[] saveSlots;
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
-    
-    public void StartGame() //open slot selection menu
+
+    //---MAIN SCREEN---
+    public void OpenSlotSelection()
     {
         //if 0 save files exist start new game immediately for dramatic effect.
         if (SaveManager.Instance.GetSaveCount() == 0)
@@ -30,13 +30,9 @@ public class MainMenu : Singleton<MainMenu>
             UpdateSaveSlotUI();
         }
     }
-    public void UpdateSaveSlotUI() //update every slot
+    public void OpenSettings()
     {
-        for (int i = 0; i <= 5; i++)
-        {
-            SaveData data = SaveManager.Instance.Load(i);
-            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
-        }
+        OptionsMenu.Instance.OpenOptionsMenu();
     }
     public void StartCreditsSequence()
     {
@@ -51,20 +47,20 @@ public class MainMenu : Singleton<MainMenu>
         Debug.Log("This would exit the game");
         Application.Quit();
     }
-    public void ReturnToMainMenu() //move 1 step backwards
+    //--=SLOT SELECT SCREEN--=
+    public void UpdateSaveSlotUI() //update every slot
     {
-        if(newGameConfigPanel.activeSelf)
+        for (int i = 0; i <= 5; i++)
         {
-            //move back to slots
-            newGameConfigPanel.SetActive(false);
-            StartGame();
-        } else //assume saveSlotPanel is active
-        {
-            mainMenuPanel.SetActive(true);
-            saveSlotPanel.SetActive(false);
+            SaveData data = SaveManager.Instance.Load(i);
+            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
         }
     }
-    //--- New Game configuration functions ---
+    public void LoadGame(int slot)
+    {
+        SaveManager.Instance.LoadGame(slot);
+    }
+    //---NEW GAME CONFIG SCREEN---
     public void OpenNewGameConfiguration(int slot)
     {
         selectedSlot = slot;
@@ -99,5 +95,19 @@ public class MainMenu : Singleton<MainMenu>
         }
         selectedDifficulty = difficulty;
         GameManager.Instance.difficulty = difficulty;
+    }
+    //---OTHER---
+    public void ReturnToMainMenu() //move 1 step backwards
+    {
+        if(newGameConfigPanel.activeSelf)
+        {
+            //move back to slots
+            newGameConfigPanel.SetActive(false);
+            OpenSlotSelection();
+        } else //assume saveSlotPanel is active
+        {
+            mainMenuPanel.SetActive(true);
+            saveSlotPanel.SetActive(false);
+        }
     }
 }

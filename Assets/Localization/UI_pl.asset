@@ -146,6 +146,10 @@ MonoBehaviour:
     m_Localized: temu
     m_Metadata:
       m_Items: []
+  - m_Id: 8437757961887744
+    m_Localized: Interakcja
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

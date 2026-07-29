@@ -19,12 +19,14 @@ public class PlayerController : Singleton<PlayerController>
     private Vector2 lookInput;
     private Vector3 velocity;
     private float xRotation;
+    private Interactable interactable;
 
     void Start()
     {
         if(GameManager.Instance == null)
         {
             Debug.LogError("THIS GAME DOES NOT ALLOW THIS. LOAD ALL GAMES FROM MAIN MENU.");
+            return;
         }
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
@@ -60,14 +62,15 @@ public class PlayerController : Singleton<PlayerController>
         camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         //is something interactable in sight?
-        Ray InteractRay = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)); //raycast przed kamerę
-        if (Physics.Raycast(InteractRay, out RaycastHit hit, 3f) && hit.collider.TryGetComponent<Interactable>(out _))
+        Ray interactRay = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)); //raycast przed kamerę
+        if (Physics.Raycast(interactRay, out RaycastHit hit, 3f) && hit.collider.TryGetComponent(out interactable))
         {
             interactionText.SetActive(true);
         }
         else
         {
             interactionText.SetActive(false);
+            interactable = null;
         }
     }
 
@@ -86,5 +89,10 @@ public class PlayerController : Singleton<PlayerController>
     public void OnLook(InputAction.CallbackContext context)
     {
         lookInput = context.ReadValue<Vector2>();
+    }
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if(!context.started || interactable == null) return;
+        interactable.Interact();
     }
 }
