@@ -2,12 +2,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
+public class MainMenu : Singleton<MainMenu>
 {
     //MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> (if new game)INTRO -> GAME
     //loading game is in "SaveManager.cs"
     //opening settings is in "OptionsMenu.cs"
-    public static MainMenu Instance;
     public GameObject mainMenuPanel;
     public GameObject creditsPanel;
     public GameObject saveSlotPanel;
@@ -16,19 +15,7 @@ public class MainMenu : MonoBehaviour
     public GameObject[] saveSlots;
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Debug.LogWarning("Multiple instances of MainMenu detected. Destroying duplicate.");
-            Destroy(gameObject);
-        }
-    }
+    
     public void StartGame() //open slot selection menu
     {
         //if 0 save files exist start new game immediately for dramatic effect.

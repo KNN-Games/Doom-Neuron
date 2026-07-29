@@ -4,7 +4,7 @@ using UnityEngine.Audio;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
-public class OptionsMenu : MonoBehaviour
+public class OptionsMenu : Singleton<OptionsMenu>
 {
     //SUMMARY:
     //when u change a slider/button/whatever u should feel the effects immediatly, but not save them until u hit the save button.
@@ -15,7 +15,6 @@ public class OptionsMenu : MonoBehaviour
     //4. modify BackToMenu() to check if the setting has changed
     //5. modify SaveChanges() to & DiscardChanges() to save/discard the setting
     //6. modify ResetSettings() to reset the setting to default value
-    public static OptionsMenu Instance;
     public AudioMixer audioMixer;
     [Header("UI References")]
     //the whole canvas
@@ -41,18 +40,6 @@ public class OptionsMenu : MonoBehaviour
     private float savedsfxVolume;
     private string savedLanguage;
 
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Debug.LogWarning("Multiple instances of OptionsMenu detected. Destroying duplicate.");
-            Destroy(gameObject);
-        }
-    }
     public void Start()
     {
         //load variables

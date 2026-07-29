@@ -2,24 +2,12 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SaveManager : MonoBehaviour
+public class SaveManager : Singleton<SaveManager>
 {
     //individual saves are divided to slots, each slot corresponds to a save file
-    public static SaveManager Instance;
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
     //THERE ARE 6 SLOTS: 0,1,2,3,4,5
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Debug.LogWarning("Multiple instances of SaveManager detected. Destroying duplicate.");
-            Destroy(gameObject);
-        }
-    }
+    
     void Start()
     {
         Debug.Log($"Save folder path: {SaveFolder}");
