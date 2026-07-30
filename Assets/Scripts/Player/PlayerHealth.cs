@@ -1,18 +1,62 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerHealth : MonoBehaviour
+[RequireComponent(typeof(PlayerInput))]
+public class PlayerHealth : Singleton<PlayerHealth>
 {
-    public static PlayerHealth Instance;
-    void Awake()
+    [Header("Stats")]
+    public int maxBlood;
+    [Header("References")]
+    public GameObject deathScreen;
+    [HideInInspector] public int CurrentBlood { get; private set; } //as in: current blood
+    [HideInInspector] public int CurrentBlackBile { get; private set; } //as in: current black bile
+    public bool IsGooped => CurrentBlackBile > 0;
+    private PlayerInput input;
+    void Start()
     {
-        if (Instance == null)
+        CurrentBlood = maxBlood;
+        CurrentBlackBile = 0;
+        input = GetComponent<PlayerInput>();
+    }
+    public void TakeDamage(int damage)
+    {
+        CurrentBlood -= damage;
+        if(CurrentBlood <= 0)
         {
-            Instance = this;
+            Die();
         }
-        else
+    }
+    public void GainBlood(int amount)
+    {
+        CurrentBlood += Math.Clamp(amount, 0, maxBlood - CurrentBlackBile - CurrentBlood);
+    }
+    public void TakeBlackDamage(int damage) //as in: black bile
+    {
+        CurrentBlackBile += damage;
+        CurrentBlood = Math.Clamp(CurrentBlood, 0, maxBlood - CurrentBlackBile);
+        if(CurrentBlood <= 0)
         {
-            Debug.LogWarning($"Multiple instances of {GetType().Name} detected. Destroying duplicate.");
-            Destroy(gameObject);
+            Die();
         }
+    }
+    public void LoseBlackDamage(int amount)
+    {
+        CurrentBlackBile -= amount;
+        CurrentBlackBile = Math.Clamp(CurrentBlackBile, 0, maxBlood);
+    }
+    public void Die()
+    {
+        deathScreen.SetActive(true);
+        input.currentActionMap.Disable();
+        Time.timeScale = 0f;
+        Debug.Log("You died!");
+    }
+    public void BackToCheckpoint()
+    {
+        deathScreen.SetActive(false);
+        input.currentActionMap.Enable();
+        Time.timeScale = 1f;
+        SaveManager.Instance.LoadGame(GameManager.Instance.saveSlot);
     }
 }

@@ -3,34 +3,6 @@
     "name": "GameInput",
     "maps": [
         {
-            "name": "UI",
-            "id": "7083ef40-7d57-4ed7-a26a-3383e0f8c6a5",
-            "actions": [
-                {
-                    "name": "OpenPauseMenu",
-                    "type": "Button",
-                    "id": "98ce56de-c304-4e13-83ce-db939c846219",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
-                    "name": "",
-                    "id": "0e1bbf87-af0b-45e2-bc97-869472c44e53",
-                    "path": "<Keyboard>/escape",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "OpenPauseMenu",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
             "name": "Player",
             "id": "3539c4d5-afdb-47ea-bea8-a8efa77ad435",
             "actions": [
@@ -65,6 +37,15 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "0117948a-3cdc-4e82-a7d8-b9a3edae6fab",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "OpenPauseMenu",
+                    "type": "Button",
+                    "id": "fd7427b3-6462-4d50-b2c7-ee00e5a25419",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -157,6 +138,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d935e9e7-f8d2-4ea4-9dbb-5de7fffb9f0f",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenPauseMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

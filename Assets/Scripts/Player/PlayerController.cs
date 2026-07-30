@@ -20,14 +20,9 @@ public class PlayerController : Singleton<PlayerController>
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
-
+    
     void Start()
     {
-        if(GameManager.Instance == null)
-        {
-            Debug.LogError("THIS GAME DOES NOT ALLOW THIS. LOAD ALL GAMES FROM MAIN MENU.");
-            return;
-        }
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
