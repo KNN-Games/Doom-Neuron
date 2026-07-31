@@ -48,7 +48,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     public void Die()
     {
         deathScreen.SetActive(true);
-        PlayerGeneral.Instance.hud.SetActive(false);
+        PlayerUI.Instance.hud.SetActive(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         input.currentActionMap.Disable();

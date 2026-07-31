@@ -19,7 +19,7 @@ public class PlayerController : Singleton<PlayerController>
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
-    
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -28,7 +28,7 @@ public class PlayerController : Singleton<PlayerController>
     }
     void Update()
     {
-        if(PauseMenu.Instance.isPaused) return;
+        if(PlayerUI.Instance.isPaused) return;
 
         Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
         Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);

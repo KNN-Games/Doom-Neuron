@@ -3352,6 +3352,7 @@ MonoBehaviour:
   pauseMenu: {fileID: 928354374}
   backToMainMenuPrompt: {fileID: 734582650}
   lastSavedText: {fileID: 116838592}
+  hud: {fileID: 351361358}
   isPaused: 0
 --- !u!114 &1169289983
 MonoBehaviour:
@@ -3449,8 +3450,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1169289983}
-        m_TargetAssemblyTypeName: PlayerGeneral, Assembly-CSharp
+      - m_Target: {fileID: 1169289982}
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
         m_MethodName: BackToCheckpoint
         m_Mode: 1
         m_Arguments:
@@ -4177,8 +4178,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1169289983}
-        m_TargetAssemblyTypeName: PlayerGeneral, Assembly-CSharp
+      - m_Target: {fileID: 1169289982}
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
         m_MethodName: BackToCheckpoint
         m_Mode: 1
         m_Arguments:

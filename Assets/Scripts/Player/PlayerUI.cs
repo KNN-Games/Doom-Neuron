@@ -4,11 +4,12 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-public class PauseMenu : Singleton<PauseMenu>
+public class PlayerUI : Singleton<PlayerUI>
 {
     public GameObject pauseMenu;
     public GameObject backToMainMenuPrompt;
     public TextMeshProUGUI lastSavedText;
+    public GameObject hud;
     [HideInInspector] public bool isPaused = false;
     public void OnOpenPauseMenu(InputAction.CallbackContext context)
     {
@@ -29,7 +30,7 @@ public class PauseMenu : Singleton<PauseMenu>
         isPaused = true;
         Time.timeScale = 0f;
         pauseMenu.SetActive(true);
-        PlayerGeneral.Instance.hud.SetActive(false);
+        hud.SetActive(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -43,7 +44,7 @@ public class PauseMenu : Singleton<PauseMenu>
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenu.SetActive(false);
-        PlayerGeneral.Instance.hud.SetActive(true);
+        hud.SetActive(true);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -53,6 +54,7 @@ public class PauseMenu : Singleton<PauseMenu>
     }
     public void BackToCheckpoint()
     {
+        Time.timeScale = 1f;
         SaveManager.Instance.LoadGame();
     }
     //---BACK TO MENU PROMPT---
