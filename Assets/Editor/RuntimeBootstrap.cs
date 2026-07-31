@@ -19,8 +19,6 @@ public static class RuntimeBootstrap
             return;
         }
         Object.Instantiate(prefab);
-        GameManager.Instance.saveSlot = 7;
-        GameManager.Instance.difficulty = 2;
         Debug.LogWarning("GAME NOT LOADED FROM MAIN MENU. SAVING WILL NOT WORK! CHANGING SCENES WILL NOT WORK! LOADED DEFAULT DIFFICULTY: MEDIUM");
     }
 }

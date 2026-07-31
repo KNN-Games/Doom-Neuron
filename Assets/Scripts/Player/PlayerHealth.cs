@@ -7,6 +7,8 @@ public class PlayerHealth : Singleton<PlayerHealth>
 {
     [Header("Stats")]
     public int maxBlood;
+    public float damageReduction = 0;
+    public bool isInvulnerable = false;
     [Header("References")]
     public GameObject deathScreen;
     [HideInInspector] public int CurrentBlood { get; private set; } //as in: current blood
@@ -21,6 +23,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void TakeDamage(int damage)
     {
+        if(isInvulnerable) return;
         CurrentBlood -= damage;
         if(CurrentBlood <= 0)
         {
@@ -33,6 +36,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void TakeBlackDamage(int damage) //as in: black bile
     {
+        if(isInvulnerable) return;
         CurrentBlackBile += damage;
         CurrentBlood = Math.Clamp(CurrentBlood, 0, maxBlood - CurrentBlackBile);
         if(CurrentBlood <= 0)
@@ -47,12 +51,9 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void Die()
     {
+        PlayerUI.Instance.PauseGame();
         deathScreen.SetActive(true);
-        PlayerUI.Instance.hud.SetActive(false);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
         input.currentActionMap.Disable();
-        Time.timeScale = 0f;
         Debug.Log("You died!");
     }
 }

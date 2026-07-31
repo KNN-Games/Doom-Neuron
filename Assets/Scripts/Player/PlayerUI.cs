@@ -11,11 +11,11 @@ public class PlayerUI : Singleton<PlayerUI>
     public TextMeshProUGUI lastSavedText;
     public GameObject hud;
     [HideInInspector] public bool isPaused = false;
-    public void OnOpenPauseMenu(InputAction.CallbackContext context)
+    public void OnTogglePauseMenu(InputAction.CallbackContext context)
     {
-        if (!context.started || SceneManager.GetActiveScene().name == "MainMenu") return;
+        if (!context.started || SceneManager.GetActiveScene().name == "MainMenu" || CheatsManager.Instance.IsConsoleActive) return;
 
-        if (!pauseMenu.activeSelf) //open menu
+        if (!isPaused) //open menu
         {
             OpenPauseMenu();
         }
@@ -24,29 +24,24 @@ public class PlayerUI : Singleton<PlayerUI>
             ClosePauseMenu();
         }
     }
+    //---PAUSE MENU---
     public void OpenPauseMenu()
     {
         if (OptionsMenu.Instance.optionsMenuCanvas.activeSelf) return; //if options are active don't do anything
-        isPaused = true;
-        Time.timeScale = 0f;
+        PauseGame();
         pauseMenu.SetActive(true);
         hud.SetActive(false);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
     public void ClosePauseMenu()
     {
         if (OptionsMenu.Instance.optionsMenuCanvas.activeSelf) return; //if options are active don't do anything
-        if(backToMainMenuPrompt.activeSelf)
+        if (backToMainMenuPrompt.activeSelf)
         {
             backToMainMenuPrompt.SetActive(false);
         }
-        isPaused = false;
-        Time.timeScale = 1f;
+        UnpauseGame();
         pauseMenu.SetActive(false);
         hud.SetActive(true);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
     public void OpenSettings()
     {
@@ -56,6 +51,23 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         Time.timeScale = 1f;
         SaveManager.Instance.LoadGame();
+    }
+    //---DIRECT PAUSE---
+    public void PauseGame()
+    {
+        isPaused = true;
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        hud.SetActive(false);
+    }
+    public void UnpauseGame()
+    {
+        isPaused = false;
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        hud.SetActive(true);
     }
     //---BACK TO MENU PROMPT---
     public void OpenBackToMainMenuPrompt()
@@ -83,5 +95,4 @@ public class PlayerUI : Singleton<PlayerUI>
             time.Seconds
         );
     }
-    //------
 }

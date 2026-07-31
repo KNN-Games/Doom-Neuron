@@ -43,9 +43,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "OpenPauseMenu",
+                    "name": "TogglePauseMenu",
                     "type": "Button",
-                    "id": "fd7427b3-6462-4d50-b2c7-ee00e5a25419",
+                    "id": "b73d90b5-098f-4d78-9055-02fe7a9bd14c",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -143,12 +143,60 @@
                 },
                 {
                     "name": "",
-                    "id": "d935e9e7-f8d2-4ea4-9dbb-5de7fffb9f0f",
+                    "id": "3d6a66b7-abb9-4b16-a887-8def6152ebf5",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "OpenPauseMenu",
+                    "action": "TogglePauseMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Debug",
+            "id": "93a396dd-1898-4e8a-a73c-ad0048a72b00",
+            "actions": [
+                {
+                    "name": "OpenConsole",
+                    "type": "Button",
+                    "id": "c1b5a3e2-fe91-48f3-b5ce-aafaa32a9715",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SubmitCommand",
+                    "type": "Button",
+                    "id": "c2832b68-f436-4716-a628-a91ac92ed410",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ed819439-4d57-44cc-b021-f78a964eccb0",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenConsole",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bd853688-648f-4773-a149-cbc269ed3ab2",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SubmitCommand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

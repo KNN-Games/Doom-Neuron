@@ -3140,7 +3140,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1169289977}
   - component: {fileID: 1169289978}
-  - component: {fileID: 1169289983}
   - component: {fileID: 1169289980}
   - component: {fileID: 1169289979}
   - component: {fileID: 1169289982}
@@ -3317,10 +3316,18 @@ MonoBehaviour:
     m_ActionId: 0117948a-3cdc-4e82-a7d8-b9a3edae6fab
     m_ActionName: 'Player/Interact[/Keyboard/e]'
   - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c1b5a3e2-fe91-48f3-b5ce-aafaa32a9715
+    m_ActionName: 'Debug/OpenConsole[/Keyboard/backquote]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c2832b68-f436-4716-a628-a91ac92ed410
+    m_ActionName: 'Debug/SubmitCommand[/Keyboard/enter]'
+  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1169289982}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: OnOpenPauseMenu
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
+        m_MethodName: OnTogglePauseMenu
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3330,8 +3337,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: fd7427b3-6462-4d50-b2c7-ee00e5a25419
-    m_ActionName: 'Player/OpenPauseMenu[/Keyboard/escape]'
+    m_ActionId: b73d90b5-098f-4d78-9055-02fe7a9bd14c
+    m_ActionName: 'Player/TogglePauseMenu[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -3354,19 +3361,6 @@ MonoBehaviour:
   lastSavedText: {fileID: 116838592}
   hud: {fileID: 351361358}
   isPaused: 0
---- !u!114 &1169289983
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169289976}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a69217d91b9770f448c3b7831c0e1820, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerGeneral
-  hud: {fileID: 351361358}
 --- !u!1 &1197849906
 GameObject:
   m_ObjectHideFlags: 0
