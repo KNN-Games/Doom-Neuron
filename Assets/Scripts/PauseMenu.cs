@@ -10,7 +10,6 @@ public class PauseMenu : Singleton<PauseMenu>
     public GameObject backToMainMenuPrompt;
     public TextMeshProUGUI lastSavedText;
     [HideInInspector] public bool isPaused = false;
-    [HideInInspector] public GameObject hud; //PlayerController.cs fills this reference when level starts
     public void OnOpenPauseMenu(InputAction.CallbackContext context)
     {
         if (!context.started || SceneManager.GetActiveScene().name == "MainMenu") return;
@@ -30,7 +29,7 @@ public class PauseMenu : Singleton<PauseMenu>
         isPaused = true;
         Time.timeScale = 0f;
         pauseMenu.SetActive(true);
-        hud.SetActive(false);
+        PlayerGeneral.Instance.hud.SetActive(false);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -44,15 +43,19 @@ public class PauseMenu : Singleton<PauseMenu>
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenu.SetActive(false);
-        hud.SetActive(true);
+        PlayerGeneral.Instance.hud.SetActive(true);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    //opening settings is in "OptionsMenu.cs"
+    public void OpenSettings()
+    {
+        OptionsMenu.Instance.OpenOptionsMenu();
+    }
     public void BackToCheckpoint()
     {
-        SaveManager.Instance.LoadGame(GameManager.Instance.saveSlot);
+        SaveManager.Instance.LoadGame();
     }
+    //---BACK TO MENU PROMPT---
     public void OpenBackToMainMenuPrompt()
     {
         backToMainMenuPrompt.SetActive(true);
@@ -60,7 +63,7 @@ public class PauseMenu : Singleton<PauseMenu>
     }
     public void ConfirmReturn()
     {
-        ClosePauseMenu();
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
     public void CancelReturn()
@@ -78,4 +81,5 @@ public class PauseMenu : Singleton<PauseMenu>
             time.Seconds
         );
     }
+    //------
 }

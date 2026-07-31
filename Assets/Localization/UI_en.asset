@@ -152,6 +152,10 @@ MonoBehaviour:
     m_Localized: Interact
     m_Metadata:
       m_Items: []
+  - m_Id: 9099232753803264
+    m_Localized: You died
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

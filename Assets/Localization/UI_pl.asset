@@ -150,6 +150,10 @@ MonoBehaviour:
     m_Localized: Interakcja
     m_Metadata:
       m_Items: []
+  - m_Id: 9099232753803264
+    m_Localized: "Jeste\u015B trupem"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

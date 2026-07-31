@@ -11,7 +11,7 @@ public class Interactable : MonoBehaviour
     //generic functions
     public void Save()
     {
-        SaveManager.Instance.Save(GameManager.Instance.saveSlot);
+        SaveManager.Instance.Save();
         Debug.Log("Saved game");
     }
 }

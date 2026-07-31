@@ -12,7 +12,6 @@ public class PlayerController : Singleton<PlayerController>
     public float mouseSensitivity = 0.5f;
     [Header("References")]
     public Camera camera; //as in: player camera
-    public GameObject hud; //reference for other scripts
     public GameObject interactionText;
     private CharacterController characterController;
     private Vector2 moveInput;
@@ -26,7 +25,6 @@ public class PlayerController : Singleton<PlayerController>
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        PauseMenu.Instance.hud = hud; //let PauseMenu.cs know where is the HUD
     }
     void Update()
     {

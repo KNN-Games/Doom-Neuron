@@ -147,6 +147,10 @@ MonoBehaviour:
     m_Key: INTERACT
     m_Metadata:
       m_Items: []
+  - m_Id: 9099232753803264
+    m_Key: DEATH
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

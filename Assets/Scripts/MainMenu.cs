@@ -58,6 +58,7 @@ public class MainMenu : Singleton<MainMenu>
     }
     public void LoadGame(int slot)
     {
+        GameManager.Instance.saveSlot = slot;
         SaveManager.Instance.LoadGame(slot);
     }
     //---NEW GAME CONFIG SCREEN---

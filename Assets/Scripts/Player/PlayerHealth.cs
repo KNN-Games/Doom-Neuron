@@ -48,15 +48,11 @@ public class PlayerHealth : Singleton<PlayerHealth>
     public void Die()
     {
         deathScreen.SetActive(true);
+        PlayerGeneral.Instance.hud.SetActive(false);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         input.currentActionMap.Disable();
         Time.timeScale = 0f;
         Debug.Log("You died!");
-    }
-    public void BackToCheckpoint()
-    {
-        deathScreen.SetActive(false);
-        input.currentActionMap.Enable();
-        Time.timeScale = 1f;
-        SaveManager.Instance.LoadGame(GameManager.Instance.saveSlot);
     }
 }

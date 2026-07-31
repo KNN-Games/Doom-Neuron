@@ -6,8 +6,9 @@ public class GameManager : Singleton<GameManager>
     public float lastSaved;
     public int difficulty; // current difficulty level
     public int saveSlot; // As in: current save slot
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         DontDestroyOnLoad(gameObject);
     }
     void Update()

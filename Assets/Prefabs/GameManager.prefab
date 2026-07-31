@@ -5034,8 +5034,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   playTime: 0
   lastSaved: 0
-  difficulty: 0
-  saveSlot: 0
+  difficulty: 99
+  saveSlot: 99
 --- !u!1 &6379759187438789963
 GameObject:
   m_ObjectHideFlags: 0
