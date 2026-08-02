@@ -82,12 +82,14 @@ public class MainMenu : Singleton<MainMenu>
     }
     public void ConfirmGame() //play intro (not implemented yet)
     {
+        //Later on make it so player is created in the intro scene, but for now just create player in the first level.
         // Reset game data
         GameManager.Instance.playTime = 0f;
         GameManager.Instance.difficulty = selectedDifficulty;
 
         // Initialize new game data
         SaveManager.Instance.Save(selectedSlot);
+
         SceneManager.LoadScene("TestArena");
     }
     public void SetNewGameDifficulty(int difficulty)

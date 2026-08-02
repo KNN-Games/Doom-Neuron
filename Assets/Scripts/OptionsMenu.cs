@@ -85,14 +85,19 @@ public class OptionsMenu : Singleton<OptionsMenu>
             Debug.Log("Default language loaded");
         }
 
-        Debug.Log("Settings loaded. Values: ");
-        Debug.Log("Master Volume: " + PlayerPrefs.GetFloat("masterVolume") + ", Music Volume: " + PlayerPrefs.GetFloat("musicVolume") + ", SFX Volume: " + PlayerPrefs.GetFloat("sfxVolume"));
-
         //save variables from playersPrefs to local variables
         savedMasterVolume = PlayerPrefs.GetFloat("masterVolume");
         savedMusicVolume = PlayerPrefs.GetFloat("musicVolume");
         savedsfxVolume = PlayerPrefs.GetFloat("sfxVolume");
         savedLanguage = PlayerPrefs.GetString("language");
+
+        //print all settings values
+        Debug.Log(
+            $"Settings loaded. Values:\n" +
+            $"Master Volume: {savedMasterVolume}\n" +
+            $"Music Volume: {savedMusicVolume}\n" +
+            $"SFX Volume: {savedsfxVolume}"
+        );
     }
     public void OpenOptionsMenu()
     {
