@@ -1,4 +1,5 @@
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +7,7 @@ public class SaveManager : Singleton<SaveManager>
 {
     //individual saves are divided to slots, each slot corresponds to a save file
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
+    private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
     //THERE ARE 6 SLOTS: 0,1,2,3,4,5
 
     //---SAVE GAME ON EVERY SCENE CHANGE---
@@ -89,10 +91,26 @@ public class SaveManager : Singleton<SaveManager>
             //Debug.Log(data.difficulty);
             //Debug.Log(data.playTime);
             //Debug.Log(data.lastPlayed);
-            Debug.Log(data.sceneName);
+            //Debug.Log(data.sceneName);
 
             // Load the scene
             SceneManager.LoadScene(data.sceneName);
+
+            //create player
+            if(PlayerController.Instance == null)
+            {
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+                if (prefab != null)
+                {
+                    GameObject player = Instantiate(prefab);
+                    player.name = "Player"; // Set the name of the instantiated player object
+                }
+                else
+                {
+                    Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
+                }
+            }
+            
             Debug.Log($"Game loaded from slot {slot}");
         }
         else //start new game
