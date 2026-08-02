@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class Interactable : MonoBehaviour
 {
@@ -13,5 +14,9 @@ public class Interactable : MonoBehaviour
     {
         SaveManager.Instance.Save();
         Debug.Log("Saved game");
+    }
+    public void LoadLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
     }
 }

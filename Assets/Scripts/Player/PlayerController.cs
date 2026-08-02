@@ -20,6 +20,12 @@ public class PlayerController : Singleton<PlayerController>
     private float xRotation;
     private Interactable interactable;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        DontDestroyOnLoad(gameObject);
+    }
+    
     void Start()
     {
         characterController = GetComponent<CharacterController>();

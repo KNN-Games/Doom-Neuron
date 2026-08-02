@@ -15,6 +15,15 @@ public class MainMenu : Singleton<MainMenu>
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
 
+    protected override void Awake()
+    {
+        base.Awake();
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null) //destroy player if it exists, because the player is not supposed to exist in the main menu
+        {
+            Destroy(GameObject.FindWithTag("Player"));
+        }
+    }
     //---MAIN SCREEN---
     public void OpenSlotSelection()
     {
