@@ -1,19 +1,20 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour
 {
     [Header("Base Enemy Stats")]
-    public int Health { get; private set; }
+    public int Health;
     [HideInInspector] public Transform targetTransform; //as in: the thing the enemy is trying to attack (player or other target)
+    protected NavMeshAgent agent;
     private Transform cameraTransform;
     private SpriteRenderer spriteRenderer;
-    private CharacterController characterController;
     private void Start()
     {
         cameraTransform = PlayerController.Instance.camera.transform;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        characterController = GetComponent<CharacterController>();
+        agent = GetComponent<NavMeshAgent>();
         if(Health <= 0)
         {
             Debug.LogError("Enemy health is not set. Please set the health value in the inspector.");

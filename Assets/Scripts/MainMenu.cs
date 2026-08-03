@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -91,6 +92,11 @@ public class MainMenu : Singleton<MainMenu>
         SaveManager.Instance.Save(selectedSlot);
 
         SceneManager.LoadScene("TestArena");
+        //CHANGE THIS LATER!!!
+        const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab";
+        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+        GameObject player = Instantiate(playerPrefab);
+        player.name = "Player";
     }
     public void SetNewGameDifficulty(int difficulty)
     {

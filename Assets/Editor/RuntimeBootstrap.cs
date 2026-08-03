@@ -20,8 +20,11 @@ public static class RuntimeBootstrap
             Debug.LogError($"GameManager prefab not found:\n{GameManagerPrefabPath}");
             return;
         }
-        GameObject gameManager = Object.Instantiate(gameManagerPrefab);
-        gameManager.name = "GameManager";
+        if (GameManager.Instance == null)
+        {
+            GameObject gameManager = Object.Instantiate(gameManagerPrefab);
+            gameManager.name = "GameManager";
+        }
 
         GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
         if (playerPrefab == null)
@@ -29,8 +32,11 @@ public static class RuntimeBootstrap
             Debug.LogError($"Player prefab not found:\n{PlayerPrefabPath}");
             return;
         }
-        GameObject player = Object.Instantiate(playerPrefab);
-        player.name = "Player";
+        if(PlayerController.Instance == null)
+        {
+            GameObject player = Object.Instantiate(playerPrefab);
+            player.name = "Player";
+        }
 
         Debug.LogWarning("GAME NOT LOADED FROM MAIN MENU. SAVING WILL NOT WORK! CHANGING SCENES WILL NOT WORK! LOADED DEFAULT DIFFICULTY: MEDIUM");
     }
