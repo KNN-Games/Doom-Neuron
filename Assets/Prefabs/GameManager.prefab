@@ -3684,10 +3684,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 8108550406534529693, guid: 5d68e8f80f7722a4c826d8653d0e9bab, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -7316,6 +7316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e278ce8a107db2148939d54b159ad167, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheatsManager
+  testSound: {fileID: 0}
   consolePanel: {fileID: 3971397188769678856}
   inputField: {fileID: 7438899518659815125}
   outputText: {fileID: 2556401291009964119}

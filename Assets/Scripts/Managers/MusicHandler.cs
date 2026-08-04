@@ -1,10 +1,14 @@
 using UnityEngine;
 
+/// <summary>
+/// Handles the background music for the game.
+/// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class MusicHandler : Singleton<MusicHandler>
 {
     private AudioSource musicAudioSource;
-    void Start()
+    
+    private void Start()
     {
         musicAudioSource = GetComponent<AudioSource>();
     }

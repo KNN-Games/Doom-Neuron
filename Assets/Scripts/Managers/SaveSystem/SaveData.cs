@@ -4,12 +4,12 @@ using UnityEngine;
 [Serializable]
 public class SaveData
 {
-    //save information
+    // Save information
     //ADD HERE: lowest difficulty in save file (for achievements)
     public int difficulty; // Difficulty level of the game
     public float playTime; // Total playtime in seconds
     public long lastPlayed; // Last time the game was played in ticks
-    //game state information
+    // Game state information
     public string sceneName; // Current scene
     public Vector3 playerPosition;
     public int playerHealth;

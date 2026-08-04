@@ -7,14 +7,15 @@ public class PlayerHealth : Singleton<PlayerHealth>
 {
     [Header("Stats")]
     public int maxBlood;
-    public float damageReduction = 0;
+    public float damageReduction = 0; //0 means 0%, 1 means 100%. Modyfy this additively please.
     public bool isInvulnerable = false;
     [Header("References")]
     public GameObject deathScreen;
-    [HideInInspector] public int CurrentBlood { get; private set; } //as in: current blood
-    [HideInInspector] public int CurrentBlackBile { get; private set; } //as in: current black bile
+    public int CurrentBlood { get; private set; } //as in: current blood
+    public int CurrentBlackBile { get; private set; } //as in: current black bile
     public bool IsGooped => CurrentBlackBile > 0;
     private PlayerInput input;
+    
     void Start()
     {
         CurrentBlood = maxBlood;
@@ -24,7 +25,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     public void TakeDamage(int damage)
     {
         if(isInvulnerable) return;
-        CurrentBlood -= damage;
+        CurrentBlood -= Mathf.RoundToInt(damage * (1 - damageReduction));
         if(CurrentBlood <= 0)
         {
             Die();

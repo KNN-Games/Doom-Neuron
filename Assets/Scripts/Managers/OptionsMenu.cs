@@ -4,150 +4,165 @@ using UnityEngine.Audio;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
+/// <summary>
+/// Handles the options menu, including audio, controls, and general settings.
+/// CURRENT values are the live preview state while the options menu is open,
+/// SAVED values are what is already saved to disk (used to discard changes and check for unsaved changes).
+/// When you change a slider/button/whatever you should feel the effects immediately, but not save them until you hit the save button.
+/// 
+/// When adding a new setting you have to add:
+/// 1. two (2) variables to hold the CURRENT and SAVED values of the setting.
+/// 2. references to the UI elements that will control the setting (slider, button, etc.).
+/// 3. a function to set the CURRENT value of the setting.
+/// 4. modify LoadSettingsValues() to load the SAVED value from PlayerPrefs and set the variable.
+/// 5. modify HasUnsavedChanges() to check if the CURRENT value has changed.
+/// 6. modify SynchronizeSettings() to apply the CURRENT value to the actual setting and update the UI to reflect the CURRENT value.
+/// 7. modify ResetSettings() to reset the setting to default value.
+/// </summary>
 public class OptionsMenu : Singleton<OptionsMenu>
 {
-    //SUMMARY:
-    //when u change a slider/button/whatever u should feel the effects immediatly, but not save them until u hit the save button.
-    //when adding a new setting u have to add:
-    //1. a variable to hold the value of the setting
-    //2. a function to set the value of the setting 
-    //3. modify Start() to load the setting from PlayerPrefs and set the variable
-    //4. modify BackToMenu() to check if the setting has changed
-    //5. modify SaveChanges() to & DiscardChanges() to save/discard the setting
-    //6. modify ResetSettings() to reset the setting to default value
+    public bool IsOptionsMenuOpen => optionsMenuCanvas.activeSelf;
     public AudioMixer audioMixer;
-    [Header("UI References")]
-    //the whole canvas
-    public GameObject optionsMenuCanvas;
-    //panels
-    public GameObject generalSettingsPanel;
-    public GameObject audioSettingsPanel;
-    public GameObject controlsSettingsPanel;
-    public GameObject saveChangesPrompt;
-    [Header("Audio UI")]
-    //slider texts
-    public TextMeshProUGUI masterVolumeText;
-    public TextMeshProUGUI musicVolumeText;
-    public TextMeshProUGUI sfxVolumeText;
-    //sliders
-    public Slider masterVolumeSlider;
-    public Slider musicVolumeSlider;
-    public Slider sfxVolumeSlider;
 
-    //variables to hold the settings values
+    [Header("Main UI References")]
+    [SerializeField] private GameObject optionsMenuCanvas;
+    [SerializeField] private GameObject generalSettingsPanel;
+    [SerializeField] private GameObject audioSettingsPanel;
+    [SerializeField] private GameObject controlsSettingsPanel;
+    [SerializeField] private GameObject saveChangesPrompt;
+
+    [Header("Audio UI References")]
+    [SerializeField] private TextMeshProUGUI masterVolumeText;
+    [SerializeField] private TextMeshProUGUI musicVolumeText;
+    [SerializeField] private TextMeshProUGUI sfxVolumeText;
+    [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider musicVolumeSlider;
+    [SerializeField] private Slider sfxVolumeSlider;
+
+    // Persisted values: what is already saved to disk (used to discard changes and check for unsaved changes).
     private float savedMasterVolume;
     private float savedMusicVolume;
-    private float savedsfxVolume;
+    private float savedSfxVolume;
     private string savedLanguage;
 
-    public void Start()
+    // Current values: live preview state while the options menu is open.
+    private float currentMasterVolume;
+    private float currentMusicVolume;
+    private float currentSfxVolume;
+    private string currentLanguage;
+
+    private void Start()
     {
-        //load variables
-        //check if settings exist and load defaults if not
+        LoadSettingsValues();
+        SynchronizeSettings();
+    }
+    private void LoadSettingsValues()
+    {
+        // Load the saved values from PlayerPrefs, or set to default if not found.
+        // Master volume
         if (PlayerPrefs.HasKey("masterVolume"))
         {
-            SetMasterVolume(PlayerPrefs.GetFloat("masterVolume"));
+            savedMasterVolume = PlayerPrefs.GetFloat("masterVolume");
         }
         else
         {
-            SetMasterVolume(1f);
-            PlayerPrefs.SetFloat("masterVolume", 1f);
-            Debug.Log("Default master volume loaded");
+            savedMasterVolume = 1f;
+            PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
         }
+        // Music volume
         if (PlayerPrefs.HasKey("musicVolume"))
         {
-            SetMusicVolume(PlayerPrefs.GetFloat("musicVolume"));
+            savedMusicVolume = PlayerPrefs.GetFloat("musicVolume");
         }
         else
         {
-            SetMusicVolume(1f);
-            PlayerPrefs.SetFloat("musicVolume", 1f);
-            Debug.Log("Default music volume loaded");
+            savedMusicVolume = 1f;
+            PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
         }
+        // SFX volume
         if (PlayerPrefs.HasKey("sfxVolume"))
         {
-            SetSFXVolume(PlayerPrefs.GetFloat("sfxVolume"));
+            savedSfxVolume = PlayerPrefs.GetFloat("sfxVolume");
         }
         else
         {
-            SetSFXVolume(1f);
-            PlayerPrefs.SetFloat("sfxVolume", 1f);
-            Debug.Log("Default sfx volume loaded");
+            savedSfxVolume = 1f;
+            PlayerPrefs.SetFloat("sfxVolume", savedSfxVolume);
         }
+        // Language
         if (PlayerPrefs.HasKey("language"))
         {
-            SetLanguage(PlayerPrefs.GetString("language"));
+            savedLanguage = PlayerPrefs.GetString("language");
         }
         else
         {
-            SetLanguage("en");
-            PlayerPrefs.SetString("language", "en");
-            Debug.Log("Default language loaded");
+            savedLanguage = "en";
+            PlayerPrefs.SetString("language", savedLanguage);
         }
 
-        //save variables from playersPrefs to local variables
-        savedMasterVolume = PlayerPrefs.GetFloat("masterVolume");
-        savedMusicVolume = PlayerPrefs.GetFloat("musicVolume");
-        savedsfxVolume = PlayerPrefs.GetFloat("sfxVolume");
-        savedLanguage = PlayerPrefs.GetString("language");
+        // Set current values as the saved values initially, so that the UI reflects the saved state when the menu is opened.
+        LoadSavedToCurrent();
 
-        //print all settings values
-        Debug.Log(
-            $"Settings loaded. Values:\n" +
-            $"Master Volume: {savedMasterVolume}\n" +
-            $"Music Volume: {savedMusicVolume}\n" +
-            $"SFX Volume: {savedsfxVolume}"
-        );
+        // Apply the saved values to the actual settings.
+        PlayerPrefs.Save();
     }
-    public void OpenOptionsMenu()
+    private void SynchronizeSettings() // Update settings & UI to match CURRENT values.
+    {
+        // Apply the current values.
+        SetMasterVolume(currentMasterVolume);
+        SetMusicVolume(currentMusicVolume);
+        SetSFXVolume(currentSfxVolume);
+        SetLanguage(currentLanguage);
+        // Update the sliders to reflect the current values.
+        masterVolumeSlider.value = currentMasterVolume;
+        musicVolumeSlider.value = currentMusicVolume;
+        sfxVolumeSlider.value = currentSfxVolume;
+    }
+    private void LoadSavedToCurrent() // Load the saved values into the current values.
+    {
+        currentMasterVolume = savedMasterVolume;
+        currentMusicVolume = savedMusicVolume;
+        currentSfxVolume = savedSfxVolume;
+        currentLanguage = savedLanguage;
+    }
+    private bool HasUnsavedChanges()
+    {
+        return !Mathf.Approximately(currentMasterVolume, savedMasterVolume)
+            || !Mathf.Approximately(currentMusicVolume, savedMusicVolume)
+            || !Mathf.Approximately(currentSfxVolume, savedSfxVolume)
+            || currentLanguage != savedLanguage;
+    }
+    public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
+    {
+        savedMasterVolume = currentMasterVolume;
+        savedMusicVolume = currentMusicVolume;
+        savedSfxVolume = currentSfxVolume;
+        savedLanguage = currentLanguage;
+
+        PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
+        PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
+        PlayerPrefs.SetFloat("sfxVolume", savedSfxVolume);
+        PlayerPrefs.SetString("language", savedLanguage);
+        PlayerPrefs.Save();
+    }
+    //---MENU NAVIGATION---
+    public void OpenOptionsMenu() // Used by PlayerUI and MainMenu to open the options menu.
     {
         optionsMenuCanvas.SetActive(true);
         OpenGeneralSettings();
-        //load slider values
-        masterVolumeSlider.value = savedMasterVolume; //saved should have the same value as playerPrefs (the real value), right? 
-        musicVolumeSlider.value = savedMusicVolume; //At least when the options menu is opened.
-        sfxVolumeSlider.value = savedsfxVolume;
-    }
-    public void SaveChanges()
-    {
-        //save to playerPrefs
-        PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
-        PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
-        PlayerPrefs.SetFloat("sfxVolume", savedsfxVolume);
-        PlayerPrefs.SetString("language", savedLanguage);
 
-        PlayerPrefs.Save();
+        // Reset preview state to the last persisted values whenever the menu opens.
+        LoadSavedToCurrent();
+        SynchronizeSettings();
     }
-    private void DiscardChanges()
-    {
-        //revert to saved values
-        SetMasterVolume(PlayerPrefs.GetFloat("masterVolume"));
-        SetMusicVolume(PlayerPrefs.GetFloat("musicVolume"));
-        SetSFXVolume(PlayerPrefs.GetFloat("sfxVolume"));
-        SetLanguage(PlayerPrefs.GetString("language"));
-    }
-
-    //---Left bar buttons---
     public void BackToMenu()
     {
-        bool changesMade = false;
-
-        if (PlayerPrefs.GetFloat("masterVolume") != savedMasterVolume) changesMade = true;
-        if (PlayerPrefs.GetFloat("musicVolume") != savedMusicVolume) changesMade = true;
-        if (PlayerPrefs.GetFloat("sfxVolume") != savedsfxVolume) changesMade = true;
-        if (PlayerPrefs.GetString("language") != savedLanguage) changesMade = true;
-        //check if any settings have changed
-        if (changesMade)
+        if (HasUnsavedChanges())
         {
-            //open "are you sure" prompt. It gives 3 options: confirm, discard, cancel.
-            //it blocks u from clicking any other button because of a background with raycast target enabled.
             saveChangesPrompt.SetActive(true);
+            return;
         }
-        else
-        {
-            SaveChanges();
-            optionsMenuCanvas.SetActive(false);
-        }
+        optionsMenuCanvas.SetActive(false);
     }
     public void OpenGeneralSettings()
     {
@@ -170,13 +185,14 @@ public class OptionsMenu : Singleton<OptionsMenu>
     public void ResetSettings()
     {
         Debug.Log("Resetting settings to default values");
-        SetMasterVolume(1f);
-        SetMusicVolume(1f);
-        SetSFXVolume(1f);
-        SetLanguage("en");
+        currentMasterVolume = 1f;
+        currentMusicVolume = 1f;
+        currentSfxVolume = 1f;
+        currentLanguage = "en";
+
+        SynchronizeSettings();
         BackToMenu();
     }
-    //---Save changes prompt buttons---
     public void Confirm()
     {
         SaveChanges();
@@ -185,7 +201,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     public void Discard()
     {
-        DiscardChanges();
+        LoadSavedToCurrent();
+        SynchronizeSettings();
         saveChangesPrompt.SetActive(false);
         optionsMenuCanvas.SetActive(false);
     }
@@ -193,10 +210,10 @@ public class OptionsMenu : Singleton<OptionsMenu>
     {
         saveChangesPrompt.SetActive(false);
     }
-
-    //---General settings---
+    //---GENERAL SETTINGS---
     public void SetLanguage(string languageCode)
     {
+        currentLanguage = languageCode;
         foreach (var locale in LocalizationSettings.AvailableLocales.Locales)
         {
             if (locale.Identifier.Code == languageCode)
@@ -207,29 +224,29 @@ public class OptionsMenu : Singleton<OptionsMenu>
         }
         Debug.LogError("Language not found");
     }
-    //---Audio settings---
+    //---AUDIO SETTINGS---
     public void SetMasterVolume(float volume)
     {
-        savedMasterVolume = volume;
+        currentMasterVolume = volume;
         float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
         audioMixer.SetFloat("MasterVolume", dB);
         masterVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     public void SetMusicVolume(float volume)
     {
-        savedMusicVolume = volume;
+        currentMusicVolume = volume;
         float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
         audioMixer.SetFloat("MusicVolume", dB);
         musicVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     public void SetSFXVolume(float volume)
     {
-        savedsfxVolume = volume;
+        currentSfxVolume = volume;
         float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
         audioMixer.SetFloat("SoundEffectsVolume", dB);
         sfxVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
-    //---Controls settings---
+    //---CONTROLS SETTINGS---
     public void SetButtonToAction()
     {
         //this one will be hard to do.

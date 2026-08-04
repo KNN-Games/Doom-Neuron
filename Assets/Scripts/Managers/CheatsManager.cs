@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// Handles cheat commands and console input for the game.
+/// Activate the console with ` key and type commands to execute cheats.
+/// </summary>
 public class CheatsManager : Singleton<CheatsManager>
 {
     public bool IsConsoleActive => consolePanel.activeSelf;
@@ -13,19 +17,21 @@ public class CheatsManager : Singleton<CheatsManager>
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private TMP_Text outputText;
     [SerializeField] private ScrollRect scrollRect;
+    // Dictionary to hold command names and their corresponding actions
     private Dictionary<string, System.Action<string[]>> commands;
     private bool isOpen;
+    
     private void Start()
     {
-        commands = new() //list of commands
+        commands = new() // List of commands
         {
             {"blood", AddBlood},
             {"blackbile", AddBlackBile},
             {"divine", ToggleInvulnerability},
-            {"suicide", Die}
+            {"suicide", Die},
         };
     }
-    //---HANDLE INPUT---
+    //---HANDLE INPUT ACTIONS---
     public void OnOpenConsole(InputAction.CallbackContext context)
     {
         if (!context.started || SceneManager.GetActiveScene().name == "MainMenu") return;
@@ -36,6 +42,7 @@ public class CheatsManager : Singleton<CheatsManager>
         if (!context.started) return;
         SubmitCommand();
     }
+    //---CONSOLE MANAGEMENT---
     private void ToggleConsole()
     {
         isOpen = !isOpen;
@@ -76,7 +83,7 @@ public class CheatsManager : Singleton<CheatsManager>
         scrollRect.verticalNormalizedPosition = 0f;
     }
     //---COMMMANDS---
-    private void AddBlood(string[] args)
+    private void AddBlood(string[] args) // Add blood (as in: HP) to the player. Usage: blood <amount>
     {
         if (args.Length == 0)
         {
@@ -87,7 +94,7 @@ public class CheatsManager : Singleton<CheatsManager>
         PlayerHealth.Instance.GainBlood(amount);
         outputText.text += $"Added {amount} HP\n";
     }
-    private void AddBlackBile(string[] args)
+    private void AddBlackBile(string[] args) // Add black bile (as in: black damage) to the player. Usage: blackbile <amount>
     {
         if (args.Length == 0)
         {
@@ -98,15 +105,15 @@ public class CheatsManager : Singleton<CheatsManager>
         PlayerHealth.Instance.TakeBlackDamage(amount);
         outputText.text += $"Added {amount} black bile\n";
     }
-    private void Die(string[] args)
+    private void Die(string[] args) // Instantly kills the player. Usage: suicide
     {
         PlayerHealth.Instance.Die();
     }
-    private void ToggleInvulnerability(string[] args) //ignores possible visual effects we may add later
+    private void ToggleInvulnerability(string[] args) // Toggles invulnerability. Usage: invulnerable
     {
         bool inv = PlayerHealth.Instance.isInvulnerable;
         inv = !inv;
-        PlayerHealth.Instance.isInvulnerable = inv;
+        PlayerHealth.Instance.isInvulnerable = inv; // Ignores possible visual effects we may add later
         if(inv)
         {
             outputText.text += "Only an instant death can kill you now\n";

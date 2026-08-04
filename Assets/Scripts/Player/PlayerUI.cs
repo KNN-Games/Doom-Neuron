@@ -27,14 +27,14 @@ public class PlayerUI : Singleton<PlayerUI>
     //---PAUSE MENU---
     public void OpenPauseMenu()
     {
-        if (OptionsMenu.Instance.optionsMenuCanvas.activeSelf) return; //if options are active don't do anything
+        if (OptionsMenu.Instance.IsOptionsMenuOpen) return; //if options are active don't do anything
         PauseGame();
         pauseMenu.SetActive(true);
         hud.SetActive(false);
     }
     public void ClosePauseMenu()
     {
-        if (OptionsMenu.Instance.optionsMenuCanvas.activeSelf) return; //if options are active don't do anything
+        if (OptionsMenu.Instance.IsOptionsMenuOpen) return; //if options are active don't do anything
         if (backToMainMenuPrompt.activeSelf)
         {
             backToMainMenuPrompt.SetActive(false);

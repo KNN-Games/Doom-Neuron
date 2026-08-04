@@ -5,20 +5,23 @@ using UnityEngine.Localization.Components;
 
 public class SlotTextHandler : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private GameObject noSaveText;
     [SerializeField] private GameObject yesSaveText;
     [SerializeField] private LocalizeStringEvent difficultyText;
     [SerializeField] private TMP_Text playTimeText;
     [SerializeField] private TMP_Text lastPlayedText;
+    
     public void UpdateSlot(SaveData data)
     {
-        //if no file found
+        // If no file found
         if (data == null)
         {
             yesSaveText.SetActive(false);
             noSaveText.SetActive(true);
             return;
         }
+
         yesSaveText.SetActive(true);
         noSaveText.SetActive(false);
 
@@ -41,11 +44,11 @@ public class SlotTextHandler : MonoBehaviour
             Debug.LogWarning($"Unknown difficulty level {data.difficulty} in save slot.");
         }
 
-        //Update time played text
+        // Update time played text
         playTimeText.text = Format(data.playTime);
 
-        //Update last played text
-        DateTime lastPlayed = new(data.lastPlayed); //conversion: long -> DateTime
+        // Update last played text
+        DateTime lastPlayed = new(data.lastPlayed); // Conversion: long -> DateTime
         lastPlayedText.text = lastPlayed.ToShortDateString();
     }
     private static string Format(float seconds)
