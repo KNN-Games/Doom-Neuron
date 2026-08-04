@@ -1,5 +1,4 @@
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,7 +11,6 @@ using UnityEngine.SceneManagement;
 public class SaveManager : Singleton<SaveManager>
 {
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
-    private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
 
     //---SAVE GAME ON EVERY SCENE CHANGE---
     protected override void Awake()
@@ -72,6 +70,7 @@ public class SaveManager : Singleton<SaveManager>
         // Create save data object
         SaveData data = new()
         {
+            saveSlot = slot,
             difficulty = diff,
             playTime = GameManager.Instance.playTime,
             lastPlayed = System.DateTime.Now.Ticks,
@@ -90,6 +89,11 @@ public class SaveManager : Singleton<SaveManager>
     //---LOADING---
     public SaveData Load(int slot) // Returns the save data from the specified slot, or null if no save data exists for that slot
     {
+        if (slot < 0 || slot > 5)
+        {
+            Debug.LogError("LOAD FAILURE. INVALID SLOT: " + slot);
+            return null;
+        }
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");
         if (File.Exists(path))
         {
@@ -103,49 +107,26 @@ public class SaveManager : Singleton<SaveManager>
     }
     public void LoadGame()
     {
-        LoadGame(GameManager.Instance.saveSlot);
+        LoadGame(Load(GameManager.Instance.saveSlot));
     }
-    public void LoadGame(int slot)
+    public void LoadGame(SaveData data) // I don't know if I should move this to GameManager.
     {
-        SaveData data = Load(slot);
-        if (data != null) // Data found
-        {
-            // Load the game state from the save data
-            GameManager.Instance.playTime = data.playTime;
-            GameManager.Instance.difficulty = data.difficulty;
-            GameManager.Instance.saveSlot = slot; //this part is technically not from data
+        // Load the game state from the save data
+        GameManager.Instance.playTime = data.playTime;
+        GameManager.Instance.difficulty = data.difficulty;
+        GameManager.Instance.saveSlot = data.saveSlot;
 
-            //DEBUG: print all save data info
-            //Debug.Log(data.difficulty);
-            //Debug.Log(data.playTime);
-            //Debug.Log(data.lastPlayed);
-            //Debug.Log(data.sceneName);
+        // Load the scene
+        SceneManager.LoadScene(data.sceneName);
 
-            // Load the scene
-            SceneManager.LoadScene(data.sceneName);
-
-            // Create player
-            if (PlayerController.Instance == null)
-            {
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
-                if (prefab != null)
-                {
-                    GameObject player = Instantiate(prefab);
-                    player.name = "Player"; // Set the name of the instantiated player object
-                }
-                else
-                {
-                    Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
-                }
-            }
-
-            Debug.Log($"Game loaded from slot {slot}");
-        }
-        else // Start new game
-        {
-            Debug.LogWarning($"No save data found in slot {slot}. Starting a new game.");
-            MainMenu.Instance.OpenNewGameConfiguration(slot);
-        }
+        // DEBUG: print all save data info
+        Debug.Log(
+        $"Game loaded. Values:\n" +
+        $"save slot: {data.saveSlot}\n" +
+        $"difficulty: {data.difficulty}\n" +
+        $"playTime: {data.playTime}\n" +
+        $"lastPlayed: {data.lastPlayed}\n" +
+        $"sceneName: {data.sceneName}\n");
     }
     //------
     public void DeleteSave(int slot) // Used in main menu slot selection screen via mainMenu.cs

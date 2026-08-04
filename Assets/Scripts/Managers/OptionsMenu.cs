@@ -103,6 +103,14 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
         // Apply the saved values to the actual settings.
         PlayerPrefs.Save();
+
+        // DEBUG: print all saved values
+        Debug.Log(
+        $"Settings loaded. Values:\n" +
+        $"Master Volume: {savedMasterVolume}\n" +
+        $"Music Volume: {savedMusicVolume}\n" +
+        $"SFX Volume: {savedSfxVolume}\n" +
+        $"Language: {savedLanguage}");
     }
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {

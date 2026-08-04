@@ -18,6 +18,7 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject[] saveSlots;
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
+    private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
 
     protected override void Awake()
     {
@@ -47,7 +48,7 @@ public class MainMenu : Singleton<MainMenu>
     {
         OptionsMenu.Instance.OpenOptionsMenu();
     }
-    public void StartCreditsSequence()
+    public void StartCreditsSequence() //Tutaj, Maciej Fedorowicz. W tym miejscu dodaj kod do rozpoczęcia sekwencji napisów końcowych.
     {
         // Start the credits sequence
         creditsPanel.SetActive(true);
@@ -55,24 +56,24 @@ public class MainMenu : Singleton<MainMenu>
 
 
     }
-    public void ExitGame() // Exit the game
+    public void ExitGame()
     {
         Debug.Log("This would exit the game");
         Application.Quit();
     }
     //---SLOT SELECT SCREEN---
-    private void UpdateSaveSlotUI() // Update every slot
-    {
-        for (int i = 0; i <= 5; i++)
-        {
-            SaveData data = SaveManager.Instance.Load(i);
-            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
-        }
-    }
     public void LoadGame(int slot)
     {
+        SaveData data = SaveManager.Instance.Load(slot);
+        if (data == null)
+        {
+            OpenNewGameConfiguration(slot);
+            return;
+        }
         GameManager.Instance.saveSlot = slot;
-        SaveManager.Instance.LoadGame(slot);
+        SaveManager.Instance.LoadGame(data);
+
+        CreatePlayer();
     }
     public void DeleteSave(int slot)
     {
@@ -80,31 +81,17 @@ public class MainMenu : Singleton<MainMenu>
         UpdateSaveSlotUI();
     }
     //---NEW GAME CONFIG SCREEN---
-    public void OpenNewGameConfiguration(int slot)
-    {
-        selectedSlot = slot;
-        mainMenuPanel.SetActive(false);
-        saveSlotPanel.SetActive(false);
-        newGameConfigPanel.SetActive(true);
-        difficultyButtons[1].image.color = Color.red; // Highlight medium difficulty button, because it's the default difficulty
-        selectedDifficulty = 2;
-    }
-    public void ConfirmGame() //play intro (not implemented yet)
+    public void ConfirmGame()
     {
         // Later on make it so player is created in the intro scene, but for now just create player in the first level.
         // Reset game data
         GameManager.Instance.playTime = 0f;
         GameManager.Instance.difficulty = selectedDifficulty;
-
-        // Initialize new game data
-        SaveManager.Instance.Save(selectedSlot);
+        GameManager.Instance.saveSlot = selectedSlot;
 
         SceneManager.LoadScene("TestArena");
         //CHANGE THIS LATER!!!
-        const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab";
-        GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
-        GameObject player = Instantiate(playerPrefab);
-        player.name = "Player";
+        CreatePlayer();
     }
     public void SetNewGameDifficulty(int difficulty)
     {
@@ -123,17 +110,52 @@ public class MainMenu : Singleton<MainMenu>
         GameManager.Instance.difficulty = difficulty;
     }
     //---OTHER---
-    public void ReturnToMainMenu() // Move 1 step backwards
+    public void ReturnToMainMenu() // Used by buttons. Move 1 step backward.
     {
-        if(newGameConfigPanel.activeSelf)
+        if (newGameConfigPanel.activeSelf)
         {
             // Move back to slots
             newGameConfigPanel.SetActive(false);
             OpenSlotSelection();
-        } else // Assume saveSlotPanel is active
+        }
+        else // Assume saveSlotPanel is active
         {
             mainMenuPanel.SetActive(true);
             saveSlotPanel.SetActive(false);
+        }
+    }
+    //---HELPER METHODS---
+    private void CreatePlayer() // Create player in the scene, if it doesn't already exist
+    {
+        if (PlayerController.Instance == null)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+            if (prefab != null)
+            {
+                GameObject player = Instantiate(prefab);
+                player.name = "Player"; // Set the name of the instantiated player object
+            }
+            else
+            {
+                Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
+            }
+        }
+    }
+    private void OpenNewGameConfiguration(int slot) // No button does this directly, only based on context.
+    {
+        selectedSlot = slot;
+        mainMenuPanel.SetActive(false);
+        saveSlotPanel.SetActive(false);
+        newGameConfigPanel.SetActive(true);
+        difficultyButtons[1].image.color = Color.red; // Highlight medium difficulty button, because it's the default difficulty
+        selectedDifficulty = 2;
+    }
+    private void UpdateSaveSlotUI() // Update every slot
+    {
+        for (int i = 0; i <= 5; i++)
+        {
+            SaveData data = SaveManager.Instance.Load(i);
+            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
         }
     }
 }
