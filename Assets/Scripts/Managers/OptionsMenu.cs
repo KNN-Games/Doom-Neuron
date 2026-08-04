@@ -14,10 +14,13 @@ using UnityEngine.UI;
 /// 1. two (2) variables to hold the CURRENT and SAVED values of the setting.
 /// 2. references to the UI elements that will control the setting (slider, button, etc.).
 /// 3. a function to set the CURRENT value of the setting.
-/// 4. modify LoadSettingsValues() to load the SAVED value from PlayerPrefs and set the variable.
-/// 5. modify HasUnsavedChanges() to check if the CURRENT value has changed.
-/// 6. modify SynchronizeSettings() to apply the CURRENT value to the actual setting and update the UI to reflect the CURRENT value.
-/// 7. modify ResetSettings() to reset the setting to default value.
+/// 4. modify Start() to check and load the setting from PlayerPrefs
+/// 5. modify ApplySavedValues() to set the CURRENT value to match the SAVED and update UI if nessesary
+/// 6. modify HasUnsavedChanges() to check if new CURRENT == SAVED
+/// 7. modify SaveChanges() to set SAVED to match CURRENT and send it to PlayerPrefs
+/// 8. modify ResetSettings to include default value
+/// 
+/// TO DO: include arrays? References are starting to get really long...
 /// </summary>
 public class OptionsMenu : Singleton<OptionsMenu>
 {
@@ -52,11 +55,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private string currentLanguage;
 
     private void Start()
-    {
-        LoadSettingsValues();
-        SynchronizeSettings();
-    }
-    private void LoadSettingsValues()
     {
         // Load the saved values from PlayerPrefs, or set to default if not found.
         // Master volume
@@ -101,29 +99,23 @@ public class OptionsMenu : Singleton<OptionsMenu>
         }
 
         // Set current values as the saved values initially, so that the UI reflects the saved state when the menu is opened.
-        LoadSavedToCurrent();
+        ApplySavedValues();
 
         // Apply the saved values to the actual settings.
         PlayerPrefs.Save();
     }
-    private void SynchronizeSettings() // Update settings & UI to match CURRENT values.
+    private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {
-        // Apply the current values.
-        SetMasterVolume(currentMasterVolume);
-        SetMusicVolume(currentMusicVolume);
-        SetSFXVolume(currentSfxVolume);
-        SetLanguage(currentLanguage);
+        // Set CURRENT values to match SAVED values.
+        SetMasterVolume(savedMasterVolume);
+        SetMusicVolume(savedMusicVolume);
+        SetSFXVolume(savedSfxVolume);
+        SetLanguage(savedLanguage);
+
         // Update the sliders to reflect the current values.
-        masterVolumeSlider.value = currentMasterVolume;
-        musicVolumeSlider.value = currentMusicVolume;
-        sfxVolumeSlider.value = currentSfxVolume;
-    }
-    private void LoadSavedToCurrent() // Load the saved values into the current values.
-    {
-        currentMasterVolume = savedMasterVolume;
-        currentMusicVolume = savedMusicVolume;
-        currentSfxVolume = savedSfxVolume;
-        currentLanguage = savedLanguage;
+        masterVolumeSlider.value = savedMasterVolume;
+        musicVolumeSlider.value = savedMusicVolume;
+        sfxVolumeSlider.value = savedSfxVolume;
     }
     private bool HasUnsavedChanges()
     {
@@ -134,11 +126,13 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
     {
+        // Change SAVED to match CURRENT
         savedMasterVolume = currentMasterVolume;
         savedMusicVolume = currentMusicVolume;
         savedSfxVolume = currentSfxVolume;
         savedLanguage = currentLanguage;
 
+        // Persist the SAVED values to PlayerPrefs
         PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
         PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
         PlayerPrefs.SetFloat("sfxVolume", savedSfxVolume);
@@ -152,8 +146,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         OpenGeneralSettings();
 
         // Reset preview state to the last persisted values whenever the menu opens.
-        LoadSavedToCurrent();
-        SynchronizeSettings();
+        ApplySavedValues();
     }
     public void BackToMenu()
     {
@@ -185,12 +178,13 @@ public class OptionsMenu : Singleton<OptionsMenu>
     public void ResetSettings()
     {
         Debug.Log("Resetting settings to default values");
-        currentMasterVolume = 1f;
-        currentMusicVolume = 1f;
-        currentSfxVolume = 1f;
-        currentLanguage = "en";
+        savedMasterVolume = 1f;
+        savedMusicVolume = 1f;
+        savedSfxVolume = 1f;
+        savedLanguage = "en";
 
-        SynchronizeSettings();
+        ApplySavedValues();
+        SaveChanges(); // Only the PlayerPrefs part of this function matters.
         BackToMenu();
     }
     public void Confirm()
@@ -201,8 +195,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     public void Discard()
     {
-        LoadSavedToCurrent();
-        SynchronizeSettings();
+        ApplySavedValues();
         saveChangesPrompt.SetActive(false);
         optionsMenuCanvas.SetActive(false);
     }
