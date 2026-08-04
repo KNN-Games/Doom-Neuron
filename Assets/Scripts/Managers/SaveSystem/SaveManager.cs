@@ -159,7 +159,6 @@ public class SaveManager : Singleton<SaveManager>
         {
             Debug.LogWarning($"Save file not found at {path}");
         }
-        MainMenu.Instance.UpdateSaveSlotUI();
     }
     public int GetSaveCount()
     {

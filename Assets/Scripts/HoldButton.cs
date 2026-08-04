@@ -11,7 +11,7 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
     private float holdTimer;
     private bool holding;
     private Image image;
-    void Start()
+    private void Start()
     {
         image = GetComponent<Image>();
     }

@@ -1,10 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// The main player Script.
+/// Handles player movement, looking around, and interaction with objects in the game world. Also handles the camera and some other generic player functions.
+/// Remember to not directly reference the player GameObject in scenes, but instead use PlayerController.Instance to access the singleton instance.
+/// </summary>
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Transform))]
 public class PlayerController : Singleton<PlayerController>
 {
+    [HideInInspector] public Transform playerTransform;
     [Header("Movement")]
     public float moveSpeed = 8f;
     public float jumpHeight = 1.5f;
@@ -13,8 +19,7 @@ public class PlayerController : Singleton<PlayerController>
     public float mouseSensitivity = 0.5f;
     [Header("References")]
     public Camera camera; // As in: player camera
-    public GameObject interactionText;
-    [HideInInspector] public Transform playerTransform;
+    [SerializeField] private GameObject interactionText;
     private CharacterController characterController;
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -28,20 +33,16 @@ public class PlayerController : Singleton<PlayerController>
         DontDestroyOnLoad(gameObject);
     }
     
-    void Start()
+    private void Start()
     {
         playerTransform = GetComponent<Transform>();
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    void Update()
+    private void Update()
     {
         if(PlayerUI.Instance.isPaused) return;
-
-        // Debug ray that points where player is looking
-        Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-        Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);
 
         // WASD movement
         Vector3 movement = transform.right * moveInput.x + transform.forward * moveInput.y;
@@ -59,13 +60,14 @@ public class PlayerController : Singleton<PlayerController>
         // Looking around
         float mouseX = lookInput.x * mouseSensitivity;
         float mouseY = lookInput.y * mouseSensitivity;
-        transform.Rotate(Vector3.up * mouseX); //left-right
-        xRotation -= mouseY; //up-down
+        transform.Rotate(Vector3.up * mouseX); // left-right
+        xRotation -= mouseY; // up-down
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
         camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         // Handle interaction with objects in sight
         Ray interactRay = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f)); // Raycast in front of the player camera (center of the screen)
+        Debug.DrawRay(interactRay.origin, interactRay.direction * 100f, Color.red); // Debug ray that points where player is looking
         if (Physics.Raycast(interactRay, out RaycastHit hit, 3f) && hit.collider.TryGetComponent(out interactable))
         {
             interactionText.SetActive(true);

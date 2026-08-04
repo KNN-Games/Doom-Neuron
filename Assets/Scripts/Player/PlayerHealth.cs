@@ -7,16 +7,14 @@ public class PlayerHealth : Singleton<PlayerHealth>
 {
     [Header("Stats")]
     public int maxBlood;
-    public float damageReduction = 0; //0 means 0%, 1 means 100%. Modyfy this additively please.
+    public float damageReduction = 0; //0 means 0%, 1 means 100%. Modify this additively please.
     public bool isInvulnerable = false;
     [Header("References")]
-    public GameObject deathScreen;
     public int CurrentBlood { get; private set; } //as in: current blood
     public int CurrentBlackBile { get; private set; } //as in: current black bile
-    public bool IsGooped => CurrentBlackBile > 0;
     private PlayerInput input;
     
-    void Start()
+    private void Start()
     {
         CurrentBlood = maxBlood;
         CurrentBlackBile = 0;
@@ -52,8 +50,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void Die()
     {
-        PlayerUI.Instance.PauseGame();
-        deathScreen.SetActive(true);
+        PlayerUI.Instance.ShowDeathScreen();
         input.currentActionMap.Disable();
         Debug.Log("You died!");
     }

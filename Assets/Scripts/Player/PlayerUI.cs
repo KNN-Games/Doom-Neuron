@@ -4,13 +4,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Handles the player's UI: Pause menu, HUD.
+/// </summary>
 public class PlayerUI : Singleton<PlayerUI>
 {
-    public GameObject pauseMenu;
-    public GameObject backToMainMenuPrompt;
-    public TextMeshProUGUI lastSavedText;
-    public GameObject hud;
     [HideInInspector] public bool isPaused = false;
+    [Header("References")]
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject backToMainMenuPrompt;
+    [SerializeField] private TextMeshProUGUI lastSavedText;
+    [SerializeField] private GameObject hud;
+    [SerializeField] private GameObject deathScreen;
     public void OnTogglePauseMenu(InputAction.CallbackContext context)
     {
         if (!context.started || SceneManager.GetActiveScene().name == "MainMenu" || CheatsManager.Instance.IsConsoleActive) return;
@@ -94,5 +99,11 @@ public class PlayerUI : Singleton<PlayerUI>
             time.Minutes,
             time.Seconds
         );
+    }
+    //---DEATH SCREEN---
+    public void ShowDeathScreen()
+    {
+        PauseGame();
+        deathScreen.SetActive(true);
     }
 }
