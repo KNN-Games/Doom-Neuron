@@ -27,7 +27,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
 {
     public bool IsOptionsMenuOpen => optionsMenuCanvas.activeSelf;
     public AudioMixer audioMixer;
-
     [Header("Main UI References")]
     [SerializeField] private GameObject optionsMenuCanvas;
     [SerializeField] private GameObject generalSettingsPanel;
@@ -35,7 +34,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private GameObject controlsSettingsPanel;
     [SerializeField] private GameObject saveChangesPrompt;
     [SerializeField] private Button generalSettingsButton;
-
     [Header("Audio UI References")]
     [SerializeField] private TextMeshProUGUI masterVolumeText;
     [SerializeField] private TextMeshProUGUI musicVolumeText;
@@ -46,127 +44,72 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [Header("Controls UI References")]
     [SerializeField] private TextMeshProUGUI mouseSensitivityText;
     [SerializeField] private Slider mouseSensitivitySlider;
-
-    // Persisted values: what is already saved to disk (used to discard changes and check for unsaved changes).
-    private float savedMasterVolume;
-    private float savedMusicVolume;
-    private float savedSfxVolume;
-    private string savedLanguage;
-    private float savedMouseSensitivity;
-
-    // Current values: live preview state while the options menu is open.
-    private float currentMasterVolume;
-    private float currentMusicVolume;
-    private float currentSfxVolume;
-    private string currentLanguage;
-    private float currentMouseSensitivity;
+    // All settings
+    private static readonly System.Collections.Generic.List<OptionSetting> allSettings = new();
+    private FloatSetting masterVolume;
+    private FloatSetting musicVolume;
+    private FloatSetting sfxVolume;
+    private StringSetting language;
+    private FloatSetting mouseSensitivity;
+    private StringSetting jumpKey;
+    private StringSetting interactKey;
 
     private void Start()
     {
-        // Load the saved values from PlayerPrefs, or set to default if not found.
-        // Master volume
-        if (PlayerPrefs.HasKey("masterVolume"))
-        {
-            savedMasterVolume = PlayerPrefs.GetFloat("masterVolume");
-        }
-        else
-        {
-            savedMasterVolume = 1f;
-            PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
-        }
-        // Music volume
-        if (PlayerPrefs.HasKey("musicVolume"))
-        {
-            savedMusicVolume = PlayerPrefs.GetFloat("musicVolume");
-        }
-        else
-        {
-            savedMusicVolume = 1f;
-            PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
-        }
-        // SFX volume
-        if (PlayerPrefs.HasKey("sfxVolume"))
-        {
-            savedSfxVolume = PlayerPrefs.GetFloat("sfxVolume");
-        }
-        else
-        {
-            savedSfxVolume = 1f;
-            PlayerPrefs.SetFloat("sfxVolume", savedSfxVolume);
-        }
-        // Language
-        if (PlayerPrefs.HasKey("language"))
-        {
-            savedLanguage = PlayerPrefs.GetString("language");
-        }
-        else
-        {
-            savedLanguage = "en";
-            PlayerPrefs.SetString("language", savedLanguage);
-        }
-        // Mouse sensitivity
-        if (PlayerPrefs.HasKey("mouseSensitivity"))
-        {
-            savedMouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity");
-        }
-        else
-        {
-            savedMouseSensitivity = 1f;
-            PlayerPrefs.SetFloat("mouseSensitivity", savedMouseSensitivity);
-        }
+        masterVolume = new FloatSetting("masterVolume", 1f);
+        musicVolume = new FloatSetting("musicVolume", 1f);
+        sfxVolume = new FloatSetting("sfxVolume", 1f);
+        language = new StringSetting("language", "en");
+        mouseSensitivity = new FloatSetting("mouseSensitivity", 1f);
+        jumpKey = new StringSetting("jumpKey", string.Empty);
+        interactKey = new StringSetting("interactKey", string.Empty);
 
-        // Set current values as the saved values initially, so that the UI reflects the saved state when the menu is opened.
+        allSettings.Clear();
         ApplySavedValues();
-
-        // Apply the saved values to the actual settings.
         PlayerPrefs.Save();
 
-        // DEBUG: print all saved values
         Debug.Log(
-        $"Settings loaded. Values:\n" +
-        $"Master Volume: {savedMasterVolume}\n" +
-        $"Music Volume: {savedMusicVolume}\n" +
-        $"SFX Volume: {savedSfxVolume}\n" +
-        $"Language: {savedLanguage}\n" +
-        $"Mouse Sensitivity: {savedMouseSensitivity}");
+            $"Settings loaded. Values:\n" +
+            $"Master Volume: {masterVolume.SavedValue}\n" +
+            $"Music Volume: {musicVolume.SavedValue}\n" +
+            $"SFX Volume: {sfxVolume.SavedValue}\n" +
+            $"Language: {language.SavedValue}\n" +
+            $"Mouse Sensitivity: {mouseSensitivity.SavedValue}");
     }
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {
-        // Set CURRENT values to match SAVED values.
-        SetMasterVolume(savedMasterVolume);
-        SetMusicVolume(savedMusicVolume);
-        SetSFXVolume(savedSfxVolume);
-        SetLanguage(savedLanguage);
-        SetMouseSensitivity(savedMouseSensitivity);
-        // Update the sliders to reflect the current values.
-        masterVolumeSlider.value = savedMasterVolume;
-        musicVolumeSlider.value = savedMusicVolume;
-        sfxVolumeSlider.value = savedSfxVolume;
-        mouseSensitivitySlider.value = savedMouseSensitivity;
+        SetMasterVolume(masterVolume.SavedValue);
+        SetMusicVolume(musicVolume.SavedValue);
+        SetSFXVolume(sfxVolume.SavedValue);
+        SetLanguage(language.SavedValue);
+        SetMouseSensitivity(mouseSensitivity.SavedValue);
+
+        masterVolumeSlider.value = masterVolume.SavedValue;
+        musicVolumeSlider.value = musicVolume.SavedValue;
+        sfxVolumeSlider.value = sfxVolume.SavedValue;
+        mouseSensitivitySlider.value = mouseSensitivity.SavedValue;
     }
     private bool HasUnsavedChanges()
     {
-        return !Mathf.Approximately(currentMasterVolume, savedMasterVolume)
-            || !Mathf.Approximately(currentMusicVolume, savedMusicVolume)
-            || !Mathf.Approximately(currentSfxVolume, savedSfxVolume)
-            || currentLanguage != savedLanguage
-            || currentMouseSensitivity != savedMouseSensitivity;
+        foreach(var setting in allSettings)
+        {
+            if(setting.Changed())
+            {
+                return true;
+            }
+        }
+        return false;
     }
     public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
     {
-        // Change SAVED to match CURRENT
-        savedMasterVolume = currentMasterVolume;
-        savedMusicVolume = currentMusicVolume;
-        savedSfxVolume = currentSfxVolume;
-        savedLanguage = currentLanguage;
-        savedMouseSensitivity = currentMouseSensitivity;
-
-        // Persist the SAVED values to PlayerPrefs
-        PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
-        PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
-        PlayerPrefs.SetFloat("sfxVolume", savedSfxVolume);
-        PlayerPrefs.SetString("language", savedLanguage);
-        PlayerPrefs.SetFloat("mouseSensitivity", savedMouseSensitivity);
+        foreach (var setting in allSettings)
+        {
+            setting.ApplyCurrentToSaved();
+        }
+        foreach (var setting in allSettings)
+        {
+            setting.WriteToPlayerPrefs();
+        }
         PlayerPrefs.Save();
     }
     //---MENU NAVIGATION---
@@ -209,13 +152,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
     public void ResetSettings()
     {
         Debug.Log("Resetting settings to default values");
-        savedMasterVolume = 1f;
-        savedMusicVolume = 1f;
-        savedSfxVolume = 1f;
-        savedLanguage = "en";
-
+        foreach (var setting in allSettings)
+        {
+            setting.ResetToDefault();
+        }
         ApplySavedValues();
-        SaveChanges(); // Only the PlayerPrefs part of this function matters.
+        SaveChanges();
         BackToMenu();
     }
     public void Confirm()
@@ -237,7 +179,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     //---GENERAL SETTINGS---
     public void SetLanguage(string languageCode)
     {
-        currentLanguage = languageCode;
+        language.CurrentValue = languageCode;
         foreach (var locale in LocalizationSettings.AvailableLocales.Locales)
         {
             if (locale.Identifier.Code == languageCode)
@@ -251,21 +193,21 @@ public class OptionsMenu : Singleton<OptionsMenu>
     //---AUDIO SETTINGS---
     public void SetMasterVolume(float volume)
     {
-        currentMasterVolume = volume;
+        masterVolume.CurrentValue = volume;
         float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
         audioMixer.SetFloat("MasterVolume", dB);
         masterVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     public void SetMusicVolume(float volume)
     {
-        currentMusicVolume = volume;
+        musicVolume.CurrentValue = volume;
         float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
         audioMixer.SetFloat("MusicVolume", dB);
         musicVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     public void SetSFXVolume(float volume)
     {
-        currentSfxVolume = volume;
+        sfxVolume.CurrentValue = volume;
         float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
         audioMixer.SetFloat("SoundEffectsVolume", dB);
         sfxVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
@@ -273,13 +215,110 @@ public class OptionsMenu : Singleton<OptionsMenu>
     //---CONTROLS SETTINGS---
     public void SetMouseSensitivity(float sensitivity)
     {
-        // I can't transmit this to immediately to player since he might not exist. It is also not nessesary.
-        // Instead apply this one only on save via PlayerPrefs, live preview doesn't make sense for this setting anyway.
-        currentMouseSensitivity = (float)Math.Round(sensitivity, 2);
-        mouseSensitivityText.text = currentMouseSensitivity.ToString();
+        mouseSensitivity.CurrentValue = (float)Math.Round(sensitivity, 2);
+        mouseSensitivityText.text = mouseSensitivity.CurrentValue.ToString();
     }
-    public void SetButtonToAction()
+    public void BeginRebindOperation()
     {
-        
+
+    }
+    //---INTERNAL FUNCTIONS---
+    private abstract class OptionSetting
+    {
+        public abstract void ApplyCurrentToSaved(); // As in: save new values
+        public abstract void ApplySavedToCurrent(); // As in: revert changes
+        public abstract void WriteToPlayerPrefs();
+        public abstract void ResetToDefault();
+        public abstract bool Changed(); // As in: is value changed?
+    }
+    private class StringSetting : OptionSetting
+    {
+        private readonly string Key;
+        private readonly string DefaultValue;
+        public string CurrentValue;
+        public string SavedValue;
+        public StringSetting(string key, string defaultValue)
+        {
+            Key = key;
+            DefaultValue = defaultValue;
+            if (PlayerPrefs.HasKey(key))
+            {
+                SavedValue = PlayerPrefs.GetString(key);
+                CurrentValue = SavedValue;
+            }
+            else
+            {
+                SavedValue = defaultValue;
+                CurrentValue = defaultValue;
+                PlayerPrefs.SetString(key, defaultValue);
+            }
+            allSettings.Add(this);
+        }
+        public override void ApplyCurrentToSaved()
+        {
+            SavedValue = CurrentValue;
+        }
+        public override void ApplySavedToCurrent()
+        {
+            CurrentValue = SavedValue;
+        }
+        public override void WriteToPlayerPrefs()
+        {
+            PlayerPrefs.SetString(Key, SavedValue);
+        }
+        public override void ResetToDefault()
+        {
+            CurrentValue = DefaultValue;
+            SavedValue = DefaultValue;
+        }
+        public override bool Changed()
+        {
+            return string.Equals(SavedValue, CurrentValue);
+        }
+    }
+    private class FloatSetting : OptionSetting
+    {
+        private readonly string Key;
+        private readonly float DefaultValue;
+        public float CurrentValue;
+        public float SavedValue;
+        public FloatSetting(string key, float defaultValue)
+        {
+            Key = key;
+            DefaultValue = defaultValue;
+            if (PlayerPrefs.HasKey(key))
+            {
+                SavedValue = PlayerPrefs.GetFloat(key);
+                CurrentValue = SavedValue;
+            }
+            else
+            {
+                SavedValue = defaultValue;
+                CurrentValue = defaultValue;
+                PlayerPrefs.SetFloat(key, defaultValue);
+            }
+            allSettings.Add(this);
+        }
+        public override void ApplyCurrentToSaved()
+        {
+            SavedValue = CurrentValue;
+        }
+        public override void ApplySavedToCurrent()
+        {
+            CurrentValue = SavedValue;
+        }
+        public override void WriteToPlayerPrefs()
+        {
+            PlayerPrefs.SetFloat(Key, SavedValue);
+        }
+        public override void ResetToDefault()
+        {
+            CurrentValue = DefaultValue;
+            SavedValue = DefaultValue;
+        }
+        public override bool Changed()
+        {
+            return !Mathf.Approximately(CurrentValue, SavedValue);
+        }
     }
 }
