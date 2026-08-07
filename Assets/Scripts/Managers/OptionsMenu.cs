@@ -64,7 +64,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
         jumpKey = new StringSetting("jumpKey", string.Empty);
         interactKey = new StringSetting("interactKey", string.Empty);
 
-        allSettings.Clear();
         ApplySavedValues();
         PlayerPrefs.Save();
 
@@ -226,7 +225,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private abstract class OptionSetting
     {
         public abstract void ApplyCurrentToSaved(); // As in: save new values
-        public abstract void ApplySavedToCurrent(); // As in: revert changes
         public abstract void WriteToPlayerPrefs();
         public abstract void ResetToDefault();
         public abstract bool Changed(); // As in: is value changed?
@@ -258,10 +256,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
         {
             SavedValue = CurrentValue;
         }
-        public override void ApplySavedToCurrent()
-        {
-            CurrentValue = SavedValue;
-        }
         public override void WriteToPlayerPrefs()
         {
             PlayerPrefs.SetString(Key, SavedValue);
@@ -273,7 +267,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         }
         public override bool Changed()
         {
-            return string.Equals(SavedValue, CurrentValue);
+            return !string.Equals(SavedValue, CurrentValue);
         }
     }
     private class FloatSetting : OptionSetting
@@ -302,10 +296,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
         public override void ApplyCurrentToSaved()
         {
             SavedValue = CurrentValue;
-        }
-        public override void ApplySavedToCurrent()
-        {
-            CurrentValue = SavedValue;
         }
         public override void WriteToPlayerPrefs()
         {
