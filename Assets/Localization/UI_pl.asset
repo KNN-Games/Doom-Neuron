@@ -154,6 +154,10 @@ MonoBehaviour:
     m_Localized: "Jeste\u015B trupem"
     m_Metadata:
       m_Items: []
+  - m_Id: 11632702227013632
+    m_Localized: "Czu\u0142o\u015B\u0107 myszki"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -15,8 +15,6 @@ public class PlayerController : Singleton<PlayerController>
     public float moveSpeed = 8f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f; // Earth gravity
-    [Header("Mouse")]
-    public float mouseSensitivity = 0.5f;
     [Header("References")]
     public Camera camera; // As in: player camera
     [SerializeField] private GameObject interactionText;
@@ -26,6 +24,7 @@ public class PlayerController : Singleton<PlayerController>
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
+    private float MouseSensitivity => PlayerPrefs.GetFloat("mouseSensitivity");
 
     protected override void Awake()
     {
@@ -58,8 +57,8 @@ public class PlayerController : Singleton<PlayerController>
         characterController.Move(velocity * Time.deltaTime);
 
         // Looking around
-        float mouseX = lookInput.x * mouseSensitivity;
-        float mouseY = lookInput.y * mouseSensitivity;
+        float mouseX = lookInput.x * MouseSensitivity;
+        float mouseY = lookInput.y * MouseSensitivity;
         transform.Rotate(Vector3.up * mouseX); // left-right
         xRotation -= mouseY; // up-down
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);

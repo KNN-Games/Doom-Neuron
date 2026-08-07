@@ -151,6 +151,10 @@ MonoBehaviour:
     m_Key: DEATH
     m_Metadata:
       m_Items: []
+  - m_Id: 11632702227013632
+    m_Key: MOUSE SENSITIVITY SETTING
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -24,6 +24,7 @@ public static class RuntimeBootstrap
         {
             GameObject gameManager = Object.Instantiate(gameManagerPrefab);
             gameManager.name = "GameManager";
+            Debug.LogWarning("GAME MANAGER NOT FOUND. YOU MOST LIKELY DID NOT LOAD THE GAME FROM THE MAIN MENU.\nSAVING WILL NOT WORK! CHANGING SCENES WILL NOT WORK! LOADED DEFAULT DIFFICULTY: MEDIUM");
         }
 
         GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
@@ -36,9 +37,9 @@ public static class RuntimeBootstrap
         {
             GameObject player = Object.Instantiate(playerPrefab);
             player.name = "Player";
+            Debug.LogWarning("PLAYER NOT FOUND. YOU MOST LIKELY DID NOT LOAD THE GAME FROM THE MAIN MENU. \nLOADING DEFAULT PLAYER STATE");
         }
 
-        Debug.LogWarning("GAME NOT LOADED FROM MAIN MENU. SAVING WILL NOT WORK! CHANGING SCENES WILL NOT WORK! LOADED DEFAULT DIFFICULTY: MEDIUM");
     }
 }
 

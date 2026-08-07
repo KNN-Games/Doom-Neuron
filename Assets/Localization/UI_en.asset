@@ -156,6 +156,10 @@ MonoBehaviour:
     m_Localized: You died
     m_Metadata:
       m_Items: []
+  - m_Id: 11632702227013632
+    m_Localized: Mouse sensitivity
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

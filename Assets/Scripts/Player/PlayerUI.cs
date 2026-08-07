@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Handles the player's UI: Pause menu, HUD.
@@ -12,6 +13,7 @@ public class PlayerUI : Singleton<PlayerUI>
     [HideInInspector] public bool isPaused = false;
     [Header("References")]
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private Button resumeButton;
     [SerializeField] private GameObject backToMainMenuPrompt;
     [SerializeField] private TextMeshProUGUI lastSavedText;
     [SerializeField] private GameObject hud;
@@ -32,14 +34,15 @@ public class PlayerUI : Singleton<PlayerUI>
     //---PAUSE MENU---
     public void OpenPauseMenu()
     {
-        if (OptionsMenu.Instance.IsOptionsMenuOpen) return; //if options are active don't do anything
+        if (OptionsMenu.Instance.IsOptionsMenuOpen) return; // If options are active don't do anything
         PauseGame();
         pauseMenu.SetActive(true);
         hud.SetActive(false);
+        resumeButton.Select(); // Select resume button by default for non-mouse navigation
     }
     public void ClosePauseMenu()
     {
-        if (OptionsMenu.Instance.IsOptionsMenuOpen) return; //if options are active don't do anything
+        if (OptionsMenu.Instance.IsOptionsMenuOpen) return; // If options are active don't do anything
         if (backToMainMenuPrompt.activeSelf)
         {
             backToMainMenuPrompt.SetActive(false);
@@ -65,6 +68,7 @@ public class PlayerUI : Singleton<PlayerUI>
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         hud.SetActive(false);
+        Debug.Log("Paused Game");
     }
     public void UnpauseGame()
     {
@@ -73,6 +77,7 @@ public class PlayerUI : Singleton<PlayerUI>
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         hud.SetActive(true);
+        Debug.Log("Unpaused Game");
     }
     //---BACK TO MENU PROMPT---
     public void OpenBackToMainMenuPrompt()

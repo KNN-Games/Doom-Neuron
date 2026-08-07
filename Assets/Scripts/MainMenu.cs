@@ -14,17 +14,22 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject creditsPanel;
     [SerializeField] private GameObject saveSlotPanel;
     [SerializeField] private GameObject newGameConfigPanel;
-    [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
     [SerializeField] private GameObject[] saveSlots;
+    [SerializeField] private Button startButton;
+    [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
     private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
-
+    
     protected override void Awake()
     {
         base.Awake();
+        //Select "Start" button by default for non-mouse navigation
+        startButton.Select();
+
+        // Destroy player if it exists, because the player is not supposed to exist in the main menu
         GameObject player = GameObject.FindWithTag("Player");
-        if (player != null) // Destroy player if it exists, because the player is not supposed to exist in the main menu
+        if (player != null)
         {
             Destroy(GameObject.FindWithTag("Player"));
         }
@@ -39,6 +44,7 @@ public class MainMenu : Singleton<MainMenu>
         }
         else
         {
+            saveSlots[0].GetComponent<Button>().Select(); // Select first slot by default for non-mouse navigation
             saveSlotPanel.SetActive(true);
             mainMenuPanel.SetActive(false);
             UpdateSaveSlotUI();
@@ -147,7 +153,7 @@ public class MainMenu : Singleton<MainMenu>
         mainMenuPanel.SetActive(false);
         saveSlotPanel.SetActive(false);
         newGameConfigPanel.SetActive(true);
-        difficultyButtons[1].image.color = Color.red; // Highlight medium difficulty button, because it's the default difficulty
+        difficultyButtons[1].Select(); // Select medium difficulty by default
         selectedDifficulty = 2;
     }
     private void UpdateSaveSlotUI() // Update every slot

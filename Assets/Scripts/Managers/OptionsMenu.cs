@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -33,6 +34,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private GameObject audioSettingsPanel;
     [SerializeField] private GameObject controlsSettingsPanel;
     [SerializeField] private GameObject saveChangesPrompt;
+    [SerializeField] private Button generalSettingsButton;
 
     [Header("Audio UI References")]
     [SerializeField] private TextMeshProUGUI masterVolumeText;
@@ -41,18 +43,23 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Slider masterVolumeSlider;
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
+    [Header("Controls UI References")]
+    [SerializeField] private TextMeshProUGUI mouseSensitivityText;
+    [SerializeField] private Slider mouseSensitivitySlider;
 
     // Persisted values: what is already saved to disk (used to discard changes and check for unsaved changes).
     private float savedMasterVolume;
     private float savedMusicVolume;
     private float savedSfxVolume;
     private string savedLanguage;
+    private float savedMouseSensitivity;
 
     // Current values: live preview state while the options menu is open.
     private float currentMasterVolume;
     private float currentMusicVolume;
     private float currentSfxVolume;
     private string currentLanguage;
+    private float currentMouseSensitivity;
 
     private void Start()
     {
@@ -97,6 +104,16 @@ public class OptionsMenu : Singleton<OptionsMenu>
             savedLanguage = "en";
             PlayerPrefs.SetString("language", savedLanguage);
         }
+        // Mouse sensitivity
+        if (PlayerPrefs.HasKey("mouseSensitivity"))
+        {
+            savedMouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity");
+        }
+        else
+        {
+            savedMouseSensitivity = 1f;
+            PlayerPrefs.SetFloat("mouseSensitivity", savedMouseSensitivity);
+        }
 
         // Set current values as the saved values initially, so that the UI reflects the saved state when the menu is opened.
         ApplySavedValues();
@@ -110,7 +127,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
         $"Master Volume: {savedMasterVolume}\n" +
         $"Music Volume: {savedMusicVolume}\n" +
         $"SFX Volume: {savedSfxVolume}\n" +
-        $"Language: {savedLanguage}");
+        $"Language: {savedLanguage}\n" +
+        $"Mouse Sensitivity: {savedMouseSensitivity}");
     }
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {
@@ -119,18 +137,20 @@ public class OptionsMenu : Singleton<OptionsMenu>
         SetMusicVolume(savedMusicVolume);
         SetSFXVolume(savedSfxVolume);
         SetLanguage(savedLanguage);
-
+        SetMouseSensitivity(savedMouseSensitivity);
         // Update the sliders to reflect the current values.
         masterVolumeSlider.value = savedMasterVolume;
         musicVolumeSlider.value = savedMusicVolume;
         sfxVolumeSlider.value = savedSfxVolume;
+        mouseSensitivitySlider.value = savedMouseSensitivity;
     }
     private bool HasUnsavedChanges()
     {
         return !Mathf.Approximately(currentMasterVolume, savedMasterVolume)
             || !Mathf.Approximately(currentMusicVolume, savedMusicVolume)
             || !Mathf.Approximately(currentSfxVolume, savedSfxVolume)
-            || currentLanguage != savedLanguage;
+            || currentLanguage != savedLanguage
+            || currentMouseSensitivity != savedMouseSensitivity;
     }
     public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
     {
@@ -139,18 +159,21 @@ public class OptionsMenu : Singleton<OptionsMenu>
         savedMusicVolume = currentMusicVolume;
         savedSfxVolume = currentSfxVolume;
         savedLanguage = currentLanguage;
+        savedMouseSensitivity = currentMouseSensitivity;
 
         // Persist the SAVED values to PlayerPrefs
         PlayerPrefs.SetFloat("masterVolume", savedMasterVolume);
         PlayerPrefs.SetFloat("musicVolume", savedMusicVolume);
         PlayerPrefs.SetFloat("sfxVolume", savedSfxVolume);
         PlayerPrefs.SetString("language", savedLanguage);
+        PlayerPrefs.SetFloat("mouseSensitivity", savedMouseSensitivity);
         PlayerPrefs.Save();
     }
     //---MENU NAVIGATION---
     public void OpenOptionsMenu() // Used by PlayerUI and MainMenu to open the options menu.
     {
         optionsMenuCanvas.SetActive(true);
+        //generalSettingsButton.Select(); // Select general settings button by default for non-mouse navigation
         OpenGeneralSettings();
 
         // Reset preview state to the last persisted values whenever the menu opens.
@@ -248,8 +271,15 @@ public class OptionsMenu : Singleton<OptionsMenu>
         sfxVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     //---CONTROLS SETTINGS---
+    public void SetMouseSensitivity(float sensitivity)
+    {
+        // I can't transmit this to immediately to player since he might not exist. It is also not nessesary.
+        // Instead apply this one only on save via PlayerPrefs, live preview doesn't make sense for this setting anyway.
+        currentMouseSensitivity = (float)Math.Round(sensitivity, 2);
+        mouseSensitivityText.text = currentMouseSensitivity.ToString();
+    }
     public void SetButtonToAction()
     {
-        //this one will be hard to do.
+        
     }
 }

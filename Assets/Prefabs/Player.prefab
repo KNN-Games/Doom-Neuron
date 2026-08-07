@@ -1915,6 +1915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20daae6d08d309d468b2185dba5c62c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  playerTransform: {fileID: 0}
   moveSpeed: 8
   jumpHeight: 1.5
   gravity: -9.81
@@ -1936,7 +1937,6 @@ MonoBehaviour:
   maxBlood: 100
   damageReduction: 0
   isInvulnerable: 0
-  deathScreen: {fileID: 278431700507280017}
 --- !u!114 &803348909978326434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1949,11 +1949,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a083d19bf822fd4e8129db0514b1b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
+  isPaused: 0
   pauseMenu: {fileID: 5113003294856976469}
+  resumeButton: {fileID: 4379344207244584113}
   backToMainMenuPrompt: {fileID: 725939596286430773}
   lastSavedText: {fileID: 6657207076341239246}
   hud: {fileID: 1656494101972899156}
-  isPaused: 0
+  deathScreen: {fileID: 278431700507280017}
 --- !u!114 &265367723460367607
 MonoBehaviour:
   m_ObjectHideFlags: 0
