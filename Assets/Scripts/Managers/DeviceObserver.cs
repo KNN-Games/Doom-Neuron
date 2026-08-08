@@ -1,14 +1,22 @@
 using System;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.InputSystem;
 
-//Thank you Swagamaleous (reddit) for this code
-public class DeviceObserver : Singleton<MonoBehaviour>, IObserver<InputControl>, IDisposable
+public enum InputDeviceType
 {
+    None,
+    KeyboardMouse,
+    Gamepad,
+    Other
+}
+
+// Thank you Swagamaleous (reddit) for this code
+// I might integrate this into game manager later
+public class DeviceObserver : Singleton<DeviceObserver>, IObserver<InputControl>, IDisposable
+{
+    public InputDeviceType ActiveDeviceType => GetDeviceType(ActiveDevice);
     public InputDevice ActiveDevice { get; private set; }
     private IDisposable _subscription;
-
     protected override void Awake()
     {
         base.Awake();
@@ -34,5 +42,19 @@ public class DeviceObserver : Singleton<MonoBehaviour>, IObserver<InputControl>,
     public void Dispose()
     {
         _subscription?.Dispose();
+    }
+    private InputDeviceType GetDeviceType(InputDevice device)
+    {
+        if (device == null)
+        {
+            UnityEngine.Debug.LogError("NO DEVICE DETECTED");
+            return InputDeviceType.None;
+        }
+
+        if (device is Keyboard || device is Mouse) return InputDeviceType.KeyboardMouse;
+        if (device is Gamepad) return InputDeviceType.Gamepad;
+        
+        UnityEngine.Debug.LogError("UNSUPPORTED DEVICE DETECTED");
+        return InputDeviceType.Other;
     }
 }

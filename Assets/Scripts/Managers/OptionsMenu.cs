@@ -44,6 +44,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
     [Header("Controls UI References")]
+    [SerializeField] private GameObject keyboardPanel;
+    [SerializeField] private GameObject gamepadPanel;
     [SerializeField] private TextMeshProUGUI mouseSensitivityText;
     [SerializeField] private Slider mouseSensitivitySlider;
     // All settings
@@ -85,7 +87,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
             $"Music Volume: {musicVolume.SavedValue}\n" +
             $"SFX Volume: {sfxVolume.SavedValue}\n" +
             $"Language: {language.SavedValue}\n" +
-            $"Mouse Sensitivity: {mouseSensitivity.SavedValue}");
+            $"Mouse Sensitivity: {mouseSensitivity.SavedValue}\n" +
+            $"jumpKeyboard: {jumpKeyboard.SavedValue}\n" +
+            $"interactKeyboard: {interactKeyboard.SavedValue}\n" +
+            $"jumpGamepad: {jumpGamepad.SavedValue}\n" +
+            $"interactGamepad: {interactGamepad.SavedValue}\n");
+
     }
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {
@@ -94,6 +101,10 @@ public class OptionsMenu : Singleton<OptionsMenu>
         SetSFXVolume(sfxVolume.SavedValue);
         SetLanguage(language.SavedValue);
         SetMouseSensitivity(mouseSensitivity.SavedValue);
+        jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Keyboard>"), jumpKeyboard.SavedValue);
+        interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Keyboard>"), interactKeyboard.SavedValue);
+        jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Gamepad>"), jumpGamepad.SavedValue);
+        interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Gamepad>"), interactGamepad.SavedValue);
 
         masterVolumeSlider.value = masterVolume.SavedValue;
         musicVolumeSlider.value = musicVolume.SavedValue;
@@ -127,6 +138,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     public void OpenOptionsMenu() // Used by PlayerUI and MainMenu to open the options menu.
     {
         optionsMenuCanvas.SetActive(true);
+        generalSettingsButton.Select();
         //generalSettingsButton.Select(); // Select general settings button by default for non-mouse navigation
         OpenGeneralSettings();
 
@@ -159,6 +171,17 @@ public class OptionsMenu : Singleton<OptionsMenu>
         generalSettingsPanel.SetActive(false);
         audioSettingsPanel.SetActive(false);
         controlsSettingsPanel.SetActive(true);
+        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
+        if (DeviceObserver.Instance.ActiveDeviceType == InputDeviceType.Gamepad)
+        {
+            keyboardPanel.SetActive(false);
+            gamepadPanel.SetActive(true);
+        }
+        else
+        {
+            keyboardPanel.SetActive(true);
+            gamepadPanel.SetActive(false);
+        }
     }
     public void ResetSettings()
     {
@@ -224,14 +247,28 @@ public class OptionsMenu : Singleton<OptionsMenu>
         sfxVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     //---CONTROLS SETTINGS---
+    // Keyboard
     public void SetMouseSensitivity(float sensitivity)
     {
         mouseSensitivity.CurrentValue = (float)Math.Round(sensitivity, 2);
         mouseSensitivityText.text = mouseSensitivity.CurrentValue.ToString();
     }
-    public void BeginRebindOperation()
+    public void RebindKeyboardJump()
     {
-
+        BeginRebind(jumpAction, jumpKeyboard, true);
+    }
+    public void RebindKeyboardInteract()
+    {
+        BeginRebind(interactAction, interactKeyboard, true);
+    }
+    // Gamepad
+    public void RebindGamepadJump()
+    {
+        BeginRebind(jumpAction, jumpGamepad, false);
+    }
+    public void RebindGamepadInteract()
+    {
+        BeginRebind(interactAction, jumpGamepad, false);
     }
     //---INTERNAL FUNCTIONS---
     private abstract class OptionSetting
@@ -332,5 +369,44 @@ public class OptionsMenu : Singleton<OptionsMenu>
         }
         Debug.LogError("Input action path not found!");
         return -1;
+    }
+    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard)
+    {
+        string device = string.Empty;
+        string cancelKey = string.Empty;
+        if(isForKeyboard)
+        {
+            device = "<Keyboard>";
+            cancelKey = "<Keyboard>/escape";
+        } else // assume it's for Gamepad
+        {
+            device = "<Gamepad>";
+            cancelKey = "<Gamepad>/start";
+        }
+        int bindingIndex = FindBinding(action, device);
+        if (bindingIndex < 0) return;
+
+        action.Disable();
+
+        // Oh my goodness gracious
+        // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperation.html
+        action.PerformInteractiveRebinding(bindingIndex)
+            .WithControlsHavingToMatchPath(device)
+            .WithCancelingThrough(cancelKey)
+            .OnComplete(operation =>
+            {
+                string newBinding = action.bindings[bindingIndex].overridePath;
+                setting.CurrentValue = newBinding;
+                Debug.Log($"{action.name} rebound to {newBinding}");
+                operation.Dispose();
+                action.Enable();
+            })
+            .OnCancel(operation =>
+            {
+                operation.Dispose();
+                action.Enable();
+                Debug.Log("Rebinding cancelled.");
+            })
+            .Start();
     }
 }

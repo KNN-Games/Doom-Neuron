@@ -155,6 +155,14 @@ MonoBehaviour:
     m_Key: MOUSE SENSITIVITY SETTING
     m_Metadata:
       m_Items: []
+  - m_Id: 11985062585491456
+    m_Key: KEYBOARD AND MOUSE DETECTED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11985244576342016
+    m_Key: GAMEPAD DETECTED
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

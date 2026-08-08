@@ -160,6 +160,14 @@ MonoBehaviour:
     m_Localized: Mouse sensitivity
     m_Metadata:
       m_Items: []
+  - m_Id: 11985062585491456
+    m_Localized: Keybinds configuration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11985244576342016
+    m_Localized: Gamepad configuration
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
