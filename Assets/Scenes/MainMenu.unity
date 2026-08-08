@@ -5406,6 +5406,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1097625177311786646, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 49d9a47050186b74aa59c53d676922de, type: 3}
+    - target: {fileID: 1097625177311786646, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1389924551413447561, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2681633439467670409, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

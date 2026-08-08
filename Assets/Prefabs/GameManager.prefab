@@ -6717,6 +6717,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7370915507742899513}
   - component: {fileID: 7220323771296858643}
+  - component: {fileID: 6870230386942309743}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameController
@@ -6761,6 +6762,76 @@ MonoBehaviour:
   lastSaved: 0
   difficulty: 99
   saveSlot: 99
+--- !u!114 &6870230386942309743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6199708029508793839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 8f2a9dc59fdc01b49b01eb1b2bf78be2, type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7220323771296858643}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnControlsChanged
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0e808564-de53-4ea2-8471-0f8483417537
+    m_ActionName: 'Player/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/XInputControllerWindows/leftStick/up,/XInputControllerWindows/leftStick/down,/XInputControllerWindows/leftStick/left,/XInputControllerWindows/leftStick/right]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fbd34700-0da7-43aa-bc24-ea165eec2eb6
+    m_ActionName: 'Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 806d57bc-5bdc-4022-9319-115296303c99
+    m_ActionName: 'Player/Look[/Mouse/delta,/XInputControllerWindows/rightStick/up,/XInputControllerWindows/rightStick/down,/XInputControllerWindows/rightStick/left,/XInputControllerWindows/rightStick/right]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0117948a-3cdc-4e82-a7d8-b9a3edae6fab
+    m_ActionName: 'Player/Interact[/Keyboard/e,/XInputControllerWindows/buttonWest]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: b73d90b5-098f-4d78-9055-02fe7a9bd14c
+    m_ActionName: 'Player/TogglePauseMenu[/Keyboard/escape,/XInputControllerWindows/select]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c1b5a3e2-fe91-48f3-b5ce-aafaa32a9715
+    m_ActionName: 'Debug/OpenConsole[/Keyboard/backquote]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c2832b68-f436-4716-a628-a91ac92ed410
+    m_ActionName: 'Debug/SubmitCommand[/Keyboard/enter]'
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &6379759187438789963
 GameObject:
   m_ObjectHideFlags: 0
@@ -7168,6 +7239,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OptionsMenu
   audioMixer: {fileID: 24100000, guid: 5d68e8f80f7722a4c826d8653d0e9bab, type: 2}
+  jumpAction: {fileID: -8274296874602891344, guid: 8f2a9dc59fdc01b49b01eb1b2bf78be2, type: 3}
+  interactAction: {fileID: 2573326978207904616, guid: 8f2a9dc59fdc01b49b01eb1b2bf78be2, type: 3}
   optionsMenuCanvas: {fileID: 152180874015079618}
   generalSettingsPanel: {fileID: 6886558896178877395}
   audioSettingsPanel: {fileID: 986374707326411976}

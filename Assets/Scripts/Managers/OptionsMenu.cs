@@ -2,31 +2,33 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.InputSystem;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
 /// <summary>
 /// Handles the options menu, including audio, controls, and general settings.
-/// CURRENT values are the live preview state while the options menu is open,
+/// </summary>
+/// 
+/// Each setting is an object that stores DEFAULT, SAVED and CURRENT values that can be a float or a string (it is also possible to implement a int setting)
+/// DEFAULT values are used when first lauching the game and when resetting settings. They are set during setting creation and cannot be changed later.
 /// SAVED values are what is already saved to disk (used to discard changes and check for unsaved changes).
+/// CURRENT values are "live-preview" - temporary value that can be saved or discard. They are applied immediately when changing a setting (this is most important for audio setting)
 /// When you change a slider/button/whatever you should feel the effects immediately, but not save them until you hit the save button.
 /// 
 /// When adding a new setting you have to add:
-/// 1. two (2) variables to hold the CURRENT and SAVED values of the setting.
-/// 2. references to the UI elements that will control the setting (slider, button, etc.).
-/// 3. a function to set the CURRENT value of the setting.
-/// 4. modify Start() to check and load the setting from PlayerPrefs
-/// 5. modify ApplySavedValues() to set the CURRENT value to match the SAVED and update UI if nessesary
-/// 6. modify HasUnsavedChanges() to check if new CURRENT == SAVED
-/// 7. modify SaveChanges() to set SAVED to match CURRENT and send it to PlayerPrefs
-/// 8. modify ResetSettings to include default value
-/// 
-/// TO DO: include arrays? References are starting to get really long...
-/// </summary>
+/// 1. private FloatSetting/StringSetting
+/// 2. references to the UI elements that will control the setting (slider, button, etc.). This is not always nessesary.
+/// 3. modify Start() with: settingName = new FloatSetting/StringSetting("settingName", defaultValue)
+/// 4. modify ApplySavedValues() to set the CURRENT value to match the SAVED and update UI if nessesary
+/// 5. A function to set the new setting. Connect that function to the button you want in setting menu in Unity Editor.
 public class OptionsMenu : Singleton<OptionsMenu>
 {
     public bool IsOptionsMenuOpen => optionsMenuCanvas.activeSelf;
     public AudioMixer audioMixer;
+    [Header("Input action References")]
+    [SerializeField] private InputActionReference jumpAction;
+    [SerializeField] private InputActionReference interactAction;
     [Header("Main UI References")]
     [SerializeField] private GameObject optionsMenuCanvas;
     [SerializeField] private GameObject generalSettingsPanel;
@@ -46,13 +48,19 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Slider mouseSensitivitySlider;
     // All settings
     private static readonly System.Collections.Generic.List<OptionSetting> allSettings = new();
+    // Audio settings
     private FloatSetting masterVolume;
     private FloatSetting musicVolume;
     private FloatSetting sfxVolume;
+    // General settings
     private StringSetting language;
+    // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
-    private StringSetting jumpKey;
-    private StringSetting interactKey;
+    private StringSetting jumpKeyboard;
+    private StringSetting interactKeyboard;
+    // Gamepad Controls settings
+    private StringSetting jumpGamepad;
+    private StringSetting interactGamepad;
 
     private void Start()
     {
@@ -61,8 +69,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
         sfxVolume = new FloatSetting("sfxVolume", 1f);
         language = new StringSetting("language", "en");
         mouseSensitivity = new FloatSetting("mouseSensitivity", 1f);
-        jumpKey = new StringSetting("jumpKey", string.Empty);
-        interactKey = new StringSetting("interactKey", string.Empty);
+        // Control settings
+        // FindBindings returns int index from that array that holds binding with "<device>". Look in INTERNAL METHODS (line ~330) for how it works exactly.
+        jumpKeyboard = new StringSetting("jumpKey", jumpAction.action.bindings[FindBinding(jumpAction.action, "<Keyboard>")].path);
+        interactKeyboard = new StringSetting("interactKey", interactAction.action.bindings[FindBinding(interactAction.action, "<Keyboard>")].path);
+        jumpGamepad = new StringSetting("jumpGamepad", jumpAction.action.bindings[FindBinding(jumpAction.action, "<Gamepad>")].path);
+        interactGamepad = new StringSetting("interactGamepad", interactAction.action.bindings[FindBinding(interactAction.action, "<Gamepad>")].path);
 
         ApplySavedValues();
         PlayerPrefs.Save();
@@ -90,9 +102,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     private bool HasUnsavedChanges()
     {
-        foreach(var setting in allSettings)
+        foreach (var setting in allSettings)
         {
-            if(setting.Changed())
+            if (setting.Changed())
             {
                 return true;
             }
@@ -310,5 +322,15 @@ public class OptionsMenu : Singleton<OptionsMenu>
         {
             return !Mathf.Approximately(CurrentValue, SavedValue);
         }
+    }
+    private int FindBinding(InputAction action, string device)
+    {
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            string path = action.bindings[i].path;
+            if (path.StartsWith(device)) return i;
+        }
+        Debug.LogError("Input action path not found!");
+        return -1;
     }
 }
