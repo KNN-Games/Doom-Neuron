@@ -12,6 +12,7 @@ public enum InputDeviceType
 
 // Thank you Swagamaleous (reddit) for this code
 // I might integrate this into game manager later
+// This exists purely for OptionsMenu.cs to decide which button remapping menu to open. Incredible.
 public class DeviceObserver : Singleton<DeviceObserver>, IObserver<InputControl>, IDisposable
 {
     public InputDeviceType ActiveDeviceType => GetDeviceType(ActiveDevice);

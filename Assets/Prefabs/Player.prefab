@@ -1919,7 +1919,6 @@ MonoBehaviour:
   moveSpeed: 8
   jumpHeight: 1.5
   gravity: -9.81
-  mouseSensitivity: 0.5
   camera: {fileID: 5377277913762934018}
   interactionText: {fileID: 3040118820166553100}
 --- !u!114 &9189211102369497498
@@ -2046,11 +2045,19 @@ MonoBehaviour:
     m_ActionId: 0117948a-3cdc-4e82-a7d8-b9a3edae6fab
     m_ActionName: 'Player/Interact[/Keyboard/e]'
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: c1b5a3e2-fe91-48f3-b5ce-aafaa32a9715
-    m_ActionName: 'Debug/OpenConsole[/Keyboard/backquote]'
-  - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 803348909978326434}
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
+        m_MethodName: OnSubmitCommand
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: c2832b68-f436-4716-a628-a91ac92ed410
     m_ActionName: 'Debug/SubmitCommand[/Keyboard/enter]'
   - m_PersistentCalls:
@@ -2067,11 +2074,27 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: b73d90b5-098f-4d78-9055-02fe7a9bd14c
-    m_ActionName: 'Player/TogglePauseMenu[/Keyboard/escape]'
+    m_ActionId: 54d406ab-e3e9-411b-85aa-91e7a2365239
+    m_ActionName: 'Global/TogglePauseMenu[/Keyboard/escape]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 803348909978326434}
+        m_TargetAssemblyTypeName: PlayerUI, Assembly-CSharp
+        m_MethodName: OnOpenConsole
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: e841e26f-0040-43c5-af61-1bca67ca0f2e
+    m_ActionName: 'Global/OpenConsole[/Keyboard/backquote]'
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
+  m_DefaultControlScheme: Keyboard
+  m_DefaultActionMap: Global
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!1 &3254020451450307866

@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
+using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
@@ -44,10 +45,11 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
     [Header("Controls UI References")]
-    [SerializeField] private GameObject keyboardPanel;
-    [SerializeField] private GameObject gamepadPanel;
+    [SerializeField] private LocalizeStringEvent deviceDetectedLocalizedText;
     [SerializeField] private TextMeshProUGUI mouseSensitivityText;
     [SerializeField] private Slider mouseSensitivitySlider;
+    [SerializeField] private Button jumpButton;
+    [SerializeField] private Button interactButton;
     // All settings
     private static readonly System.Collections.Generic.List<OptionSetting> allSettings = new();
     // Audio settings
@@ -63,6 +65,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
     // Gamepad Controls settings
     private StringSetting jumpGamepad;
     private StringSetting interactGamepad;
+    // 
+    private TextMeshProUGUI jumpButtonText;
+    private TextMeshProUGUI interactButtonText;
 
     private void Start()
     {
@@ -77,6 +82,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
         interactKeyboard = new StringSetting("interactKey", interactAction.action.bindings[FindBinding(interactAction.action, "<Keyboard>")].path);
         jumpGamepad = new StringSetting("jumpGamepad", jumpAction.action.bindings[FindBinding(jumpAction.action, "<Gamepad>")].path);
         interactGamepad = new StringSetting("interactGamepad", interactAction.action.bindings[FindBinding(interactAction.action, "<Gamepad>")].path);
+
+        jumpButtonText = jumpButton.GetComponentInChildren<TextMeshProUGUI>();
+        interactButtonText = interactButton.GetComponentInChildren<TextMeshProUGUI>();
 
         ApplySavedValues();
         PlayerPrefs.Save();
@@ -172,16 +180,27 @@ public class OptionsMenu : Singleton<OptionsMenu>
         audioSettingsPanel.SetActive(false);
         controlsSettingsPanel.SetActive(true);
         // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
+        // This could be made more profesionally through control schemes, but that would need for this script to have a reference to PlayerInput component.
+        // Which is on the player. Which does not exist in the main menu! So too bad!
+        jumpButton.onClick.RemoveAllListeners();
+        interactButton.onClick.RemoveAllListeners();
         if (DeviceObserver.Instance.ActiveDeviceType == InputDeviceType.Gamepad)
         {
-            keyboardPanel.SetActive(false);
-            gamepadPanel.SetActive(true);
+            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
+            jumpButton.onClick.AddListener(() => RebindJump(false));
+            interactButton.onClick.AddListener(() => RebindInteract(false));
+            jumpButtonText.text = jumpGamepad.CurrentValue;
+            interactButtonText.text = interactGamepad.CurrentValue;
         }
         else
         {
-            keyboardPanel.SetActive(true);
-            gamepadPanel.SetActive(false);
+            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
+            jumpButton.onClick.AddListener(() => RebindJump(true));
+            interactButton.onClick.AddListener(() => RebindInteract(true));
+            jumpButtonText.text = jumpKeyboard.CurrentValue;
+            interactButtonText.text = interactKeyboard.CurrentValue;
         }
+        deviceDetectedLocalizedText.RefreshString();
     }
     public void ResetSettings()
     {
@@ -247,28 +266,18 @@ public class OptionsMenu : Singleton<OptionsMenu>
         sfxVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     //---CONTROLS SETTINGS---
-    // Keyboard
     public void SetMouseSensitivity(float sensitivity)
     {
         mouseSensitivity.CurrentValue = (float)Math.Round(sensitivity, 2);
         mouseSensitivityText.text = mouseSensitivity.CurrentValue.ToString();
     }
-    public void RebindKeyboardJump()
+    public void RebindJump(bool isforKeyboard)
     {
-        BeginRebind(jumpAction, jumpKeyboard, true);
+        BeginRebind(jumpAction, jumpKeyboard, isforKeyboard);
     }
-    public void RebindKeyboardInteract()
+    public void RebindInteract(bool isforKeyboard)
     {
-        BeginRebind(interactAction, interactKeyboard, true);
-    }
-    // Gamepad
-    public void RebindGamepadJump()
-    {
-        BeginRebind(jumpAction, jumpGamepad, false);
-    }
-    public void RebindGamepadInteract()
-    {
-        BeginRebind(interactAction, jumpGamepad, false);
+        BeginRebind(interactAction, interactKeyboard, isforKeyboard);
     }
     //---INTERNAL FUNCTIONS---
     private abstract class OptionSetting

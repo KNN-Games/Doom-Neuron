@@ -1,12 +1,10 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Handles cheat commands and console input for the game.
+/// Handles cheat console when in level - player must exist for this to work.
 /// Activate the console with ` key and type commands to execute cheats.
 /// </summary>
 public class CheatsManager : Singleton<CheatsManager>
@@ -19,7 +17,7 @@ public class CheatsManager : Singleton<CheatsManager>
     [SerializeField] private ScrollRect scrollRect;
     // Dictionary to hold command names and their corresponding actions
     private Dictionary<string, System.Action<string[]>> commands;
-    private bool isOpen;
+    private bool isOpen = false;
     
     private void Start()
     {
@@ -31,34 +29,25 @@ public class CheatsManager : Singleton<CheatsManager>
             {"suicide", Die},
         };
     }
-    //---HANDLE INPUT ACTIONS---
-    public void OnOpenConsole(InputAction.CallbackContext context)
-    {
-        if (!context.started || SceneManager.GetActiveScene().name == "MainMenu") return;
-        ToggleConsole();
-    }
-    public void OnSubmitCommand(InputAction.CallbackContext context)
-    {
-        if (!context.started) return;
-        SubmitCommand();
-    }
     //---CONSOLE MANAGEMENT---
-    private void ToggleConsole()
+    public void ToggleConsole() // Activated via PlayerUI.cs
     {
         isOpen = !isOpen;
+        Debug.Log(isOpen);
         consolePanel.SetActive(isOpen);
-        if (isOpen) //open console
+        if (isOpen) // Open console
         {
             inputField.ActivateInputField();
             PlayerUI.Instance.PauseGame();
         }
-        else if (PlayerUI.Instance.isPaused)//close console
+        else if (PlayerUI.Instance.isPaused) // Close console
         {
             PlayerUI.Instance.UnpauseGame();
         }
     }
-    private void SubmitCommand()
+    public void SubmitCommand() // Activated via PlayerUI.cs
     {
+        if(!isOpen) return;
         string command = inputField.text;
         ExecuteCommand(command);
         inputField.text = "";

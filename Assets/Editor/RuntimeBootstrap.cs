@@ -2,6 +2,7 @@
 
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public static class RuntimeBootstrap
@@ -39,7 +40,6 @@ public static class RuntimeBootstrap
             player.name = "Player";
             Debug.LogWarning("PLAYER NOT FOUND. YOU MOST LIKELY DID NOT LOAD THE GAME FROM THE MAIN MENU. \nLOADING DEFAULT PLAYER STATE");
         }
-
     }
 }
 
