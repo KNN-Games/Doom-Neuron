@@ -119,17 +119,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
         sfxVolumeSlider.value = sfxVolume.SavedValue;
         mouseSensitivitySlider.value = mouseSensitivity.SavedValue;
     }
-    private bool HasUnsavedChanges()
-    {
-        foreach (var setting in allSettings)
-        {
-            if (setting.Changed())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
     {
         foreach (var setting in allSettings)
@@ -189,16 +178,16 @@ public class OptionsMenu : Singleton<OptionsMenu>
             deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
             jumpButton.onClick.AddListener(() => RebindJump(false));
             interactButton.onClick.AddListener(() => RebindInteract(false));
-            jumpButtonText.text = jumpGamepad.CurrentValue;
-            interactButtonText.text = interactGamepad.CurrentValue;
+            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
+            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
         }
         else
         {
             deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
             jumpButton.onClick.AddListener(() => RebindJump(true));
             interactButton.onClick.AddListener(() => RebindInteract(true));
-            jumpButtonText.text = jumpKeyboard.CurrentValue;
-            interactButtonText.text = interactKeyboard.CurrentValue;
+            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
+            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
         }
         deviceDetectedLocalizedText.RefreshString();
     }
@@ -273,11 +262,11 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     public void RebindJump(bool isforKeyboard)
     {
-        BeginRebind(jumpAction, jumpKeyboard, isforKeyboard);
+        BeginRebind(jumpAction, jumpKeyboard, isforKeyboard, jumpButtonText);
     }
     public void RebindInteract(bool isforKeyboard)
     {
-        BeginRebind(interactAction, interactKeyboard, isforKeyboard);
+        BeginRebind(interactAction, interactKeyboard, isforKeyboard, interactButtonText);
     }
     //---INTERNAL FUNCTIONS---
     private abstract class OptionSetting
@@ -369,6 +358,17 @@ public class OptionsMenu : Singleton<OptionsMenu>
             return !Mathf.Approximately(CurrentValue, SavedValue);
         }
     }
+    private bool HasUnsavedChanges()
+    {
+        foreach (var setting in allSettings)
+        {
+            if (setting.Changed())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     private int FindBinding(InputAction action, string device)
     {
         for (int i = 0; i < action.bindings.Count; i++)
@@ -379,7 +379,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
         Debug.LogError("Input action path not found!");
         return -1;
     }
-    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard)
+    // ADD: function to update all rebind button values
+    private string GetBindingDisplayName(string bindingPath)
+    {
+        return bindingPath.Replace("<Keyboard>/", string.Empty).Replace("<Gamepad>/", string.Empty).ToUpper();
+    }
+    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard, TextMeshProUGUI buttonText)
     {
         string device = string.Empty;
         string cancelKey = string.Empty;
@@ -407,6 +412,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
                 string newBinding = action.bindings[bindingIndex].overridePath;
                 setting.CurrentValue = newBinding;
                 Debug.Log($"{action.name} rebound to {newBinding}");
+                buttonText.text = GetBindingDisplayName(newBinding);
                 operation.Dispose();
                 action.Enable();
             })
