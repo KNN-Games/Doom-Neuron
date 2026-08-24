@@ -96,6 +96,7 @@ public class CheatsManager : Singleton<CheatsManager>
     }
     private void Die(string[] args) // Instantly kills the player. Usage: suicide
     {
+        ToggleConsole(); // Close console, I can't bother to make console + death screen compatible
         PlayerHealth.Instance.Die();
     }
     private void ToggleInvulnerability(string[] args) // Toggles invulnerability. Usage: invulnerable

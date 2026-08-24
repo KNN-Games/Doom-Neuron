@@ -13,5 +13,5 @@ public class SaveData
     // Game state information
     public string sceneName; // Current scene
     public Vector3 playerPosition;
-    public int playerHealth;
+    public Vector3 playerRotation;
 }

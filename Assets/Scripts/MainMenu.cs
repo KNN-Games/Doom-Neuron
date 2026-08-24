@@ -1,6 +1,4 @@
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -19,7 +17,6 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
-    private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
     
     protected override void Awake()
     {
@@ -78,8 +75,6 @@ public class MainMenu : Singleton<MainMenu>
         }
         GameManager.Instance.saveSlot = slot;
         SaveManager.Instance.LoadGame(data);
-
-        CreatePlayer();
     }
     public void DeleteSave(int slot)
     {
@@ -87,17 +82,19 @@ public class MainMenu : Singleton<MainMenu>
         UpdateSaveSlotUI();
     }
     //---NEW GAME CONFIG SCREEN---
-    public void ConfirmGame()
+    public void ConfirmGame() // Start new game
     {
-        // Later on make it so player is created in the intro scene, but for now just create player in the first level.
-        // Reset game data
-        GameManager.Instance.playTime = 0f;
-        GameManager.Instance.difficulty = selectedDifficulty;
-        GameManager.Instance.saveSlot = selectedSlot;
-
-        SceneManager.LoadScene("TestArena");
-        //CHANGE THIS LATER!!!
-        CreatePlayer();
+        SaveData newGameData = new()
+        {
+            saveSlot = selectedSlot,
+            difficulty = selectedDifficulty,
+            playTime = 0f,
+            lastPlayed = System.DateTime.Now.Ticks,
+            sceneName = "TestArena",
+            playerPosition = Vector3.zero,
+            playerRotation = Vector3.zero
+        };
+        SaveManager.Instance.LoadGame(newGameData);
     }
     public void SetNewGameDifficulty(int difficulty)
     {
@@ -131,22 +128,6 @@ public class MainMenu : Singleton<MainMenu>
         }
     }
     //---HELPER METHODS---
-    private void CreatePlayer() // Create player in the scene, if it doesn't already exist
-    {
-        if (PlayerController.Instance == null)
-        {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
-            if (prefab != null)
-            {
-                GameObject player = Instantiate(prefab);
-                player.name = "Player"; // Set the name of the instantiated player object
-            }
-            else
-            {
-                Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
-            }
-        }
-    }
     private void OpenNewGameConfiguration(int slot) // No button does this directly, only based on context.
     {
         selectedSlot = slot;

@@ -82,14 +82,9 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         OptionsMenu.Instance.OpenOptionsMenu();
     }
-    public void BackToCheckpoint() // Activated via Canvas button
-    {
-        Time.timeScale = 1f;
-        SaveManager.Instance.LoadGame();
-    }
     //---DIRECT PAUSE---
     public void PauseGame()
-    {
+    { 
         isPaused = true;
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
@@ -102,6 +97,7 @@ public class PlayerUI : Singleton<PlayerUI>
     }
     public void UnpauseGame()
     {
+        if(PlayerHealth.Instance.IsDead) return; // Do allow unpause if player is dead
         isPaused = false;
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
@@ -138,9 +134,19 @@ public class PlayerUI : Singleton<PlayerUI>
         );
     }
     //---DEATH SCREEN---
+    public void BackToCheckpoint() // Activated via Canvas button
+    {
+        PlayerHealth.Instance.Resurrect();
+        SaveManager.Instance.LoadGame();
+    }
     public void ShowDeathScreen()
     {
         PauseGame();
         deathScreen.SetActive(true);
+    }
+    public void HideDeathScreen()
+    {
+        UnpauseGame();
+        deathScreen.SetActive(false);
     }
 }

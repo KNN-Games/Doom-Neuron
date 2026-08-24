@@ -1,4 +1,5 @@
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,7 @@ using UnityEngine.SceneManagement;
 public class SaveManager : Singleton<SaveManager>
 {
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
+    private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
 
     //---SAVE GAME ON EVERY SCENE CHANGE---
     protected override void Awake()
@@ -60,13 +62,6 @@ public class SaveManager : Singleton<SaveManager>
             return;
         }
 
-        // Collect save data
-        Vector3 playerLocation = Vector3.zero;
-        if (PlayerController.Instance != null)
-        {
-            playerLocation = PlayerController.Instance.playerTransform.position;
-        }
-
         // Create save data object
         SaveData data = new()
         {
@@ -75,7 +70,8 @@ public class SaveManager : Singleton<SaveManager>
             playTime = GameManager.Instance.playTime,
             lastPlayed = System.DateTime.Now.Ticks,
             sceneName = SceneManager.GetActiveScene().name,
-            playerPosition = playerLocation
+            playerPosition = PlayerController.Instance.transform.position,
+            playerRotation = PlayerController.Instance.transform.rotation.eulerAngles
         };
 
         // Save to a json file
@@ -112,12 +108,13 @@ public class SaveManager : Singleton<SaveManager>
     public void LoadGame(SaveData data) // I don't know if I should move this to GameManager.
     {
         // Load the game state from the save data
+        SceneManager.LoadScene(data.sceneName);
+        CreatePlayer();
+        PlayerController.Instance.transform.position = data.playerPosition;
+        PlayerController.Instance.transform.localEulerAngles = data.playerRotation;
         GameManager.Instance.playTime = data.playTime;
         GameManager.Instance.difficulty = data.difficulty;
         GameManager.Instance.saveSlot = data.saveSlot;
-
-        // Load the scene
-        SceneManager.LoadScene(data.sceneName);
 
         // DEBUG: print all save data info
         Debug.Log(
@@ -144,5 +141,21 @@ public class SaveManager : Singleton<SaveManager>
     public int GetSaveCount()
     {
         return Directory.GetFiles(SaveFolder, "save_*.json").Length;
+    }
+    private void CreatePlayer() // Create player in the scene, if it doesn't already exist
+    {
+        if (PlayerController.Instance == null)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+            if (prefab != null)
+            {
+                GameObject player = Instantiate(prefab);
+                player.name = "Player"; // Set the name of the instantiated player object
+            }
+            else
+            {
+                Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
+            }
+        }
     }
 }

@@ -12,13 +12,12 @@ public class PlayerHealth : Singleton<PlayerHealth>
     [Header("References")]
     public int CurrentBlood { get; private set; } //as in: current blood
     public int CurrentBlackBile { get; private set; } //as in: current black bile
-    private PlayerInput input;
+    public bool IsDead { get; private set; }
     
     private void Start()
     {
         CurrentBlood = maxBlood;
         CurrentBlackBile = 0;
-        input = GetComponent<PlayerInput>();
     }
     public void TakeDamage(int damage)
     {
@@ -50,8 +49,15 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void Die()
     {
+        IsDead = true;
         PlayerUI.Instance.ShowDeathScreen();
-        input.currentActionMap.Disable();
         Debug.Log("You died!");
+    }
+    public  void Resurrect()
+    {
+        IsDead = false;
+        CurrentBlackBile = 0;
+        CurrentBlood = maxBlood;
+        PlayerUI.Instance.HideDeathScreen();
     }
 }
