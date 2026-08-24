@@ -11,6 +11,9 @@ public class GameManager : Singleton<GameManager>
     public float lastSaved;
     public int difficulty; // current difficulty level
     public int saveSlot; // As in: current save slot
+    // Certain options are stored here because:
+    // For example FOV must be applied to player camera, but it does not exist in main menu, so the player needs to get it when he gets created.
+    [HideInInspector] public float fov;
     protected override void Awake()
     {
         base.Awake();

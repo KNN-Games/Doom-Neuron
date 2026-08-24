@@ -38,6 +38,7 @@ public class PlayerController : Singleton<PlayerController>
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        camera.fieldOfView = GameManager.Instance.fov;
     }
     private void Update()
     {

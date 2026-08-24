@@ -26,7 +26,7 @@ using UnityEngine.UI;
 public class OptionsMenu : Singleton<OptionsMenu>
 {
     public bool IsOptionsMenuOpen => optionsMenuCanvas.activeSelf;
-    public AudioMixer audioMixer;
+    [SerializeField] private AudioMixer audioMixer;
     [Header("Input action References")]
     [SerializeField] private InputActionReference jumpAction;
     [SerializeField] private InputActionReference interactAction;
@@ -37,6 +37,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private GameObject controlsSettingsPanel;
     [SerializeField] private GameObject saveChangesPrompt;
     [SerializeField] private Button generalSettingsButton;
+    [Header("General UI References")]
+    [SerializeField] private Slider fovSlider;
+    [SerializeField] private TextMeshProUGUI fovText;
     [Header("Audio UI References")]
     [SerializeField] private TextMeshProUGUI masterVolumeText;
     [SerializeField] private TextMeshProUGUI musicVolumeText;
@@ -58,6 +61,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private FloatSetting sfxVolume;
     // General settings
     private StringSetting language;
+    private FloatSetting fov;
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
     private StringSetting jumpKeyboard;
@@ -71,6 +75,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
     private void Start()
     {
+        fov = new FloatSetting("fov", 90f);
         masterVolume = new FloatSetting("masterVolume", 1f);
         musicVolume = new FloatSetting("musicVolume", 1f);
         sfxVolume = new FloatSetting("sfxVolume", 1f);
@@ -104,6 +109,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {
+        SetFOV(fov.SavedValue);
         SetMasterVolume(masterVolume.SavedValue);
         SetMusicVolume(musicVolume.SavedValue);
         SetSFXVolume(sfxVolume.SavedValue);
@@ -114,6 +120,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Gamepad>"), jumpGamepad.SavedValue);
         interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Gamepad>"), interactGamepad.SavedValue);
 
+        fovSlider.value = fov.SavedValue;
         masterVolumeSlider.value = masterVolume.SavedValue;
         musicVolumeSlider.value = musicVolume.SavedValue;
         sfxVolumeSlider.value = sfxVolume.SavedValue;
@@ -231,6 +238,16 @@ public class OptionsMenu : Singleton<OptionsMenu>
             }
         }
         Debug.LogError("Language not found");
+    }
+    public void SetFOV(float newFov) // The slider makes it so it is always a whole number, but internally it is still a float
+    {
+        fov.CurrentValue = newFov;
+        GameManager.Instance.fov = newFov;
+        if(PlayerController.Instance != null)
+        {
+            PlayerController.Instance.camera.fieldOfView = newFov;
+        }
+        fovText.text = newFov.ToString();
     }
     //---AUDIO SETTINGS---
     public void SetMasterVolume(float volume)

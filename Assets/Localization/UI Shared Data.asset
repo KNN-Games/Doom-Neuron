@@ -163,6 +163,10 @@ MonoBehaviour:
     m_Key: GAMEPAD DETECTED
     m_Metadata:
       m_Items: []
+  - m_Id: 17849338311270400
+    m_Key: FOV
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
