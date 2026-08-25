@@ -1,11 +1,9 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -283,8 +281,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     //---CONTROLS SETTINGS---
     public void SetMouseSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
-        mouseSensitivity.CurrentValue = sensitivity /= 10;
-        mouseSensitivityText.text = mouseSensitivity.CurrentValue.ToString();
+        mouseSensitivity.CurrentValue = sensitivity;
+        mouseSensitivityText.text = (mouseSensitivity.CurrentValue / 10).ToString();
     }
     public void RebindJump(bool isforKeyboard)
     {

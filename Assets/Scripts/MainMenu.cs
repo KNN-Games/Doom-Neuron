@@ -28,7 +28,7 @@ public class MainMenu : Singleton<MainMenu>
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
-            Destroy(GameObject.FindWithTag("Player"));
+            Destroy(player);
         }
     }
     //---MAIN SCREEN---
@@ -136,8 +136,9 @@ public class MainMenu : Singleton<MainMenu>
         mainMenuPanel.SetActive(false);
         saveSlotPanel.SetActive(false);
         newGameConfigPanel.SetActive(true);
-        difficultyButtons[1].Select(); // Select medium difficulty by default
-        selectedDifficulty = 2;
+        // Select medium difficulty by default
+        difficultyButtons[1].Select();
+        SetNewGameDifficulty(2);
     }
     private void UpdateSaveSlotUI() // Update every slot
     {
