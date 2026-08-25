@@ -49,6 +49,7 @@ public class MainMenu : Singleton<MainMenu>
     }
     public void OpenSettings()
     {
+        mainMenuPanel.SetActive(false);
         OptionsMenu.Instance.OpenOptionsMenu();
     }
     public void StartCreditsSequence() //Tutaj, Maciej Fedorowicz. W tym miejscu dodaj kod do rozpoczęcia sekwencji napisów końcowych.
@@ -121,10 +122,11 @@ public class MainMenu : Singleton<MainMenu>
             newGameConfigPanel.SetActive(false);
             OpenSlotSelection();
         }
-        else // Assume saveSlotPanel is active
+        else // Assume saveSlotPanel is active or going to from options menu - ExitSettings() in OptionsMenu.cs
         {
             mainMenuPanel.SetActive(true);
             saveSlotPanel.SetActive(false);
+            startButton.Select();
         }
     }
     //---HELPER METHODS---

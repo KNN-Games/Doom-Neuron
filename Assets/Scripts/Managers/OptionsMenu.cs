@@ -5,6 +5,7 @@ using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -36,6 +37,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private GameObject audioSettingsPanel;
     [SerializeField] private GameObject controlsSettingsPanel;
     [SerializeField] private GameObject saveChangesPrompt;
+    [SerializeField] private Button saveChangesConfirmButton;
     [SerializeField] private Button generalSettingsButton;
     [Header("General UI References")]
     [SerializeField] private Slider fovSlider;
@@ -53,6 +55,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Slider mouseSensitivitySlider;
     [SerializeField] private Button jumpButton;
     [SerializeField] private Button interactButton;
+    private TextMeshProUGUI jumpButtonText;
+    private TextMeshProUGUI interactButtonText;
     // All settings
     private static readonly System.Collections.Generic.List<OptionSetting> allSettings = new();
     // Audio settings
@@ -69,18 +73,15 @@ public class OptionsMenu : Singleton<OptionsMenu>
     // Gamepad Controls settings
     private StringSetting jumpGamepad;
     private StringSetting interactGamepad;
-    // 
-    private TextMeshProUGUI jumpButtonText;
-    private TextMeshProUGUI interactButtonText;
 
     private void Start()
     {
         fov = new FloatSetting("fov", 90f);
-        masterVolume = new FloatSetting("masterVolume", 1f);
-        musicVolume = new FloatSetting("musicVolume", 1f);
-        sfxVolume = new FloatSetting("sfxVolume", 1f);
+        masterVolume = new FloatSetting("masterVolume", 100f);
+        musicVolume = new FloatSetting("musicVolume", 100f);
+        sfxVolume = new FloatSetting("sfxVolume", 100f);
         language = new StringSetting("language", "en");
-        mouseSensitivity = new FloatSetting("mouseSensitivity", 1f);
+        mouseSensitivity = new FloatSetting("mouseSensitivity", 10f);
         // Control settings
         // FindBindings returns int index from that array that holds binding with "<device>". Look in INTERNAL METHODS (line ~330) for how it works exactly.
         jumpKeyboard = new StringSetting("jumpKey", jumpAction.action.bindings[FindBinding(jumpAction.action, "<Keyboard>")].path);
@@ -154,9 +155,10 @@ public class OptionsMenu : Singleton<OptionsMenu>
         if (HasUnsavedChanges())
         {
             saveChangesPrompt.SetActive(true);
+            saveChangesConfirmButton.Select();
             return;
         }
-        optionsMenuCanvas.SetActive(false);
+        ExitSettings();
     }
     public void OpenGeneralSettings()
     {
@@ -212,18 +214,25 @@ public class OptionsMenu : Singleton<OptionsMenu>
     public void Confirm()
     {
         SaveChanges();
-        saveChangesPrompt.SetActive(false);
-        optionsMenuCanvas.SetActive(false);
+        ExitSettings();
     }
     public void Discard()
     {
         ApplySavedValues();
-        saveChangesPrompt.SetActive(false);
-        optionsMenuCanvas.SetActive(false);
+        ExitSettings();
     }
     public void Cancel()
     {
         saveChangesPrompt.SetActive(false);
+    }
+    private void ExitSettings()
+    {
+        saveChangesPrompt.SetActive(false);
+        optionsMenuCanvas.SetActive(false);
+        if (MainMenu.Instance != null) // if in main menu reactivate it.
+        {
+            MainMenu.Instance.ReturnToMainMenu();
+        }
     }
     //---GENERAL SETTINGS---
     public void SetLanguage(string languageCode)
@@ -243,38 +252,38 @@ public class OptionsMenu : Singleton<OptionsMenu>
     {
         fov.CurrentValue = newFov;
         GameManager.Instance.fov = newFov;
-        if(PlayerController.Instance != null)
+        if (PlayerController.Instance != null) // I do not use Camera.main because what if we add cutscenes and player modifies FOV mid one?
         {
             PlayerController.Instance.camera.fieldOfView = newFov;
         }
         fovText.text = newFov.ToString();
     }
     //---AUDIO SETTINGS---
-    public void SetMasterVolume(float volume)
+    public void SetMasterVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         masterVolume.CurrentValue = volume;
-        float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
+        masterVolumeText.text = volume + "%";
+        float dB = Mathf.Log10(Mathf.Max(volume /= 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MasterVolume", dB);
-        masterVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
-    public void SetMusicVolume(float volume)
+    public void SetMusicVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         musicVolume.CurrentValue = volume;
-        float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
+        musicVolumeText.text = volume + "%";
+        float dB = Mathf.Log10(Mathf.Max(volume /= 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MusicVolume", dB);
-        musicVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
-    public void SetSFXVolume(float volume)
+    public void SetSFXVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         sfxVolume.CurrentValue = volume;
-        float dB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
+        sfxVolumeText.text = volume + "%";
+        float dB = Mathf.Log10(Mathf.Max(volume /= 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("SoundEffectsVolume", dB);
-        sfxVolumeText.text = Mathf.RoundToInt(volume * 100) + "%";
     }
     //---CONTROLS SETTINGS---
-    public void SetMouseSensitivity(float sensitivity)
+    public void SetMouseSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
-        mouseSensitivity.CurrentValue = (float)Math.Round(sensitivity, 2);
+        mouseSensitivity.CurrentValue = sensitivity /= 10;
         mouseSensitivityText.text = mouseSensitivity.CurrentValue.ToString();
     }
     public void RebindJump(bool isforKeyboard)
@@ -286,6 +295,74 @@ public class OptionsMenu : Singleton<OptionsMenu>
         BeginRebind(interactAction, interactKeyboard, isforKeyboard, interactButtonText);
     }
     //---INTERNAL FUNCTIONS---
+    private bool HasUnsavedChanges()
+    {
+        foreach (var setting in allSettings)
+        {
+            if (setting.Changed())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    private int FindBinding(InputAction action, string device)
+    {
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            string path = action.bindings[i].path;
+            if (path.StartsWith(device)) return i;
+        }
+        Debug.LogError("Input action path not found!");
+        return -1;
+    }
+    // ADD: function to update all rebind button values
+    private string GetBindingDisplayName(string bindingPath)
+    {
+        return bindingPath.Replace("<Keyboard>/", string.Empty).Replace("<Gamepad>/", string.Empty).ToUpper();
+    }
+    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard, TextMeshProUGUI buttonText)
+    {
+        string device = string.Empty;
+        string cancelKey = string.Empty;
+        if (isForKeyboard)
+        {
+            device = "<Keyboard>";
+            cancelKey = "<Keyboard>/escape";
+        }
+        else // assume it's for Gamepad
+        {
+            device = "<Gamepad>";
+            cancelKey = "<Gamepad>/start";
+        }
+        int bindingIndex = FindBinding(action, device);
+        if (bindingIndex < 0) return;
+
+        action.Disable();
+
+        // Oh my goodness gracious
+        // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperation.html
+        action.PerformInteractiveRebinding(bindingIndex)
+            .WithControlsHavingToMatchPath(device)
+            .WithCancelingThrough(cancelKey)
+            .OnComplete(operation =>
+            {
+                string newBinding = action.bindings[bindingIndex].overridePath;
+                setting.CurrentValue = newBinding;
+                Debug.Log($"{action.name} rebound to {newBinding}");
+                buttonText.text = GetBindingDisplayName(newBinding);
+                operation.Dispose();
+                action.Enable();
+            })
+            .OnCancel(operation =>
+            {
+                operation.Dispose();
+                action.Enable();
+                Debug.Log("Rebinding cancelled.");
+            })
+            .Start();
+    }
+    //--- SETTING CLASSES ---
     private abstract class OptionSetting
     {
         public abstract void ApplyCurrentToSaved(); // As in: save new values
@@ -374,71 +451,5 @@ public class OptionsMenu : Singleton<OptionsMenu>
         {
             return !Mathf.Approximately(CurrentValue, SavedValue);
         }
-    }
-    private bool HasUnsavedChanges()
-    {
-        foreach (var setting in allSettings)
-        {
-            if (setting.Changed())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    private int FindBinding(InputAction action, string device)
-    {
-        for (int i = 0; i < action.bindings.Count; i++)
-        {
-            string path = action.bindings[i].path;
-            if (path.StartsWith(device)) return i;
-        }
-        Debug.LogError("Input action path not found!");
-        return -1;
-    }
-    // ADD: function to update all rebind button values
-    private string GetBindingDisplayName(string bindingPath)
-    {
-        return bindingPath.Replace("<Keyboard>/", string.Empty).Replace("<Gamepad>/", string.Empty).ToUpper();
-    }
-    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard, TextMeshProUGUI buttonText)
-    {
-        string device = string.Empty;
-        string cancelKey = string.Empty;
-        if(isForKeyboard)
-        {
-            device = "<Keyboard>";
-            cancelKey = "<Keyboard>/escape";
-        } else // assume it's for Gamepad
-        {
-            device = "<Gamepad>";
-            cancelKey = "<Gamepad>/start";
-        }
-        int bindingIndex = FindBinding(action, device);
-        if (bindingIndex < 0) return;
-
-        action.Disable();
-
-        // Oh my goodness gracious
-        // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperation.html
-        action.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsHavingToMatchPath(device)
-            .WithCancelingThrough(cancelKey)
-            .OnComplete(operation =>
-            {
-                string newBinding = action.bindings[bindingIndex].overridePath;
-                setting.CurrentValue = newBinding;
-                Debug.Log($"{action.name} rebound to {newBinding}");
-                buttonText.text = GetBindingDisplayName(newBinding);
-                operation.Dispose();
-                action.Enable();
-            })
-            .OnCancel(operation =>
-            {
-                operation.Dispose();
-                action.Enable();
-                Debug.Log("Rebinding cancelled.");
-            })
-            .Start();
     }
 }
