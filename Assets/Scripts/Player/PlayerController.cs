@@ -24,7 +24,7 @@ public class PlayerController : Singleton<PlayerController>
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
-    private float MouseSensitivity => PlayerPrefs.GetFloat("mouseSensitivity");
+    private float MouseSensitivity => PlayerPrefs.GetFloat("mouseSensitivity") / 10;
 
     protected override void Awake()
     {

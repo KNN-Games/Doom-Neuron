@@ -281,7 +281,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     //---CONTROLS SETTINGS---
     public void SetMouseSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
-        mouseSensitivity.CurrentValue = sensitivity / 10;
+        mouseSensitivity.CurrentValue = sensitivity;
         mouseSensitivityText.text = (mouseSensitivity.CurrentValue / 10).ToString();
     }
     public void RebindJump(bool isforKeyboard)
