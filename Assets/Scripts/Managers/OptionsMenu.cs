@@ -261,27 +261,27 @@ public class OptionsMenu : Singleton<OptionsMenu>
     {
         masterVolume.CurrentValue = volume;
         masterVolumeText.text = volume + "%";
-        float dB = Mathf.Log10(Mathf.Max(volume /= 100, 0.0001f)) * 20f;
+        float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MasterVolume", dB);
     }
     public void SetMusicVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         musicVolume.CurrentValue = volume;
         musicVolumeText.text = volume + "%";
-        float dB = Mathf.Log10(Mathf.Max(volume /= 100, 0.0001f)) * 20f;
+        float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MusicVolume", dB);
     }
     public void SetSFXVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         sfxVolume.CurrentValue = volume;
         sfxVolumeText.text = volume + "%";
-        float dB = Mathf.Log10(Mathf.Max(volume /= 100, 0.0001f)) * 20f;
+        float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("SoundEffectsVolume", dB);
     }
     //---CONTROLS SETTINGS---
     public void SetMouseSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
-        mouseSensitivity.CurrentValue = sensitivity;
+        mouseSensitivity.CurrentValue = sensitivity / 10;
         mouseSensitivityText.text = (mouseSensitivity.CurrentValue / 10).ToString();
     }
     public void RebindJump(bool isforKeyboard)
