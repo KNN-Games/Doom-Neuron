@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,17 +14,16 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject saveSlotPanel;
     [SerializeField] private GameObject newGameConfigPanel;
     [SerializeField] private GameObject[] saveSlots;
+    [SerializeField] private SplashScreen splashScreen;
     [SerializeField] private Button startButton;
     [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
+    [HideInInspector] public bool isInSplashScreen;
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
 
     protected override void Awake()
     {
         base.Awake();
-        //Select "Start" button by default for non-mouse navigation
-        startButton.Select();
-
         // Destroy player if it exists, because the player is not supposed to exist in the main menu
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
@@ -31,10 +31,11 @@ public class MainMenu : Singleton<MainMenu>
             Destroy(player);
         }
     }
-    public void OpenMainMenu() // Used by SplashScreen.cs
+    private void OpenMainMenu()
     {
         mainMenuPanel.SetActive(true);
         saveSlotPanel.SetActive(false);
+        //Select "Start" button by default for non-mouse navigation
         startButton.Select();
     }
     //---MAIN SCREEN---
@@ -120,6 +121,18 @@ public class MainMenu : Singleton<MainMenu>
         GameManager.Instance.difficulty = difficulty;
     }
     //---OTHER---
+    public void SkipSplashScreen() // Used by SplashScreen.cs
+    {
+        if (!isInSplashScreen)return;
+        isInSplashScreen = false;
+        splashScreen.gameObject.SetActive(false);
+        StartCoroutine(OpenMainMenuNextFrame());
+    }
+    private IEnumerator OpenMainMenuNextFrame() // Unfortunately needed so pressing Enter doesn't immediately also trigger the selected startButton
+    {
+        yield return null;
+        OpenMainMenu();
+    }
     public void ReturnToMainMenu() // Used by buttons. Move 1 step backward.
     {
         if (newGameConfigPanel.activeSelf)

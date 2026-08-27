@@ -226,11 +226,13 @@ MonoBehaviour:
   - {fileID: 1441968516}
   - {fileID: 1844958661}
   - {fileID: 1794715701}
+  splashScreen: {fileID: 409699}
   startButton: {fileID: 2141608490}
   difficultyButtons:
   - {fileID: 2064655695}
   - {fileID: 1975361030}
   - {fileID: 506214610}
+  isInSplashScreen: 0
 --- !u!4 &3507046
 Transform:
   m_ObjectHideFlags: 0

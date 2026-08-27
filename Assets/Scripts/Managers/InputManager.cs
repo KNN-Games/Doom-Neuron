@@ -82,6 +82,11 @@ public class InputManager : Singleton<InputManager>
         if(OptionsMenu.Instance.IsOptionsMenuOpen) // If options menu is open: Save changes
         {
             OptionsMenu.Instance.SaveChanges();
+            return;
+        }
+        if(MainMenu.Instance.isInSplashScreen) // If splash screen is open: skip it
+        {
+            MainMenu.Instance.SkipSplashScreen();
         }
     }
     // Global map
