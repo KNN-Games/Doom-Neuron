@@ -32,10 +32,6 @@ public class InputManager : Singleton<InputManager>
     }
     public void SetPlayer(GameObject player)
     {
-        if (playerController != null)
-        {
-            //playerController.moveInput = Vector2.zero;
-        }
         playerController = player.GetComponent<PlayerController>();
         playerUI = player.GetComponent<PlayerUI>();
         SetActiveInputMap("Gameplay");
@@ -82,7 +78,11 @@ public class InputManager : Singleton<InputManager>
     public void OnConfirm(InputAction.CallbackContext context)
     {
         if (!context.started) return;
-        CheatsManager.Instance.SubmitCommand();
+        CheatsManager.Instance.SubmitCommand(); // If cheats menu is open: Submit command
+        if(OptionsMenu.Instance.IsOptionsMenuOpen) // If options menu is open: Save changes
+        {
+            OptionsMenu.Instance.SaveChanges();
+        }
     }
     // Global map
     public void OnTogglePauseMenu(InputAction.CallbackContext context)
@@ -92,7 +92,7 @@ public class InputManager : Singleton<InputManager>
     }
     public void OnOpenConsole(InputAction.CallbackContext context)
     {
-        if (!context.started) return;
+        if (!context.started || !IsPlayerPresent) return;
         CheatsManager.Instance.ToggleConsole();
     }
 }

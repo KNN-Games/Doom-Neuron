@@ -17,7 +17,7 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
-    
+
     protected override void Awake()
     {
         base.Awake();
@@ -30,6 +30,12 @@ public class MainMenu : Singleton<MainMenu>
         {
             Destroy(player);
         }
+    }
+    public void OpenMainMenu() // Used by SplashScreen.cs
+    {
+        mainMenuPanel.SetActive(true);
+        saveSlotPanel.SetActive(false);
+        startButton.Select();
     }
     //---MAIN SCREEN---
     public void OpenSlotSelection()
@@ -124,9 +130,7 @@ public class MainMenu : Singleton<MainMenu>
         }
         else // Assume saveSlotPanel is active or going to from options menu - ExitSettings() in OptionsMenu.cs
         {
-            mainMenuPanel.SetActive(true);
-            saveSlotPanel.SetActive(false);
-            startButton.Select();
+            OpenMainMenu();
         }
     }
     //---HELPER METHODS---

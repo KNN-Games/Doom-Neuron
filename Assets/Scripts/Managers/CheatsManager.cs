@@ -30,7 +30,7 @@ public class CheatsManager : Singleton<CheatsManager>
         };
     }
     //---CONSOLE MANAGEMENT---
-    public void ToggleConsole() // Activated via PlayerUI.cs
+    public void ToggleConsole()
     {
         PlayerUI ui = PlayerUI.Instance;
         isOpen = !isOpen;
@@ -45,7 +45,7 @@ public class CheatsManager : Singleton<CheatsManager>
             ui.UnpauseGame();
         }
     }
-    public void SubmitCommand() // Activated via PlayerUI.cs
+    public void SubmitCommand()
     {
         if(!isOpen) return;
         string command = inputField.text;
