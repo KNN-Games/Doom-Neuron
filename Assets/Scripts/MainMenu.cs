@@ -15,8 +15,10 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject newGameConfigPanel;
     [SerializeField] private GameObject[] saveSlots;
     [SerializeField] private SplashScreen splashScreen;
-    [SerializeField] private Button startButton;
+    [SerializeField] private Button[] mainMenuButtons;
     [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
+    [Header("Settings")]
+    [SerializeField] private float fadeInDuration;
     [HideInInspector] public bool isInSplashScreen;
     private int selectedSlot = -1; // Track the selected save slot, -1 means none
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
@@ -30,13 +32,6 @@ public class MainMenu : Singleton<MainMenu>
         {
             Destroy(player);
         }
-    }
-    private void OpenMainMenu()
-    {
-        mainMenuPanel.SetActive(true);
-        saveSlotPanel.SetActive(false);
-        //Select "Start" button by default for non-mouse navigation
-        startButton.Select();
     }
     //---MAIN SCREEN---
     public void OpenSlotSelection()
@@ -120,18 +115,42 @@ public class MainMenu : Singleton<MainMenu>
         selectedDifficulty = difficulty;
         GameManager.Instance.difficulty = difficulty;
     }
-    //---OTHER---
-    public void SkipSplashScreen() // Used by SplashScreen.cs
+    //---HELPER METHODS---
+    public void EndSplashScreen() // Used by SplashScreen.cs
     {
         if (!isInSplashScreen)return;
         isInSplashScreen = false;
         splashScreen.gameObject.SetActive(false);
-        StartCoroutine(OpenMainMenuNextFrame());
+        StartCoroutine(FadeInMainMenu(fadeInDuration));
     }
-    private IEnumerator OpenMainMenuNextFrame() // Unfortunately needed so pressing Enter doesn't immediately also trigger the selected startButton
+    private void OpenMainMenu()
     {
-        yield return null;
-        OpenMainMenu();
+        mainMenuPanel.SetActive(true);
+        saveSlotPanel.SetActive(false);
+        //Select "Start" button by default for non-mouse navigation
+        mainMenuButtons[0].Select();
+    }
+    private IEnumerator FadeInMainMenu(float duration)
+    {
+        //Activate
+        mainMenuPanel.SetActive(true);
+        foreach(Button button in mainMenuButtons)
+        {
+            button.interactable = false;
+        }
+        CanvasGroup canvasGroup = mainMenuPanel.GetComponent<CanvasGroup>();
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, time / duration);
+            yield return null;
+        }
+        canvasGroup.alpha = 1f;
+        foreach(Button button in mainMenuButtons)
+        {
+            button.interactable = true;
+        }
     }
     public void ReturnToMainMenu() // Used by buttons. Move 1 step backward.
     {
@@ -146,7 +165,6 @@ public class MainMenu : Singleton<MainMenu>
             OpenMainMenu();
         }
     }
-    //---HELPER METHODS---
     private void OpenNewGameConfiguration(int slot) // No button does this directly, only based on context.
     {
         selectedSlot = slot;

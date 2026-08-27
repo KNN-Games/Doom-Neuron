@@ -26,7 +26,7 @@ public class SplashScreen : MonoBehaviour
         yield return Fade(0f, 1f, fadeInDuration);
         yield return new WaitForSeconds(visibleDuration);
         yield return Fade(1f, 0f, fadeOutDuration);
-        menu.SkipSplashScreen();
+        menu.EndSplashScreen();
     }
     private IEnumerator Fade(float from, float to, float duration)
     {

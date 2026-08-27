@@ -227,11 +227,16 @@ MonoBehaviour:
   - {fileID: 1844958661}
   - {fileID: 1794715701}
   splashScreen: {fileID: 409699}
-  startButton: {fileID: 2141608490}
+  mainMenuButtons:
+  - {fileID: 2141608490}
+  - {fileID: 1895091989}
+  - {fileID: 1781066390}
+  - {fileID: 857720715}
   difficultyButtons:
   - {fileID: 2064655695}
   - {fileID: 1975361030}
   - {fileID: 506214610}
+  fadeInDuration: 1
   isInSplashScreen: 0
 --- !u!4 &3507046
 Transform:
@@ -4120,6 +4125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1673614976}
+  - component: {fileID: 1673614977}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -4151,6 +4157,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1673614977
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1673614975}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1740068216
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -23,7 +23,7 @@ public class InputManager : Singleton<InputManager>
         // Try to find player
         if(!IsPlayerPresent)
         {
-            GameObject potentialPlayer = GameObject.FindGameObjectWithTag("Player");
+            GameObject potentialPlayer = GameObject.FindWithTag("Player");
             if(potentialPlayer != null)
             {
                 SetPlayer(potentialPlayer);
@@ -86,7 +86,7 @@ public class InputManager : Singleton<InputManager>
         }
         if(MainMenu.Instance.isInSplashScreen) // If splash screen is open: skip it
         {
-            MainMenu.Instance.SkipSplashScreen();
+            MainMenu.Instance.EndSplashScreen();
         }
     }
     // Global map
