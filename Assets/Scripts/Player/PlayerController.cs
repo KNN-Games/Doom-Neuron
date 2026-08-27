@@ -19,8 +19,8 @@ public class PlayerController : Singleton<PlayerController>
     public Camera camera; // As in: player camera
     [SerializeField] private GameObject interactionText;
     private CharacterController characterController;
-    private Vector2 moveInput;
-    private Vector2 lookInput;
+    [HideInInspector] public Vector2 moveInput;
+    [HideInInspector] public Vector2 lookInput;
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
@@ -78,25 +78,17 @@ public class PlayerController : Singleton<PlayerController>
             interactable = null;
         }
     }
-    //---HANDLE INPUT ACTIONS---
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        moveInput = context.ReadValue<Vector2>();
-    }
-    public void OnJump(InputAction.CallbackContext context)
+    // Functions used by InputManager.cs
+    public void Jump()
     {
         if (characterController.isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
     }
-    public void OnLook(InputAction.CallbackContext context)
+    public void Interact()
     {
-        lookInput = context.ReadValue<Vector2>();
-    }
-    public void OnInteract(InputAction.CallbackContext context)
-    {
-        if(!context.started || interactable == null) return;
+        if(interactable == null) return;
         interactable.Interact();
     }
 }

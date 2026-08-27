@@ -271,7 +271,7 @@
             "id": "93a396dd-1898-4e8a-a73c-ad0048a72b00",
             "actions": [
                 {
-                    "name": "SubmitCommand",
+                    "name": "Confirm",
                     "type": "Button",
                     "id": "c2832b68-f436-4716-a628-a91ac92ed410",
                     "expectedControlType": "",
@@ -288,7 +288,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard",
-                    "action": "SubmitCommand",
+                    "action": "Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1db1d02d-eba5-4b6c-a88c-cb40062fd7b2",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Confirm",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

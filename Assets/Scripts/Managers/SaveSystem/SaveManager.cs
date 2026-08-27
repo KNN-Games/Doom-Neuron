@@ -144,18 +144,15 @@ public class SaveManager : Singleton<SaveManager>
     }
     private void CreatePlayer() // Create player in the scene, if it doesn't already exist
     {
-        if (PlayerController.Instance == null)
+        if (PlayerController.Instance != null) return;
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+        if (prefab == null)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
-            if (prefab != null)
-            {
-                GameObject player = Instantiate(prefab);
-                player.name = "Player"; // Set the name of the instantiated player object
-            }
-            else
-            {
-                Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
-            }
+            Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
+            return;
         }
+        GameObject player = Instantiate(prefab);
+        player.name = "Player"; // Set the name of the instantiated player object
+        InputManager.Instance.SetPlayer(player);
     }
 }

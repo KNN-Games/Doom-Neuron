@@ -357,7 +357,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             ""id"": ""93a396dd-1898-4e8a-a73c-ad0048a72b00"",
             ""actions"": [
                 {
-                    ""name"": ""SubmitCommand"",
+                    ""name"": ""Confirm"",
                     ""type"": ""Button"",
                     ""id"": ""c2832b68-f436-4716-a628-a91ac92ed410"",
                     ""expectedControlType"": """",
@@ -374,7 +374,18 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard"",
-                    ""action"": ""SubmitCommand"",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1db1d02d-eba5-4b6c-a88c-cb40062fd7b2"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -478,7 +489,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         m_Gameplay_Interact = m_Gameplay.FindAction("Interact", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-        m_UI_SubmitCommand = m_UI.FindAction("SubmitCommand", throwIfNotFound: true);
+        m_UI_Confirm = m_UI.FindAction("Confirm", throwIfNotFound: true);
         // Global
         m_Global = asset.FindActionMap("Global", throwIfNotFound: true);
         m_Global_TogglePauseMenu = m_Global.FindAction("TogglePauseMenu", throwIfNotFound: true);
@@ -694,7 +705,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     // UI
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
-    private readonly InputAction m_UI_SubmitCommand;
+    private readonly InputAction m_UI_Confirm;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -707,9 +718,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         /// </summary>
         public UIActions(@GameInput wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "UI/SubmitCommand".
+        /// Provides access to the underlying input action "UI/Confirm".
         /// </summary>
-        public InputAction @SubmitCommand => m_Wrapper.m_UI_SubmitCommand;
+        public InputAction @Confirm => m_Wrapper.m_UI_Confirm;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -736,9 +747,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_UIActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_UIActionsCallbackInterfaces.Add(instance);
-            @SubmitCommand.started += instance.OnSubmitCommand;
-            @SubmitCommand.performed += instance.OnSubmitCommand;
-            @SubmitCommand.canceled += instance.OnSubmitCommand;
+            @Confirm.started += instance.OnConfirm;
+            @Confirm.performed += instance.OnConfirm;
+            @Confirm.canceled += instance.OnConfirm;
         }
 
         /// <summary>
@@ -750,9 +761,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UIActions" />
         private void UnregisterCallbacks(IUIActions instance)
         {
-            @SubmitCommand.started -= instance.OnSubmitCommand;
-            @SubmitCommand.performed -= instance.OnSubmitCommand;
-            @SubmitCommand.canceled -= instance.OnSubmitCommand;
+            @Confirm.started -= instance.OnConfirm;
+            @Confirm.performed -= instance.OnConfirm;
+            @Confirm.canceled -= instance.OnConfirm;
         }
 
         /// <summary>
@@ -963,12 +974,12 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         /// <summary>
-        /// Method invoked when associated input action "SubmitCommand" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Confirm" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSubmitCommand(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Global" which allows adding and removing callbacks.

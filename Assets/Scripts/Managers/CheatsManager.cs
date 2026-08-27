@@ -32,17 +32,17 @@ public class CheatsManager : Singleton<CheatsManager>
     //---CONSOLE MANAGEMENT---
     public void ToggleConsole() // Activated via PlayerUI.cs
     {
+        PlayerUI ui = PlayerUI.Instance;
         isOpen = !isOpen;
-        Debug.Log(isOpen);
         consolePanel.SetActive(isOpen);
         if (isOpen) // Open console
         {
             inputField.ActivateInputField();
-            PlayerUI.Instance.PauseGame();
+            ui.PauseGame();
         }
-        else if (PlayerUI.Instance.isPaused) // Close console
+        else if (ui.isPaused && !ui.pauseMenu.activeSelf) // Close console
         {
-            PlayerUI.Instance.UnpauseGame();
+            ui.UnpauseGame();
         }
     }
     public void SubmitCommand() // Activated via PlayerUI.cs

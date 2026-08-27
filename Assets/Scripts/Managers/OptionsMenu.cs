@@ -67,6 +67,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     // Gamepad Controls settings
     private StringSetting jumpGamepad;
     private StringSetting interactGamepad;
+    private PlayerInput playerInput;
 
     private void Start()
     {
@@ -109,6 +110,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
         ApplySavedValues();
         PlayerPrefs.Save();
+        playerInput = InputManager.Instance.playerInput;
 
         Debug.Log(
             $"Settings loaded. Values:\n" +
@@ -182,11 +184,11 @@ public class OptionsMenu : Singleton<OptionsMenu>
         audioSettingsPanel.SetActive(false);
         controlsSettingsPanel.SetActive(true);
         // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
-        // This could be made more profesionally through control schemes, but that would need for this script to have a reference to PlayerInput component.
-        // Which is on the player. Which does not exist in the main menu! So too bad!
         jumpButton.onClick.RemoveAllListeners();
         interactButton.onClick.RemoveAllListeners();
-        if (DeviceObserver.Instance.ActiveDeviceType == InputDeviceType.Gamepad)
+        
+        Debug.Log(playerInput.currentControlScheme);
+        if (playerInput.currentControlScheme == "Gamepad")
         {
             deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
             jumpButton.onClick.AddListener(() => RebindJump(false));
