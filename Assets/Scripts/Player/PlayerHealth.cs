@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Handles player health, hard damage and dying
+/// </summary>
 public class PlayerHealth : Singleton<PlayerHealth>
 {
     [Header("Stats")]

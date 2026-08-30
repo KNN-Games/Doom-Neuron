@@ -6,9 +6,11 @@ using UnityEngine.SceneManagement;
 /// Represents an interactable object in the game world.
 /// When the player interacts with this object (via PlayerController.OnInteract(context)), it will invoke the specified UnityEvent.
 /// </summary>
+/// <remarks>
 /// Below are some generic functions that can be used for common interactions, such as saving the game or loading a level.
 /// Remember to not directly reference the player and game manager GameObjects in scenes, 
 /// but instead use PlayerController.Instance and GameManager.Instance to access the singleton instances.
+/// </remarks>
 public class Interactable : MonoBehaviour
 {
     public UnityEvent onInteraction;

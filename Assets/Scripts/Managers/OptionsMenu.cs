@@ -19,9 +19,8 @@ using UnityEngine.UI;
 /// When adding a new setting you have to add:
 /// 1. private FloatSetting/StringSetting
 /// 2. references to the UI elements that will control the setting (slider, button, etc.). This is not always nessesary.
-/// 3. modify Start() with: settingName = new FloatSetting/StringSetting("settingName", defaultValue)
-/// 4. modify ApplySavedValues() to set the CURRENT value to match the SAVED and update UI if nessesary
-/// 5. A function to set the new setting. Connect that function to the button you want in setting menu in Unity Editor.
+/// 3. A function to set the new setting. Connect that function to the button you want in setting menu in Unity Editor.
+/// 4. modify Start() with: settingName = new FloatSetting/StringSetting("settingName", defaultValue, FunctionThatChangesThisSetting)
 /// </remarks>
 public class OptionsMenu : Singleton<OptionsMenu>
 {
@@ -67,6 +66,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     // Gamepad Controls settings
     private StringSetting jumpGamepad;
     private StringSetting interactGamepad;
+    // Other
     private PlayerInput playerInput;
 
     private void Start()
@@ -80,30 +80,22 @@ public class OptionsMenu : Singleton<OptionsMenu>
         mouseSensitivity = new FloatSetting("mouseSensitivity", 10f, SetMouseSensitivity);
         // Control settings
         // FindBindings returns int index from that array that holds binding with "<device>". Look in INTERNAL METHODS (line ~330) for how it works exactly.
-        jumpKeyboard = new StringSetting
-        (
+        jumpKeyboard = new StringSetting(
             "jumpKey",
             jumpAction.action.bindings[FindBinding(jumpAction.action, "<Keyboard>")].path,
-            value => jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Keyboard>"), value)
-        );
-        interactKeyboard = new StringSetting
-        (
+            value => jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Keyboard>"), value));
+        interactKeyboard = new StringSetting(
             "interactKey",
             interactAction.action.bindings[FindBinding(interactAction.action, "<Keyboard>")].path,
-            value => interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Keyboard>"), value)
-        );
-        jumpGamepad = new StringSetting
-        (
+            value => interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Keyboard>"), value));
+        jumpGamepad = new StringSetting(
             "jumpGamepad",
             jumpAction.action.bindings[FindBinding(jumpAction.action, "<Gamepad>")].path,
-            value => jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Gamepad>"), value)
-        );
-        interactGamepad = new StringSetting
-        (
+            value => jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Gamepad>"), value));
+        interactGamepad = new StringSetting(
             "interactGamepad",
             interactAction.action.bindings[FindBinding(interactAction.action, "<Gamepad>")].path,
-            value => interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Gamepad>"), value)
-        );
+            value => interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Gamepad>"), value));
 
         jumpButtonText = jumpButton.GetComponentInChildren<TextMeshProUGUI>();
         interactButtonText = interactButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -112,144 +104,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         PlayerPrefs.Save();
         playerInput = InputManager.Instance.playerInput;
 
-        Debug.Log(
-            $"Settings loaded. Values:\n" +
-            $"Master Volume: {masterVolume.SavedValue}\n" +
-            $"Music Volume: {musicVolume.SavedValue}\n" +
-            $"SFX Volume: {sfxVolume.SavedValue}\n" +
-            $"Language: {language.SavedValue}\n" +
-            $"Mouse Sensitivity: {mouseSensitivity.SavedValue}\n" +
-            $"jumpKeyboard: {jumpKeyboard.SavedValue}\n" +
-            $"interactKeyboard: {interactKeyboard.SavedValue}\n" +
-            $"jumpGamepad: {jumpGamepad.SavedValue}\n" +
-            $"interactGamepad: {interactGamepad.SavedValue}\n");
-
-    }
-    private void ApplySavedValues() // Update settings & UI to match SAVED values.
-    {
-        foreach (var setting in allSettings)
-        {
-            setting.ApplySavedToCurrent();
-            setting.InvokeChangeSettingFunction();
-        }
-    }
-    public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
-    {
-        foreach (var setting in allSettings)
-        {
-            setting.ApplyCurrentToSaved();
-        }
-        foreach (var setting in allSettings)
-        {
-            setting.WriteToPlayerPrefs();
-        }
-        PlayerPrefs.Save();
-    }
-    //---MENU NAVIGATION---
-    public void OpenOptionsMenu() // Used by PlayerUI and MainMenu to open the options menu.
-    {
-        optionsMenuCanvas.SetActive(true);
-        generalSettingsButton.Select();
-        //generalSettingsButton.Select(); // Select general settings button by default for non-mouse navigation
-        OpenGeneralSettings();
-
-        // Reset preview state to the last persisted values whenever the menu opens.
-        ApplySavedValues();
-    }
-    public void BackToMenu()
-    {
-        if (HasUnsavedChanges())
-        {
-            saveChangesPrompt.SetActive(true);
-            saveChangesConfirmButton.Select();
-            return;
-        }
-        ExitSettings();
-    }
-    public void OpenGeneralSettings()
-    {
-        generalSettingsPanel.SetActive(true);
-        audioSettingsPanel.SetActive(false);
-        controlsSettingsPanel.SetActive(false);
-    }
-    public void OpenAudioSettings()
-    {
-        generalSettingsPanel.SetActive(false);
-        audioSettingsPanel.SetActive(true);
-        controlsSettingsPanel.SetActive(false);
-    }
-    public void OpenControlsSettings()
-    {
-        generalSettingsPanel.SetActive(false);
-        audioSettingsPanel.SetActive(false);
-        controlsSettingsPanel.SetActive(true);
-        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
-        jumpButton.onClick.RemoveAllListeners();
-        interactButton.onClick.RemoveAllListeners();
-        
-        Debug.Log(playerInput.currentControlScheme);
-        if (playerInput.currentControlScheme == "Gamepad")
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(false));
-            interactButton.onClick.AddListener(() => RebindInteract(false));
-            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
-        }
-        else
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(true));
-            interactButton.onClick.AddListener(() => RebindInteract(true));
-            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
-        }
-        deviceDetectedLocalizedText.RefreshString();
-    }
-    public void ResetSettings() // Reset all settings
-    {
-        foreach (var setting in allSettings)
-        {
-            setting.ResetToDefault();
-            setting.InvokeChangeSettingFunction();
-        }
-        SaveChanges();
-        BackToMenu();
-        Debug.Log("Resetting settings to default values");
-    }
-    public void ResetSetting(string settingName)
-    {
-        foreach (var setting in allSettings)
-        {
-            if (setting.Key != settingName) continue;
-            setting.ResetToDefault();
-            setting.InvokeChangeSettingFunction();
-            return;
-        }
-        Debug.LogError("Setting not found");
-    }
-    public void Confirm()
-    {
-        SaveChanges();
-        ExitSettings();
-    }
-    public void Discard()
-    {
-        ApplySavedValues();
-        ExitSettings();
-    }
-    public void Cancel()
-    {
-        saveChangesPrompt.SetActive(false);
-    }
-    private void ExitSettings()
-    {
-        saveChangesPrompt.SetActive(false);
-        optionsMenuCanvas.SetActive(false);
-        if (MainMenu.Instance != null) // if in main menu reactivate it.
-        {
-            MainMenu.Instance.ReturnToMainMenu();
-        }
+        PrintAllSettingValues();
     }
     //---GENERAL SETTINGS---
     public void SetLanguage(string languageCode)
@@ -314,7 +169,133 @@ public class OptionsMenu : Singleton<OptionsMenu>
     {
         BeginRebind(interactAction, interactKeyboard, isforKeyboard, interactButtonText);
     }
+    //---MENU NAVIGATION---
+    public void OpenOptionsMenu() // Used by PlayerUI and MainMenu to open the options menu.
+    {
+        optionsMenuCanvas.SetActive(true);
+        generalSettingsButton.Select();
+        //generalSettingsButton.Select(); // Select general settings button by default for non-mouse navigation
+        OpenGeneralSettings();
+
+        // Reset preview state to the last persisted values whenever the menu opens.
+        ApplySavedValues();
+    }
+    public void BackToMenu()
+    {
+        if (HasUnsavedChanges())
+        {
+            saveChangesPrompt.SetActive(true);
+            saveChangesConfirmButton.Select();
+            return;
+        }
+        ExitSettings();
+    }
+    public void OpenGeneralSettings()
+    {
+        generalSettingsPanel.SetActive(true);
+        audioSettingsPanel.SetActive(false);
+        controlsSettingsPanel.SetActive(false);
+    }
+    public void OpenAudioSettings()
+    {
+        generalSettingsPanel.SetActive(false);
+        audioSettingsPanel.SetActive(true);
+        controlsSettingsPanel.SetActive(false);
+    }
+    public void OpenControlsSettings()
+    {
+        generalSettingsPanel.SetActive(false);
+        audioSettingsPanel.SetActive(false);
+        controlsSettingsPanel.SetActive(true);
+        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
+        jumpButton.onClick.RemoveAllListeners();
+        interactButton.onClick.RemoveAllListeners();
+
+        Debug.Log(playerInput.currentControlScheme);
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
+            jumpButton.onClick.AddListener(() => RebindJump(false));
+            interactButton.onClick.AddListener(() => RebindInteract(false));
+            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
+            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
+        }
+        else
+        {
+            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
+            jumpButton.onClick.AddListener(() => RebindJump(true));
+            interactButton.onClick.AddListener(() => RebindInteract(true));
+            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
+            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
+        }
+        deviceDetectedLocalizedText.RefreshString();
+    }
+    public void ResetSettings() // Reset all settings
+    {
+        foreach (var setting in allSettings)
+        {
+            setting.ResetToDefault();
+            setting.InvokeChangeSettingFunction();
+        }
+        SaveChanges();
+        BackToMenu();
+        Debug.Log("Resetting settings to default values");
+    }
+    public void ResetSetting(string settingName)
+    {
+        foreach (var setting in allSettings)
+        {
+            if (setting.Key != settingName) continue;
+            setting.ResetToDefault();
+            setting.InvokeChangeSettingFunction();
+            return;
+        }
+        Debug.LogError("Setting not found");
+    }
+    public void Confirm()
+    {
+        SaveChanges();
+        ExitSettings();
+    }
+    public void Discard()
+    {
+        ApplySavedValues();
+        ExitSettings();
+    }
+    public void Cancel()
+    {
+        saveChangesPrompt.SetActive(false);
+    }
+    private void ExitSettings()
+    {
+        saveChangesPrompt.SetActive(false);
+        optionsMenuCanvas.SetActive(false);
+        if (MainMenu.Instance != null) // if in main menu reactivate it.
+        {
+            MainMenu.Instance.ReturnToMainMenu();
+        }
+    }
     //---INTERNAL FUNCTIONS---
+    private void ApplySavedValues() // Update settings & UI to match SAVED values.
+    {
+        foreach (var setting in allSettings)
+        {
+            setting.ApplySavedToCurrent();
+            setting.InvokeChangeSettingFunction();
+        }
+    }
+    public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
+    {
+        foreach (var setting in allSettings)
+        {
+            setting.ApplyCurrentToSaved();
+        }
+        foreach (var setting in allSettings)
+        {
+            setting.WriteToPlayerPrefs();
+        }
+        PlayerPrefs.Save();
+    }
     private bool HasUnsavedChanges()
     {
         foreach (var setting in allSettings)
@@ -381,6 +362,20 @@ public class OptionsMenu : Singleton<OptionsMenu>
                 Debug.Log("Rebinding cancelled.");
             })
             .Start();
+    }
+    public void PrintAllSettingValues()
+    {
+        Debug.Log(
+        $"Settings loaded. Values:\n" +
+        $"Master Volume: {masterVolume.SavedValue}\n" +
+        $"Music Volume: {musicVolume.SavedValue}\n" +
+        $"SFX Volume: {sfxVolume.SavedValue}\n" +
+        $"Language: {language.SavedValue}\n" +
+        $"Mouse Sensitivity: {mouseSensitivity.SavedValue}\n" +
+        $"jumpKeyboard: {jumpKeyboard.SavedValue}\n" +
+        $"interactKeyboard: {interactKeyboard.SavedValue}\n" +
+        $"jumpGamepad: {jumpGamepad.SavedValue}\n" +
+        $"interactGamepad: {interactGamepad.SavedValue}\n");
     }
     //--- SETTING CLASSES ---
     private abstract class OptionSetting

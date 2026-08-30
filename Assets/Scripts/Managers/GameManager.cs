@@ -22,6 +22,6 @@ public class GameManager : Singleton<GameManager>
     private void Update()
     {
         playTime += Time.deltaTime;
-        lastSaved += Time.deltaTime; // SaveManager.Save() resets this when it saves, so we can use this to determine when to save next
+        lastSaved += Time.deltaTime; // SaveManager.Save() and SaveManager.LoadGame() resets this when it saves, so we can use this to determine when to save next
     }
 }

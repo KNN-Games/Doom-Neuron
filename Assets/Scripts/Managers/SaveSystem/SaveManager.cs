@@ -1,5 +1,4 @@
 using System.IO;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,7 +11,8 @@ using UnityEngine.SceneManagement;
 public class SaveManager : Singleton<SaveManager>
 {
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
-    private const string PlayerPrefabPath = "Assets/Prefabs/Player.prefab"; // Path to the player prefab
+    [SerializeField] private GameObject playerPrefab;
+    private SaveData pendingLoadData;
 
     //---SAVE GAME ON EVERY SCENE CHANGE---
     protected override void Awake()
@@ -26,14 +26,19 @@ public class SaveManager : Singleton<SaveManager>
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Save the game
     {
+        // Load the game state
+        if (pendingLoadData != null)
+        {
+            ApplyLoadedGame(pendingLoadData);
+            pendingLoadData = null;
+            return;
+        }
         if (scene.name == "MainMenu") return;
         Save(GameManager.Instance.saveSlot);
     }
     //------
     private void Start()
     {
-        //Debug.Log($"Save folder path: {SaveFolder}");
-
         // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
         Directory.CreateDirectory(SaveFolder);
     }
@@ -105,11 +110,27 @@ public class SaveManager : Singleton<SaveManager>
     {
         LoadGame(Load(GameManager.Instance.saveSlot));
     }
-    public void LoadGame(SaveData data) // I don't know if I should move this to GameManager.
+    public void LoadGame(SaveData data) // The pipeline is this: LoadGame() -> OnSceneLoaded() -> ApplyLoadedGame()
     {
-        // Load the game state from the save data
+        if (data == null)
+        {
+            Debug.LogError("LOAD FAILURE. SAVE DATA IS MISSING.");
+            return;
+        }
+        GameManager.Instance.lastSaved = 0;
+        pendingLoadData = data;
         SceneManager.LoadScene(data.sceneName);
-        CreatePlayer();
+    }
+    private void ApplyLoadedGame(SaveData data)
+    {
+        // Create player in the scene, if it doesn't already exist
+        if (PlayerController.Instance == null)
+        {
+            GameObject player = Instantiate(playerPrefab);
+            player.name = "Player"; // Set the name of the instantiated player object
+            InputManager.Instance.SetPlayer(player);
+        }
+        // Set the variables in GameManager and PlayerController
         PlayerController.Instance.transform.position = data.playerPosition;
         PlayerController.Instance.transform.localEulerAngles = data.playerRotation;
         GameManager.Instance.playTime = data.playTime;
@@ -141,18 +162,5 @@ public class SaveManager : Singleton<SaveManager>
     public int GetSaveCount()
     {
         return Directory.GetFiles(SaveFolder, "save_*.json").Length;
-    }
-    private void CreatePlayer() // Create player in the scene, if it doesn't already exist
-    {
-        if (PlayerController.Instance != null) return;
-        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
-        if (prefab == null)
-        {
-            Debug.LogError("Player prefab not found in: " + PlayerPrefabPath);
-            return;
-        }
-        GameObject player = Instantiate(prefab);
-        player.name = "Player"; // Set the name of the instantiated player object
-        InputManager.Instance.SetPlayer(player);
     }
 }

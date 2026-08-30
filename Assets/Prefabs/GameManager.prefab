@@ -6545,6 +6545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b16d1948c10b241be4ad9547f8e0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SaveManager
+  playerPrefab: {fileID: 3186431772602036917, guid: c5903439ded8d244eaf78ac6f7ab5cb7, type: 3}
 --- !u!1 &8208635695293821927
 GameObject:
   m_ObjectHideFlags: 0

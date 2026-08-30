@@ -1,8 +1,11 @@
 using UnityEngine;
 
-//Most managers and player related stuff are Singletons to make references to them easier.
-//Instead of finding by tag or some other things like that just make a reference to these script by
-//ScriptName.Instance.FunctionName()
+/// <summary>
+/// Most managers and player related stuff are Singletons to make references to them easier.
+/// Instead of finding by tag or some other things like that just make a reference to these script by
+/// ScriptName.Instance.FunctionName()
+/// </summary>
+/// <typeparam name="T">Ensure that the parameter is the same as class name, for example GameManager : Singleton<GameManager> </typeparam>
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     public static T Instance { get; private set; }

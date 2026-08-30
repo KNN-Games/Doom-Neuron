@@ -2,6 +2,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Used on the Setting Slider prefab to simplify updating its values
+/// </summary>
 [RequireComponent(typeof(Slider))]
 public class SettingSlider : MonoBehaviour
 {

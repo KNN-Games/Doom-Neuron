@@ -3,6 +3,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Components;
 
+/// <summary>
+/// Use this to update the values in SelectFile prefab
+/// </summary>
 public class SlotTextHandler : MonoBehaviour
 {
     [Header("References")]
