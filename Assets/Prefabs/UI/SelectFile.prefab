@@ -1874,7 +1874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 507e7d61d344fec428b3320f38c60712, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoldButton
-  holdDuration: 5
+  holdDuration: 0.2
   onHoldComplete:
     m_PersistentCalls:
       m_Calls:

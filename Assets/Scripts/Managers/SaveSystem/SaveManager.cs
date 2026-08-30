@@ -10,8 +10,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class SaveManager : Singleton<SaveManager>
 {
-    private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
+    public int saveSlot = 100; // As in: current save slot, 100 means no save slot selected
     [SerializeField] private GameObject playerPrefab;
+    private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
     private SaveData pendingLoadData;
 
     //---SAVE GAME ON EVERY SCENE CHANGE---
@@ -27,13 +28,12 @@ public class SaveManager : Singleton<SaveManager>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Load the game state
+        if (scene.name == "MainMenu") return;
         if (pendingLoadData != null)
         {
             ApplyLoadedGame(pendingLoadData);
             pendingLoadData = null;
-            return;
         }
-        if (scene.name == "MainMenu") return;
         Save();
     }
     //------
@@ -45,7 +45,7 @@ public class SaveManager : Singleton<SaveManager>
     //---SAVING---
     public void Save()
     {
-        Save(GameManager.Instance.saveSlot);
+        Save(saveSlot);
     }
     public void Save(int slot) // Over-writes the save slot with new save
     {
@@ -76,7 +76,7 @@ public class SaveManager : Singleton<SaveManager>
             lastPlayed = System.DateTime.Now.Ticks,
             sceneName = SceneManager.GetActiveScene().name,
             playerPosition = PlayerController.Instance.transform.position,
-            playerRotation = PlayerController.Instance.transform.rotation.eulerAngles
+            playerRotation = PlayerController.Instance.GetRotation()
         };
 
         // Save to a json file
@@ -99,7 +99,7 @@ public class SaveManager : Singleton<SaveManager>
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            return JsonUtility.FromJson<SaveData>(json);
+            return JsonUtility.FromJson<SaveData>(json); // Because of this we can't use constructors :(
         }
         else
         {
@@ -108,7 +108,7 @@ public class SaveManager : Singleton<SaveManager>
     }
     public void LoadGame()
     {
-        LoadGame(Load(GameManager.Instance.saveSlot));
+        LoadGame(Load(saveSlot));
     }
     public void LoadGame(SaveData data) // The pipeline is this: LoadGame() -> OnSceneLoaded() -> ApplyLoadedGame()
     {
@@ -130,12 +130,16 @@ public class SaveManager : Singleton<SaveManager>
             player.name = "Player"; // Set the name of the instantiated player object
             InputManager.Instance.SetPlayer(player);
         }
-        // Set the variables in GameManager and PlayerController
+        // Set the variables for player
+        CharacterController controller = PlayerController.Instance.GetComponent<CharacterController>();
+        controller.enabled = false;
         PlayerController.Instance.transform.position = data.playerPosition;
-        PlayerController.Instance.transform.localEulerAngles = data.playerRotation;
+        PlayerController.Instance.SetRotation(data.playerRotation);
+        controller.enabled = true;
+        // Set the variables for game manager
         GameManager.Instance.playTime = data.playTime;
         GameManager.Instance.difficulty = data.difficulty;
-        GameManager.Instance.saveSlot = data.saveSlot;
+        saveSlot = data.saveSlot;
 
         // DEBUG: print all save data info
         Debug.Log(
@@ -144,7 +148,9 @@ public class SaveManager : Singleton<SaveManager>
         $"difficulty: {data.difficulty}\n" +
         $"playTime: {data.playTime}\n" +
         $"lastPlayed: {data.lastPlayed}\n" +
-        $"sceneName: {data.sceneName}\n");
+        $"sceneName: {data.sceneName}\n" +
+        $"playerLocation: {data.playerPosition}\n" +
+        $"playerRotation: {data.playerRotation}");
     }
     //------
     public void DeleteSave(int slot) // Used in main menu slot selection screen via mainMenu.cs

@@ -30,7 +30,7 @@ public class PlayerController : Singleton<PlayerController>
         base.Awake();
         DontDestroyOnLoad(gameObject);
     }
-    
+
     private void Start()
     {
         playerTransform = GetComponent<Transform>();
@@ -41,7 +41,7 @@ public class PlayerController : Singleton<PlayerController>
     }
     private void Update()
     {
-        if(PlayerUI.Instance.isPaused) return;
+        if (PlayerUI.Instance.isPaused) return;
 
         // WASD movement
         Vector3 movement = transform.right * moveInput.x + transform.forward * moveInput.y;
@@ -87,7 +87,18 @@ public class PlayerController : Singleton<PlayerController>
     }
     public void Interact()
     {
-        if(interactable == null) return;
+        if (interactable == null) return;
         interactable.Interact();
+    }
+    // Used to get and set player location
+    public void SetRotation(Vector3 rotation)
+    {
+        transform.rotation = Quaternion.Euler(0f, rotation.y, 0f);
+        xRotation = rotation.x;
+        camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+    }
+    public Vector3 GetRotation()
+    {
+        return new Vector3(xRotation, transform.eulerAngles.y, 0f);
     }
 }

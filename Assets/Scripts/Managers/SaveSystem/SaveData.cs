@@ -14,4 +14,5 @@ public class SaveData
     public string sceneName; // Current scene
     public Vector3 playerPosition;
     public Vector3 playerRotation;
+    // Do not add a constructor! It will break SaveManager.Load()
 }

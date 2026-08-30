@@ -20,7 +20,7 @@ public class MainMenu : Singleton<MainMenu>
     [Header("Settings")]
     [SerializeField] private float fadeInDuration;
     [HideInInspector] public bool isInSplashScreen;
-    private int selectedSlot = -1; // Track the selected save slot, -1 means none
+    private SaveManager saveManager;
     private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
 
     protected override void Awake()
@@ -32,6 +32,10 @@ public class MainMenu : Singleton<MainMenu>
         {
             Destroy(player);
         }
+    }
+    private void Start() // Technically more efficent than calling instance every time
+    {
+        saveManager = SaveManager.Instance;
     }
     //---MAIN SCREEN---
     public void OpenSlotSelection()
@@ -70,18 +74,18 @@ public class MainMenu : Singleton<MainMenu>
     //---SLOT SELECT SCREEN---
     public void LoadGame(int slot)
     {
-        SaveData data = SaveManager.Instance.Load(slot);
+        SaveData data = saveManager.Load(slot);
+        saveManager.saveSlot = slot; // VERY IMPORTANT! This is the only place where saveSlot is set
         if (data == null)
         {
             OpenNewGameConfiguration(slot);
             return;
         }
-        GameManager.Instance.saveSlot = slot;
-        SaveManager.Instance.LoadGame(data);
+        saveManager.LoadGame(data);
     }
     public void DeleteSave(int slot)
     {
-        SaveManager.Instance.DeleteSave(slot);
+        saveManager.DeleteSave(slot);
         UpdateSaveSlotUI();
     }
     //---NEW GAME CONFIG SCREEN---
@@ -89,7 +93,7 @@ public class MainMenu : Singleton<MainMenu>
     {
         SaveData newGameData = new()
         {
-            saveSlot = selectedSlot,
+            saveSlot = saveManager.saveSlot,
             difficulty = selectedDifficulty,
             playTime = 0f,
             lastPlayed = System.DateTime.Now.Ticks,
@@ -97,7 +101,7 @@ public class MainMenu : Singleton<MainMenu>
             playerPosition = Vector3.zero,
             playerRotation = Vector3.zero
         };
-        SaveManager.Instance.LoadGame(newGameData);
+        saveManager.LoadGame(newGameData);
     }
     public void SetNewGameDifficulty(int difficulty)
     {
@@ -167,7 +171,6 @@ public class MainMenu : Singleton<MainMenu>
     }
     private void OpenNewGameConfiguration(int slot) // No button does this directly, only based on context.
     {
-        selectedSlot = slot;
         mainMenuPanel.SetActive(false);
         saveSlotPanel.SetActive(false);
         newGameConfigPanel.SetActive(true);
@@ -179,7 +182,7 @@ public class MainMenu : Singleton<MainMenu>
     {
         for (int i = 0; i <= 5; i++)
         {
-            SaveData data = SaveManager.Instance.Load(i);
+            SaveData data = saveManager.Load(i);
             saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
         }
     }
