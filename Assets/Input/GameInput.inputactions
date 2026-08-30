@@ -319,7 +319,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "OpenConsole",
+                    "name": "ToggleConsole",
                     "type": "Button",
                     "id": "e841e26f-0040-43c5-af61-1bca67ca0f2e",
                     "expectedControlType": "",
@@ -358,7 +358,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard",
-                    "action": "OpenConsole",
+                    "action": "ToggleConsole",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

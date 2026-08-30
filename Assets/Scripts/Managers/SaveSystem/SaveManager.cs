@@ -24,7 +24,7 @@ public class SaveManager : Singleton<SaveManager>
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) // Save the game
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Load the game state
         if (pendingLoadData != null)
@@ -34,7 +34,7 @@ public class SaveManager : Singleton<SaveManager>
             return;
         }
         if (scene.name == "MainMenu") return;
-        Save(GameManager.Instance.saveSlot);
+        Save();
     }
     //------
     private void Start()

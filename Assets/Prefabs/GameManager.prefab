@@ -4256,7 +4256,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5387422916122273839}
         m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
-        m_MethodName: OnOpenConsole
+        m_MethodName: OnToggleConsole
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7856,6 +7856,14 @@ PrefabInstance:
     - target: {fileID: 2571457912266465792, guid: 4238a771d7715ab49ba79a207a16d84b, type: 3}
       propertyPath: m_Name
       value: FieldOfViewSlider
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356887708019695875, guid: 4238a771d7715ab49ba79a207a16d84b, type: 3}
+      propertyPath: m_StringReference.m_TableEntryReference.m_KeyId
+      value: 17849338311270400
+      objectReference: {fileID: 0}
+    - target: {fileID: 4356887708019695875, guid: 4238a771d7715ab49ba79a207a16d84b, type: 3}
+      propertyPath: m_StringReference.m_TableReference.m_TableCollectionName
+      value: GUID:d206fd56ebb8772478ccb7b86c52649e
       objectReference: {fileID: 0}
     - target: {fileID: 4802364867198793442, guid: 4238a771d7715ab49ba79a207a16d84b, type: 3}
       propertyPath: m_AnchorMax.y

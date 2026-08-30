@@ -95,9 +95,9 @@ public class InputManager : Singleton<InputManager>
         if (!context.started || !IsPlayerPresent || CheatsManager.Instance.IsConsoleActive) return;
         playerUI.TogglePauseMenu();
     }
-    public void OnOpenConsole(InputAction.CallbackContext context)
+    public void OnToggleConsole(InputAction.CallbackContext context)
     {
-        if (!context.started || !IsPlayerPresent) return;
+        if (!context.started) return;
         CheatsManager.Instance.ToggleConsole();
     }
 }

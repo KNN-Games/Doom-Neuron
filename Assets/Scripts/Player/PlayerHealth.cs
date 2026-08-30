@@ -33,7 +33,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     {
         CurrentBlood += Math.Clamp(amount, 0, maxBlood - CurrentBlackBile - CurrentBlood);
     }
-    public void TakeBlackDamage(int damage) //as in: black bile
+    public void TakeHardDamage(int damage) //as in: black bile
     {
         if(isInvulnerable) return;
         CurrentBlackBile += damage;
@@ -43,7 +43,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
             Die();
         }
     }
-    public void LoseBlackDamage(int amount)
+    public void LoseHardDamage(int amount)
     {
         CurrentBlackBile -= amount;
         CurrentBlackBile = Math.Clamp(CurrentBlackBile, 0, maxBlood);

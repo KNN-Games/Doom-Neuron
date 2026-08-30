@@ -5888,14 +5888,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5137851006206577965, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
-      propertyPath: m_StringReference.m_TableEntryReference.m_KeyId
-      value: 17849338311270400
-      objectReference: {fileID: 0}
-    - target: {fileID: 5137851006206577965, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
-      propertyPath: m_StringReference.m_TableReference.m_TableCollectionName
-      value: GUID:d206fd56ebb8772478ccb7b86c52649e
-      objectReference: {fileID: 0}
     - target: {fileID: 5196060713730013657, guid: 5c91d62280bee744f8e198711cacf91b, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

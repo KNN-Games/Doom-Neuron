@@ -18,36 +18,45 @@ public class CheatsManager : Singleton<CheatsManager>
     // Dictionary to hold command names and their corresponding actions
     private Dictionary<string, System.Action<string[]>> commands;
     private bool isOpen = false;
-    
+    private bool IsPlayerPresent => PlayerController.Instance != null;
     private void Start()
     {
         commands = new() // List of commands
         {
-            {"blood", AddBlood},
-            {"blackbile", AddBlackBile},
+            {"blood", AddHealth},
+            {"blackbile", AddHardDamage},
             {"divine", ToggleInvulnerability},
             {"suicide", Die},
+            {"saveinfo", PrintSaveInfo},
+            {"whole", Resurrect}
         };
     }
     //---CONSOLE MANAGEMENT---
     public void ToggleConsole()
     {
-        PlayerUI ui = PlayerUI.Instance;
         isOpen = !isOpen;
         consolePanel.SetActive(isOpen);
-        if (isOpen) // Open console
+        if (IsPlayerPresent)
+        {
+            PlayerUI ui = PlayerUI.Instance;
+            if (isOpen) // Open console
+            {
+                inputField.ActivateInputField();
+                ui.PauseGame();
+            }
+            else if (ui.isPaused && !ui.pauseMenu.activeSelf) // Close console
+            {
+                ui.UnpauseGame();
+            }
+        }
+        else if (isOpen)
         {
             inputField.ActivateInputField();
-            ui.PauseGame();
-        }
-        else if (ui.isPaused && !ui.pauseMenu.activeSelf) // Close console
-        {
-            ui.UnpauseGame();
         }
     }
     public void SubmitCommand()
     {
-        if(!isOpen) return;
+        if (!isOpen) return;
         string command = inputField.text;
         ExecuteCommand(command);
         inputField.text = "";
@@ -55,7 +64,7 @@ public class CheatsManager : Singleton<CheatsManager>
     }
     private void ExecuteCommand(string input)
     {
-        outputText.text += "> " + input + "\n";
+        Write("> " + input);
         string[] parts = input.Split(' ');
         string command = parts[0];
         string[] args = parts[1..];
@@ -65,51 +74,90 @@ public class CheatsManager : Singleton<CheatsManager>
         }
         else
         {
-            outputText.text += "Unknown command\n";
+            Write("Unknown command");
         }
-
         Canvas.ForceUpdateCanvases();
         scrollRect.verticalNormalizedPosition = 0f;
     }
-    //---COMMMANDS---
-    private void AddBlood(string[] args) // Add blood (as in: HP) to the player. Usage: blood <amount>
+    private void Write(string text) // This ensures that you don't make a format mistake while writing something to console
     {
+        outputText.text += text + "\n";
+    }
+    //---COMMMANDS---
+    private void AddHealth(string[] args) // Add blood (as in: HP) to the player. Usage: blood <amount>
+    {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot heal yourself when you don't exist");
+            return;
+        }
         if (args.Length == 0)
         {
-            outputText.text += "Usage: blood <amount>\n";
+            Write("Usage: blood <amount>");
             return;
         }
         int amount = int.Parse(args[0]);
         PlayerHealth.Instance.GainBlood(amount);
-        outputText.text += $"Added {amount} HP\n";
+        Write($"Added {amount} HP");
     }
-    private void AddBlackBile(string[] args) // Add black bile (as in: black damage) to the player. Usage: blackbile <amount>
+    private void AddHardDamage(string[] args) // Add black bile (as in: black damage) to the player. Usage: blackbile <amount>
     {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot give yourself black bile when you don't exist");
+            return;
+        }
         if (args.Length == 0)
         {
-            outputText.text += "Usage: blackbile <amount>\n";
+            Write("Usage: blackbile <amount>");
             return;
         }
         int amount = int.Parse(args[0]);
-        PlayerHealth.Instance.TakeBlackDamage(amount);
-        outputText.text += $"Added {amount} black bile\n";
+        PlayerHealth.Instance.TakeHardDamage(amount);
+        Write($"Added {amount} black bile");
     }
     private void Die(string[] args) // Instantly kills the player. Usage: suicide
     {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot die when you don't exist");
+            return;
+        }
         ToggleConsole(); // Close console, I can't bother to make console + death screen compatible
         PlayerHealth.Instance.Die();
     }
+    private void Resurrect(string[] args) // Revives the player
+    {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot be whole if you don't exist");
+            return;
+        }
+        ToggleConsole(); // Close console for the same reason as in Die()
+        PlayerHealth.Instance.Resurrect();
+    }
     private void ToggleInvulnerability(string[] args) // Toggles invulnerability. Usage: invulnerable
     {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot be invincible if you don't exist");
+            return;
+        }
         bool inv = PlayerHealth.Instance.isInvulnerable;
         inv = !inv;
         PlayerHealth.Instance.isInvulnerable = inv; // Ignores possible visual effects we may add later
-        if(inv)
+        if (inv)
         {
-            outputText.text += "Only an instant death can kill you now\n";
-        } else
-        {
-            outputText.text += "You are mortal once more\n";
+            Write("Only an instant death can kill you now");
         }
+        else
+        {
+            Write("You are mortal once more");
+        }
+    }
+    private void PrintSaveInfo(string[] args)
+    {
+        OptionsMenu.Instance.PrintAllSettingValues();
+        Write("Look in the console to see the values");
     }
 }

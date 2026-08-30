@@ -405,7 +405,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""OpenConsole"",
+                    ""name"": ""ToggleConsole"",
                     ""type"": ""Button"",
                     ""id"": ""e841e26f-0040-43c5-af61-1bca67ca0f2e"",
                     ""expectedControlType"": """",
@@ -444,7 +444,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard"",
-                    ""action"": ""OpenConsole"",
+                    ""action"": ""ToggleConsole"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -493,7 +493,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         // Global
         m_Global = asset.FindActionMap("Global", throwIfNotFound: true);
         m_Global_TogglePauseMenu = m_Global.FindAction("TogglePauseMenu", throwIfNotFound: true);
-        m_Global_OpenConsole = m_Global.FindAction("OpenConsole", throwIfNotFound: true);
+        m_Global_ToggleConsole = m_Global.FindAction("ToggleConsole", throwIfNotFound: true);
     }
 
     ~@GameInput()
@@ -802,7 +802,7 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Global;
     private List<IGlobalActions> m_GlobalActionsCallbackInterfaces = new List<IGlobalActions>();
     private readonly InputAction m_Global_TogglePauseMenu;
-    private readonly InputAction m_Global_OpenConsole;
+    private readonly InputAction m_Global_ToggleConsole;
     /// <summary>
     /// Provides access to input actions defined in input action map "Global".
     /// </summary>
@@ -819,9 +819,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @TogglePauseMenu => m_Wrapper.m_Global_TogglePauseMenu;
         /// <summary>
-        /// Provides access to the underlying input action "Global/OpenConsole".
+        /// Provides access to the underlying input action "Global/ToggleConsole".
         /// </summary>
-        public InputAction @OpenConsole => m_Wrapper.m_Global_OpenConsole;
+        public InputAction @ToggleConsole => m_Wrapper.m_Global_ToggleConsole;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -851,9 +851,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @TogglePauseMenu.started += instance.OnTogglePauseMenu;
             @TogglePauseMenu.performed += instance.OnTogglePauseMenu;
             @TogglePauseMenu.canceled += instance.OnTogglePauseMenu;
-            @OpenConsole.started += instance.OnOpenConsole;
-            @OpenConsole.performed += instance.OnOpenConsole;
-            @OpenConsole.canceled += instance.OnOpenConsole;
+            @ToggleConsole.started += instance.OnToggleConsole;
+            @ToggleConsole.performed += instance.OnToggleConsole;
+            @ToggleConsole.canceled += instance.OnToggleConsole;
         }
 
         /// <summary>
@@ -868,9 +868,9 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
             @TogglePauseMenu.started -= instance.OnTogglePauseMenu;
             @TogglePauseMenu.performed -= instance.OnTogglePauseMenu;
             @TogglePauseMenu.canceled -= instance.OnTogglePauseMenu;
-            @OpenConsole.started -= instance.OnOpenConsole;
-            @OpenConsole.performed -= instance.OnOpenConsole;
-            @OpenConsole.canceled -= instance.OnOpenConsole;
+            @ToggleConsole.started -= instance.OnToggleConsole;
+            @ToggleConsole.performed -= instance.OnToggleConsole;
+            @ToggleConsole.canceled -= instance.OnToggleConsole;
         }
 
         /// <summary>
@@ -996,11 +996,11 @@ public partial class @GameInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTogglePauseMenu(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "OpenConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "ToggleConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnOpenConsole(InputAction.CallbackContext context);
+        void OnToggleConsole(InputAction.CallbackContext context);
     }
 }
