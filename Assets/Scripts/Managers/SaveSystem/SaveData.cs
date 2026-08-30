@@ -1,10 +1,13 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Stores all save slot info
+/// </summary>
 [Serializable]
 public class SaveData
 {
-    // Save information
+    // Do not add a constructor! It will break SaveManager.Load()
     //ADD HERE: lowest difficulty in save file (for achievements)
     public int saveSlot; // Save slot number
     public int difficulty; // Difficulty level of the game
@@ -14,5 +17,15 @@ public class SaveData
     public string sceneName; // Current scene
     public Vector3 playerPosition;
     public Vector3 playerRotation;
-    // Do not add a constructor! It will break SaveManager.Load()
+    public void PrintSaveInfo()
+    {
+        Debug.Log(
+        $"Save slot {saveSlot} values:\n" +
+        $"difficulty: {difficulty}\n" +
+        $"playTime: {playTime}\n" +
+        $"lastPlayed: {lastPlayed}\n" +
+        $"sceneName: {sceneName}\n" +
+        $"playerLocation: {playerPosition}\n" +
+        $"playerRotation: {playerRotation}");
+    }
 }

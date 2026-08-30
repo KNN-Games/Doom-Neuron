@@ -54,11 +54,14 @@ public class PlayerHealth : Singleton<PlayerHealth>
         PlayerUI.Instance.ShowDeathScreen();
         Debug.Log("You died!");
     }
-    public  void Resurrect()
+    public  void Resurrect() // Resurrect and/ top of player health
     {
-        IsDead = false;
+        if(IsDead)
+        {
+            IsDead = false;
+            PlayerUI.Instance.HideDeathScreen();
+        }
         CurrentBlackBile = 0;
         CurrentBlood = maxBlood;
-        PlayerUI.Instance.HideDeathScreen();
     }
 }

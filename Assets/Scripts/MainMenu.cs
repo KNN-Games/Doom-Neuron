@@ -43,7 +43,8 @@ public class MainMenu : Singleton<MainMenu>
         // If 0 save files exist start new game immediately for dramatic effect.
         if (SaveManager.Instance.GetSaveCount() == 0)
         {
-            OpenNewGameConfiguration(0);
+            SaveManager.Instance.saveSlot = 0;
+            OpenNewGameConfiguration();
         }
         else
         {
@@ -78,7 +79,7 @@ public class MainMenu : Singleton<MainMenu>
         saveManager.saveSlot = slot; // VERY IMPORTANT! This is the only place where saveSlot is set
         if (data == null)
         {
-            OpenNewGameConfiguration(slot);
+            OpenNewGameConfiguration();
             return;
         }
         saveManager.LoadGame(data);
@@ -169,7 +170,7 @@ public class MainMenu : Singleton<MainMenu>
             OpenMainMenu();
         }
     }
-    private void OpenNewGameConfiguration(int slot) // No button does this directly, only based on context.
+    private void OpenNewGameConfiguration() // No button does this directly, only based on context.
     {
         mainMenuPanel.SetActive(false);
         saveSlotPanel.SetActive(false);

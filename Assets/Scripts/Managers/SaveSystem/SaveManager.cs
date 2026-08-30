@@ -142,15 +142,7 @@ public class SaveManager : Singleton<SaveManager>
         saveSlot = data.saveSlot;
 
         // DEBUG: print all save data info
-        Debug.Log(
-        $"Game loaded. Values:\n" +
-        $"save slot: {data.saveSlot}\n" +
-        $"difficulty: {data.difficulty}\n" +
-        $"playTime: {data.playTime}\n" +
-        $"lastPlayed: {data.lastPlayed}\n" +
-        $"sceneName: {data.sceneName}\n" +
-        $"playerLocation: {data.playerPosition}\n" +
-        $"playerRotation: {data.playerRotation}");
+        data.PrintSaveInfo();
     }
     //------
     public void DeleteSave(int slot) // Used in main menu slot selection screen via mainMenu.cs

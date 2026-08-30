@@ -24,7 +24,6 @@ public class Interactable : MonoBehaviour
     {
         SaveManager.Instance.Save();
         PlayerHealth.Instance.Resurrect(); // top off player health
-        Debug.Log("Saved game");
     }
     public void LoadLevel(string levelName)
     {
