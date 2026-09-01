@@ -17,7 +17,6 @@ public class CheatsManager : Singleton<CheatsManager>
     [SerializeField] private ScrollRect scrollRect;
     // Dictionary to hold command names and their corresponding actions
     private Dictionary<string, System.Action<string[]>> commands;
-    private static readonly string[] DifficultyNames = { "Easy", "Medium", "Hard" };
     private bool isOpen = false;
     private bool IsPlayerPresent => PlayerController.Instance != null;
     private void Start()
@@ -25,12 +24,15 @@ public class CheatsManager : Singleton<CheatsManager>
         commands = new() // List of commands
         {
             {"blood", AddHealth},
+            {"hp", AddHealth},
             {"blackbile", AddHardDamage},
             {"divine", ToggleInvulnerability},
             {"suicide", Die},
+            {"die", Die},
             {"saveinfo", PrintSaveInfo},
             {"whole", Resurrect},
-            {"difficulty", SetDifficulty}
+            {"difficulty", SetDifficulty},
+            {"diff", SetDifficulty}
         };
     }
     //---CONSOLE MANAGEMENT---

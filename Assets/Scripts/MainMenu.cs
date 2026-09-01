@@ -22,7 +22,6 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private float fadeInDuration;
     [HideInInspector] public bool isInSplashScreen;
     private SaveManager saveManager;
-    private Difficulty selectedDifficulty = Difficulty.Medium; // Track the selected difficulty level, Medium is default
 
     protected override void Awake()
     {
@@ -99,38 +98,23 @@ public class MainMenu : Singleton<MainMenu>
     //---NEW GAME CONFIG SCREEN---
     public void ConfirmGame() // Start new game
     {
-        SaveData newGameData = new()
-        {
-            saveSlot = saveManager.saveSlot,
-            difficulty = selectedDifficulty,
-            playTime = 0f,
-            lastPlayed = System.DateTime.Now.Ticks,
-            sceneName = "TestArena",
-            playerPosition = Vector3.zero,
-            playerRotation = Vector3.zero
-        };
+        GameManager.Instance.playTime = 0f;
+        SaveData newGameData = new();
+        newGameData.CollectData();
         saveManager.LoadGame(newGameData);
     }
     public void SetNewGameDifficulty(int difficulty)
     {
         for (int i = 0; i < difficultyButtons.Length; i++)
         {
-            if (i + 1 == difficulty)
-            {
-                difficultyButtons[i].image.color = Color.red;
-            }
-            else
-            {
-                difficultyButtons[i].image.color = Color.white;
-            }
+            difficultyButtons[i].image.color = (i + 1 == difficulty) ? Color.red : Color.white;
         }
-        selectedDifficulty = (Difficulty)difficulty;
-        GameManager.Instance.difficulty = selectedDifficulty;
+        GameManager.Instance.difficulty = (Difficulty)difficulty;
     }
     //---HELPER METHODS---
     public void EndSplashScreen() // Used by SplashScreen.cs
     {
-        if (!isInSplashScreen)return;
+        if (!isInSplashScreen) return;
         isInSplashScreen = false;
         splashScreen.gameObject.SetActive(false);
         StartCoroutine(FadeInMainMenu(fadeInDuration));
@@ -146,7 +130,7 @@ public class MainMenu : Singleton<MainMenu>
     {
         //Activate
         mainMenuPanel.SetActive(true);
-        foreach(Button button in mainMenuButtons)
+        foreach (Button button in mainMenuButtons)
         {
             button.interactable = false;
         }
@@ -159,7 +143,7 @@ public class MainMenu : Singleton<MainMenu>
             yield return null;
         }
         canvasGroup.alpha = 1f;
-        foreach(Button button in mainMenuButtons)
+        foreach (Button button in mainMenuButtons)
         {
             button.interactable = true;
         }

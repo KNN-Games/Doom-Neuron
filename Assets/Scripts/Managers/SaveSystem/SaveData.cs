@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Stores all save slot info
@@ -17,6 +18,28 @@ public class SaveData
     public string sceneName; // Current scene
     public Vector3 playerPosition;
     public Vector3 playerRotation;
+
+    public void CollectData()
+    {
+        saveSlot = SaveManager.Instance.saveSlot;
+        difficulty = GameManager.Instance.difficulty;
+        playTime = GameManager.Instance.playTime;
+        lastPlayed = DateTime.Now.Ticks;
+        if(SceneManager.GetActiveScene().name == "MainMenu") // Are you starting a new game?
+        {
+            // New game defaults
+            sceneName = "TestArena";
+            playerPosition = Vector3.zero;
+            playerRotation = Vector3.zero;
+        }
+        else
+        {
+            // Save current game state
+            sceneName = SceneManager.GetActiveScene().name;
+            playerPosition = PlayerController.Instance.transform.position;
+            playerRotation = PlayerController.Instance.GetRotation();
+        }
+    }
     public void PrintSaveInfo()
     {
         Debug.Log(

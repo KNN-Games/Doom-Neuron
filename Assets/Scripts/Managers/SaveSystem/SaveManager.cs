@@ -69,16 +69,8 @@ public class SaveManager : Singleton<SaveManager>
         }
 
         // Create save data object
-        SaveData data = new()
-        {
-            saveSlot = slot,
-            difficulty = diff,
-            playTime = GameManager.Instance.playTime,
-            lastPlayed = System.DateTime.Now.Ticks,
-            sceneName = SceneManager.GetActiveScene().name,
-            playerPosition = PlayerController.Instance.transform.position,
-            playerRotation = PlayerController.Instance.GetRotation()
-        };
+        SaveData data = new();
+        data.CollectData();
 
         // Save to a json file
         string json = JsonUtility.ToJson(data, true);
