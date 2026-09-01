@@ -17,6 +17,7 @@ public class CheatsManager : Singleton<CheatsManager>
     [SerializeField] private ScrollRect scrollRect;
     // Dictionary to hold command names and their corresponding actions
     private Dictionary<string, System.Action<string[]>> commands;
+    private static readonly string[] DifficultyNames = { "Easy", "Medium", "Hard" };
     private bool isOpen = false;
     private bool IsPlayerPresent => PlayerController.Instance != null;
     private void Start()
@@ -28,7 +29,8 @@ public class CheatsManager : Singleton<CheatsManager>
             {"divine", ToggleInvulnerability},
             {"suicide", Die},
             {"saveinfo", PrintSaveInfo},
-            {"whole", Resurrect}
+            {"whole", Resurrect},
+            {"difficulty", SetDifficulty}
         };
     }
     //---CONSOLE MANAGEMENT---
@@ -159,5 +161,17 @@ public class CheatsManager : Singleton<CheatsManager>
     {
         OptionsMenu.Instance.PrintAllSettingValues();
         Write("Look in the console to see the values");
+    }
+    private void SetDifficulty(string[] args) // Sets the difficulty. Usage: difficulty <level>
+    {
+        if (args.Length == 0 || !int.TryParse(args[0], out int level) || level < 1 || level > 3)
+        {
+            Write("Usage: difficulty <level>");
+            Write("1 - Easy, 2 - Medium, 3 - Hard");
+            return;
+        }
+
+        GameManager.Instance.difficulty = (Difficulty)level;
+        Write($"Difficulty set to {GameManager.Instance.difficulty}");
     }
 }

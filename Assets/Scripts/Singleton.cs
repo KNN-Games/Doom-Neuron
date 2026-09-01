@@ -18,7 +18,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
         else if (Instance != this)
         {
-            Debug.LogWarning($"Multiple instances of {typeof(T).Name} detected. Destroying duplicate."); //this will cause a lot of warnings when u go back to main menu
+            Debug.LogWarning($"Multiple instances of {typeof(T).Name} detected. Destroying duplicate.");
             Destroy(gameObject);
         }
     }

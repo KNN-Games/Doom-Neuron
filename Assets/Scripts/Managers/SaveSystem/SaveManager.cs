@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class SaveManager : Singleton<SaveManager>
 {
-    public int saveSlot = 100; // As in: current save slot, 100 means no save slot selected
+    public int saveSlot; // As in: current save slot, 100 means no save slot selected
     [SerializeField] private GameObject playerPrefab;
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
     private SaveData pendingLoadData;
@@ -21,9 +21,9 @@ public class SaveManager : Singleton<SaveManager>
         base.Awake();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-    private void OnDestroy() // Technically unnessary, but it is "good practice"
+    private void OnDestroy()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneLoaded -= OnSceneLoaded; // Technically unnessary, but it is "good practice"
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -50,6 +50,7 @@ public class SaveManager : Singleton<SaveManager>
     public void Save(int slot) // Over-writes the save slot with new save
     {
         // Check if data is viable
+        if (slot == 100) return; // 100 means no save slot selected (so you skipped main menu), so don't save
         if (SceneManager.GetActiveScene().name == "MainMenu")
         {
             Debug.LogError("SAVE FAILURE. CANNOT SAVE IN MAIN MENU");
@@ -60,8 +61,8 @@ public class SaveManager : Singleton<SaveManager>
             Debug.LogError("SAVE FAILURE. INVALID SLOT: " + slot);
             return;
         }
-        int diff = GameManager.Instance.difficulty;
-        if (diff < 1 || diff > 3)
+        Difficulty diff = GameManager.Instance.difficulty;
+        if (diff < Difficulty.Easy || diff > Difficulty.Hard)
         {
             Debug.LogError("SAVE FAILURE. INVALID DIFFICULTY: " + diff);
             return;
@@ -96,13 +97,24 @@ public class SaveManager : Singleton<SaveManager>
             return null;
         }
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");
-        if (File.Exists(path))
+        if (!File.Exists(path)) return null;
+
+        try // This make it so if you mess up the JSON save file, it won't crash the game, but instead just return null and log an error
         {
             string json = File.ReadAllText(path);
-            return JsonUtility.FromJson<SaveData>(json); // Because of this we can't use constructors :(
+            SaveData data = JsonUtility.FromJson<SaveData>(json); // Because of this we can't use constructors :(
+
+            if (data.difficulty < Difficulty.Easy || data.difficulty > Difficulty.Hard)
+            {
+                Debug.LogError($"LOAD FAILURE. CORRUPTED DIFFICULTY IN SLOT {slot}: {data.difficulty}");
+                return null;
+            }
+
+            return data;
         }
-        else
+        catch (System.Exception e)
         {
+            Debug.LogError($"LOAD FAILURE. CORRUPTED SAVE FILE IN SLOT {slot}: {e.Message}");
             return null;
         }
     }

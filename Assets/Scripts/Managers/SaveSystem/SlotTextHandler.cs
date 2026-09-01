@@ -32,9 +32,9 @@ public class SlotTextHandler : MonoBehaviour
         difficultyText.StringReference.TableReference = "UI";
         string key = data.difficulty switch
         {
-            1 => "EASY DIFFICULTY",
-            2 => "MEDIUM DIFFICULTY",
-            3 => "HARD DIFFICULTY",
+            Difficulty.Easy => "EASY DIFFICULTY",
+            Difficulty.Medium => "MEDIUM DIFFICULTY",
+            Difficulty.Hard => "HARD DIFFICULTY",
             _ => null
         };
         if (key != null)

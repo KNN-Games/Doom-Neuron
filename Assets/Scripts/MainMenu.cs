@@ -9,6 +9,7 @@ public class MainMenu : Singleton<MainMenu>
 {
     // MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> (if new game)INTRO -> GAME
     [Header("References")]
+    [SerializeField] private GameObject gameManagerPrefab;
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject creditsPanel;
     [SerializeField] private GameObject saveSlotPanel;
@@ -21,11 +22,17 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private float fadeInDuration;
     [HideInInspector] public bool isInSplashScreen;
     private SaveManager saveManager;
-    private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
+    private Difficulty selectedDifficulty = Difficulty.Medium; // Track the selected difficulty level, Medium is default
 
     protected override void Awake()
     {
         base.Awake();
+        // Ensure the GameManager exists in the scene
+        if (GameManager.Instance == null)
+        {
+            GameObject gameManager = Instantiate(gameManagerPrefab);
+            gameManager.name = "GameManager"; // Rename the instantiated GameManager for clarity
+        }
         // Destroy player if it exists, because the player is not supposed to exist in the main menu
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
@@ -117,8 +124,8 @@ public class MainMenu : Singleton<MainMenu>
                 difficultyButtons[i].image.color = Color.white;
             }
         }
-        selectedDifficulty = difficulty;
-        GameManager.Instance.difficulty = difficulty;
+        selectedDifficulty = (Difficulty)difficulty;
+        GameManager.Instance.difficulty = selectedDifficulty;
     }
     //---HELPER METHODS---
     public void EndSplashScreen() // Used by SplashScreen.cs
