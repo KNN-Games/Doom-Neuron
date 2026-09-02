@@ -172,6 +172,26 @@ MonoBehaviour:
     m_Localized: Field of view
     m_Metadata:
       m_Items: []
+  - m_Id: 21111398864314368
+    m_Localized: Full screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111452744343552
+    m_Localized: Maximized window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111493747859456
+    m_Localized: Window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118096224083968
+    m_Localized: Screen resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118853346287616
+    m_Localized: Screen mode
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

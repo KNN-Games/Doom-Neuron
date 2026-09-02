@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 /// <summary>
 /// Handles the options menu, including audio, controls, and general settings.
@@ -39,6 +40,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Button generalSettingsButton;
     [Header("General UI References")]
     [SerializeField] private SettingSlider fovSlider;
+    [SerializeField] private TMP_Dropdown resolutionDropdown;
+    [SerializeField] private TMP_Dropdown windowModeDropdown;
     [Header("Audio UI References")]
     [SerializeField] private SettingSlider masterVolumeSlider;
     [SerializeField] private SettingSlider musicVolumeSlider;
@@ -50,8 +53,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Button interactButton;
     private TextMeshProUGUI jumpButtonText;
     private TextMeshProUGUI interactButtonText;
-    // All settings
-    private static readonly System.Collections.Generic.List<OptionSetting> allSettings = new();
+    private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by GetAvailableResolutions()
+    private static readonly List<OptionSetting> allSettings = new(); // All settings
     // Audio settings
     private FloatSetting masterVolume;
     private FloatSetting musicVolume;
@@ -59,6 +62,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
     // General settings
     private StringSetting language;
     private FloatSetting fov;
+    private IntSetting resolution;
+    private IntSetting windowMode; // 0 = FullScreenWindow, 1 = MaximizedWindow, 2 = Windowed
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
     private StringSetting jumpKeyboard;
@@ -71,8 +76,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
 
     private void Start()
     {
+        // Get the list of available resolutions
+        GetAvailableResolutions();
         // Create all settings objects
         fov = new FloatSetting("fov", 90f, SetFOV);
+        resolution = new IntSetting("resolution", GetCurrentIndex(), SetResolution);
+        windowMode = new IntSetting("windowMode", (int)FullScreenMode.FullScreenWindow, SetWindowMode);
         masterVolume = new FloatSetting("masterVolume", 100f, SetMasterVolume);
         musicVolume = new FloatSetting("musicVolume", 100f, SetMusicVolume);
         sfxVolume = new FloatSetting("sfxVolume", 100f, SetSFXVolume);
@@ -107,6 +116,25 @@ public class OptionsMenu : Singleton<OptionsMenu>
         PrintAllSettingValues();
     }
     //---GENERAL SETTINGS---
+    public void SetResolution(int index) // Parameter: index of the Resolution in availableResolutions list
+    {
+        if (index < 0 || index >= availableResolutions.Count)
+        {
+            Debug.LogError($"Wrong index: {index}");
+            return;
+        }
+        resolution.CurrentValue = index;
+        var res = availableResolutions[index];
+        Screen.SetResolution(res.width, res.height, Screen.fullScreenMode);
+        resolutionDropdown.SetValueWithoutNotify(index);
+    }
+    public void SetWindowMode(int index) // Parameter: 0 = full screen, 1 = maximized, 2 = windowed
+    {
+        windowMode.CurrentValue = index;
+        // in FullScreenMode: 1 = FullScreenWindow, 2 = MaximizedWindow, 3 = Windowed, so I need to add 1 to the index to match the enum values
+        Screen.fullScreenMode = (FullScreenMode)(index + 1);
+        windowModeDropdown.SetValueWithoutNotify(index);
+    }
     public void SetLanguage(string languageCode)
     {
         language.CurrentValue = languageCode;
@@ -195,6 +223,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         generalSettingsPanel.SetActive(true);
         audioSettingsPanel.SetActive(false);
         controlsSettingsPanel.SetActive(false);
+        GetAvailableResolutions();
     }
     public void OpenAudioSettings()
     {
@@ -363,6 +392,36 @@ public class OptionsMenu : Singleton<OptionsMenu>
             })
             .Start();
     }
+    private void GetAvailableResolutions() // Update the availableResolutions list (with available resolutions) and the resolution dropdown options
+    {
+        var seen = new HashSet<(int, int)>(); // To keep track of unique width/height pairs
+        availableResolutions = new List<Resolution>();
+        resolutionDropdown.ClearOptions();
+        var labels = new List<string>(); // the labels for the dropdown options
+        // Screen.resolutions returns all available resolutions, including duplicates. We want to filter out duplicates and only keep unique width/height pairs.
+        foreach (var res in Screen.resolutions)
+        {
+            var key = (res.width, res.height);
+            if (seen.Contains(key)) continue; //  Discard duplicate resolutions
+            seen.Add(key);
+            availableResolutions.Add(res); // Add the unique resolution to the list
+            labels.Add($"{res.width} x {res.height}");
+        }
+        resolutionDropdown.AddOptions(labels);
+        // Set the dropdown to the current resolution.
+        for (int i = 0; i < availableResolutions.Count; i++)
+        {
+            if (availableResolutions[i].width == Screen.currentResolution.width && availableResolutions[i].height == Screen.currentResolution.height)
+            {
+                resolutionDropdown.SetValueWithoutNotify(i);
+                break;
+            }
+        }        
+    }
+    private int GetCurrentIndex()
+    {
+        return availableResolutions.FindIndex(r => r.width == Screen.currentResolution.width && r.height == Screen.currentResolution.height);
+    }
     public void PrintAllSettingValues()
     {
         Debug.Log(
@@ -375,7 +434,10 @@ public class OptionsMenu : Singleton<OptionsMenu>
         $"jumpKeyboard: {jumpKeyboard.SavedValue}\n" +
         $"interactKeyboard: {interactKeyboard.SavedValue}\n" +
         $"jumpGamepad: {jumpGamepad.SavedValue}\n" +
-        $"interactGamepad: {interactGamepad.SavedValue}\n");
+        $"interactGamepad: {interactGamepad.SavedValue}\n" +
+        $"FOV: {fov.SavedValue}\n" +
+        $"Resolution: {resolution.SavedValue}\n" +
+        $"Window Mode: {windowMode.SavedValue}\n");
     }
     //--- SETTING CLASSES ---
     private abstract class OptionSetting
@@ -486,6 +548,54 @@ public class OptionsMenu : Singleton<OptionsMenu>
         public override bool Changed()
         {
             return !Mathf.Approximately(CurrentValue, SavedValue);
+        }
+    }
+    private class IntSetting : OptionSetting
+    {
+        private readonly System.Action<int> changeSettingFunction;
+        public readonly int DefaultValue;
+        public int CurrentValue;
+        public int SavedValue;
+        public IntSetting(string key, int defaultValue, System.Action<int> changeSettingFunction) : base(key)
+        {
+            DefaultValue = defaultValue;
+            this.changeSettingFunction = changeSettingFunction;
+            if (PlayerPrefs.HasKey(key))
+            {
+                SavedValue = PlayerPrefs.GetInt(key);
+                CurrentValue = SavedValue;
+            }
+            else
+            {
+                SavedValue = defaultValue;
+                CurrentValue = defaultValue;
+                PlayerPrefs.SetInt(key, defaultValue);
+            }
+            allSettings.Add(this);
+        }
+        public override void InvokeChangeSettingFunction()
+        {
+            changeSettingFunction?.Invoke(CurrentValue);
+        }
+        public override void ApplySavedToCurrent()
+        {
+            CurrentValue = SavedValue;
+        }
+        public override void ApplyCurrentToSaved()
+        {
+            SavedValue = CurrentValue;
+        }
+        public override void WriteToPlayerPrefs()
+        {
+            PlayerPrefs.SetInt(Key, SavedValue);
+        }
+        public override void ResetToDefault()
+        {
+            CurrentValue = DefaultValue;
+        }
+        public override bool Changed()
+        {
+            return CurrentValue != SavedValue;
         }
     }
 }

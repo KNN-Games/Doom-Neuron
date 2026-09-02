@@ -167,6 +167,26 @@ MonoBehaviour:
     m_Key: FOV
     m_Metadata:
       m_Items: []
+  - m_Id: 21111398864314368
+    m_Key: FULL SCREEN 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111452744343552
+    m_Key: MAX WINDOW 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111493747859456
+    m_Key: WINDOW 3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118096224083968
+    m_Key: RESOLUTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118853346287616
+    m_Key: SCREEN MODE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

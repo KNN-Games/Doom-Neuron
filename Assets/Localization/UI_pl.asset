@@ -170,6 +170,26 @@ MonoBehaviour:
     m_Localized: Pole widzenia
     m_Metadata:
       m_Items: []
+  - m_Id: 21111452744343552
+    m_Localized: "Okno bez kraw\u0119dzi"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111398864314368
+    m_Localized: "Pe\u0142en ekran"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111493747859456
+    m_Localized: Okno
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118096224083968
+    m_Localized: "Rozdzielczo\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118853346287616
+    m_Localized: Tryb ekranu
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
