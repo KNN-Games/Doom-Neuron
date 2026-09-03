@@ -187,6 +187,14 @@ MonoBehaviour:
     m_Key: SCREEN MODE
     m_Metadata:
       m_Items: []
+  - m_Id: 21363606579109888
+    m_Key: GRAPHICS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21387578041491456
+    m_Key: RENDER SCALE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

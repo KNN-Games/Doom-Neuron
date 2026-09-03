@@ -6,6 +6,8 @@ using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
+using System.Collections;
 
 /// <summary>
 /// Handles the options menu, including audio, controls, and general settings.
@@ -30,18 +32,22 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [Header("Input action References")]
     [SerializeField] private InputActionReference jumpAction;
     [SerializeField] private InputActionReference interactAction;
+    [Header("URP asset reference")]
+    [SerializeField] private UniversalRenderPipelineAsset urpAsset;
     [Header("Main UI References")]
     [SerializeField] private GameObject optionsMenuCanvas;
     [SerializeField] private GameObject generalSettingsPanel;
+    [SerializeField] private GameObject graphicsSettingsPanel;
     [SerializeField] private GameObject audioSettingsPanel;
     [SerializeField] private GameObject controlsSettingsPanel;
     [SerializeField] private GameObject saveChangesPrompt;
     [SerializeField] private Button saveChangesConfirmButton;
     [SerializeField] private Button generalSettingsButton;
-    [Header("General UI References")]
+    [Header("Graphics UI References")]
     [SerializeField] private SettingSlider fovSlider;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
     [SerializeField] private TMP_Dropdown windowModeDropdown;
+    [SerializeField] private SettingSlider renderScaleSlider;
     [Header("Audio UI References")]
     [SerializeField] private SettingSlider masterVolumeSlider;
     [SerializeField] private SettingSlider musicVolumeSlider;
@@ -53,7 +59,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private Button interactButton;
     private TextMeshProUGUI jumpButtonText;
     private TextMeshProUGUI interactButtonText;
-    private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by GetAvailableResolutions()
+    private Coroutine renderScaleCoroutine;
+    private static readonly WaitForSecondsRealtime _waitForSeconds0_5 = new(0.5f);
+    private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by UpdateAvailableResolutions()
     private static readonly List<OptionSetting> allSettings = new(); // All settings
     // Audio settings
     private FloatSetting masterVolume;
@@ -61,9 +69,11 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private FloatSetting sfxVolume;
     // General settings
     private StringSetting language;
+    // Graphics settings
     private FloatSetting fov;
     private IntSetting resolution;
     private IntSetting windowMode; // 0 = FullScreenWindow, 1 = MaximizedWindow, 2 = Windowed
+    private FloatSetting renderScale;
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
     private StringSetting jumpKeyboard;
@@ -77,11 +87,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private void Start()
     {
         // Get the list of available resolutions
-        GetAvailableResolutions();
+        UpdateAvailableResolutions();
         // Create all settings objects
         fov = new FloatSetting("fov", 90f, SetFOV);
         resolution = new IntSetting("resolution", GetCurrentIndex(), SetResolution);
         windowMode = new IntSetting("windowMode", (int)FullScreenMode.FullScreenWindow, SetWindowMode);
+        renderScale = new FloatSetting("renderScale", 100f, SetRenderScale);
         masterVolume = new FloatSetting("masterVolume", 100f, SetMasterVolume);
         musicVolume = new FloatSetting("musicVolume", 100f, SetMusicVolume);
         sfxVolume = new FloatSetting("sfxVolume", 100f, SetSFXVolume);
@@ -135,7 +146,35 @@ public class OptionsMenu : Singleton<OptionsMenu>
         Screen.fullScreenMode = (FullScreenMode)(index + 1);
         windowModeDropdown.SetValueWithoutNotify(index);
     }
-    public void SetLanguage(string languageCode)
+    public void SetRenderScale(float percent) // Parameter: 10-200 -> 0.1-2.0
+    {
+        // To prevent the render scale from being set too often, we use a coroutine to delay the actual setting of the render scale. 
+        // This is because changing the render scale can be expensive and we don't want to do it on every slider change.
+        renderScale.CurrentValue = percent;
+        renderScaleSlider.UpdateSlider(percent, percent + "%", percent != renderScale.DefaultValue);
+        if (renderScaleCoroutine != null)
+        {
+            StopCoroutine(renderScaleCoroutine);
+        }
+        renderScaleCoroutine = StartCoroutine(SetRenderScaleCoroutine(percent));
+    }
+    private IEnumerator SetRenderScaleCoroutine(float percent)
+    {
+        yield return _waitForSeconds0_5;
+        SetRenderScaleImmediate(percent);
+    }
+    private void SetRenderScaleImmediate(float percent)
+    {
+        if (urpAsset != null)
+        {
+            urpAsset.renderScale = percent / 100f;
+        }
+        else
+        {
+            Debug.LogError("URP Asset is not assigned in OptionsMenu.");
+        }
+    }
+    public void SetLanguage(string languageCode) // Parameter: language code - "pl" or "en"
     {
         language.CurrentValue = languageCode;
         foreach (var locale in LocalizationSettings.AvailableLocales.Locales)
@@ -148,8 +187,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
         }
         Debug.LogError("Language not found");
     }
-    public void SetFOV(float newFov) // The slider makes it so it is always a whole number, but internally it is still a float
+    public void SetFOV(float newFov) // Parameter: 30-120
     {
+        // The slider makes it so it is always a whole number, but internally it is still a float
         fov.CurrentValue = newFov;
         GameManager.Instance.fov = newFov;
         if (PlayerController.Instance != null) // I do not use Camera.main because what if we add cutscenes and player modifies FOV mid one?
@@ -203,7 +243,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         optionsMenuCanvas.SetActive(true);
         generalSettingsButton.Select();
         //generalSettingsButton.Select(); // Select general settings button by default for non-mouse navigation
-        OpenGeneralSettings();
+        OpenSettingsPanel(generalSettingsPanel);
 
         // Reset preview state to the last persisted values whenever the menu opens.
         ApplySavedValues();
@@ -218,24 +258,23 @@ public class OptionsMenu : Singleton<OptionsMenu>
         }
         ExitSettings();
     }
-    public void OpenGeneralSettings()
+    public void OpenSettingsPanel(GameObject panelToOpen)
     {
-        generalSettingsPanel.SetActive(true);
-        audioSettingsPanel.SetActive(false);
-        controlsSettingsPanel.SetActive(false);
-        GetAvailableResolutions();
+        generalSettingsPanel.SetActive(panelToOpen == generalSettingsPanel);
+        graphicsSettingsPanel.SetActive(panelToOpen == graphicsSettingsPanel);
+        if (panelToOpen == graphicsSettingsPanel)
+        {
+            UpdateAvailableResolutions();
+        }
+        audioSettingsPanel.SetActive(panelToOpen == audioSettingsPanel);
+        controlsSettingsPanel.SetActive(panelToOpen == controlsSettingsPanel);
+        if (panelToOpen == controlsSettingsPanel)
+        {
+            UpdateKeyRebindButtons();
+        }
     }
-    public void OpenAudioSettings()
+    private void UpdateKeyRebindButtons()
     {
-        generalSettingsPanel.SetActive(false);
-        audioSettingsPanel.SetActive(true);
-        controlsSettingsPanel.SetActive(false);
-    }
-    public void OpenControlsSettings()
-    {
-        generalSettingsPanel.SetActive(false);
-        audioSettingsPanel.SetActive(false);
-        controlsSettingsPanel.SetActive(true);
         // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
         jumpButton.onClick.RemoveAllListeners();
         interactButton.onClick.RemoveAllListeners();
@@ -315,6 +354,12 @@ public class OptionsMenu : Singleton<OptionsMenu>
     }
     public void SaveChanges() // Used then player confirms changes in prompt OR when player hits save button in options menu
     {
+        // Stop all coroutines that are waiting to a setting, because we want to save the current value immediately.
+        if (renderScaleCoroutine != null)
+        {
+            StopCoroutine(renderScaleCoroutine);
+            SetRenderScaleImmediate(renderScale.CurrentValue);
+        }
         foreach (var setting in allSettings)
         {
             setting.ApplyCurrentToSaved();
@@ -392,7 +437,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
             })
             .Start();
     }
-    private void GetAvailableResolutions() // Update the availableResolutions list (with available resolutions) and the resolution dropdown options
+    private void UpdateAvailableResolutions() // Update the availableResolutions list (with available resolutions) and the resolution dropdown options
     {
         var seen = new HashSet<(int, int)>(); // To keep track of unique width/height pairs
         availableResolutions = new List<Resolution>();
@@ -416,7 +461,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
                 resolutionDropdown.SetValueWithoutNotify(i);
                 break;
             }
-        }        
+        }
     }
     private int GetCurrentIndex()
     {

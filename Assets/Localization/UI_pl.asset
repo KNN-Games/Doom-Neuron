@@ -190,6 +190,14 @@ MonoBehaviour:
     m_Localized: Tryb ekranu
     m_Metadata:
       m_Items: []
+  - m_Id: 21363606579109888
+    m_Localized: Grafika
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21387578041491456
+    m_Localized: Skala renderowania
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

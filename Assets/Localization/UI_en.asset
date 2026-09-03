@@ -192,6 +192,14 @@ MonoBehaviour:
     m_Localized: Screen mode
     m_Metadata:
       m_Items: []
+  - m_Id: 21363606579109888
+    m_Localized: Graphics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21387578041491456
+    m_Localized: Render scale
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

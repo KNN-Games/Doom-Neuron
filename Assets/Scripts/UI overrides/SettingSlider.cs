@@ -8,8 +8,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Slider))]
 public class SettingSlider : MonoBehaviour
 {
-    public Slider slider; // Used by OptionsMenu.cs
     [SerializeField] private string settingName;
+    [SerializeField] private Slider slider;
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private GameObject resetButton;
     public void ResetSetting()
