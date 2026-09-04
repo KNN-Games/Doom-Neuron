@@ -61,7 +61,7 @@ public class SaveManager : Singleton<SaveManager>
             Debug.LogError("SAVE FAILURE. INVALID SLOT: " + slot);
             return;
         }
-        Difficulty diff = GameManager.Instance.difficulty;
+        Difficulty diff = GameManager.Instance.Difficulty;
         if (diff < Difficulty.Easy || diff > Difficulty.Hard)
         {
             Debug.LogError("SAVE FAILURE. INVALID DIFFICULTY: " + diff);
@@ -142,13 +142,20 @@ public class SaveManager : Singleton<SaveManager>
         controller.enabled = true;
         // Set the variables for game manager
         GameManager.Instance.playTime = data.playTime;
-        GameManager.Instance.difficulty = data.difficulty;
+        GameManager.Instance.SetDifficulty(data.difficulty);
         saveSlot = data.saveSlot;
-
-        // DEBUG: print all save data info
-        data.PrintSaveInfo();
     }
     //------
+    public void PrintCurrentSaveInfo()
+    {
+        SaveData data = Load(saveSlot);
+        if (data == null)
+        {
+            Debug.LogWarning($"No save data found in slot {saveSlot}");
+            return;
+        }
+        data.PrintSaveInfo();
+    }
     public void DeleteSave(int slot) // Used in main menu slot selection screen via mainMenu.cs
     {
         string path = Path.Combine(SaveFolder, $"save_{slot}.json");

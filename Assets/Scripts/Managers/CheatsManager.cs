@@ -29,6 +29,7 @@ public class CheatsManager : Singleton<CheatsManager>
             {"divine", ToggleInvulnerability},
             {"suicide", Die},
             {"die", Die},
+            {"settinginfo", PrintSettingInfo},
             {"saveinfo", PrintSaveInfo},
             {"whole", Resurrect},
             {"difficulty", SetDifficulty},
@@ -159,9 +160,19 @@ public class CheatsManager : Singleton<CheatsManager>
             Write("You are mortal once more");
         }
     }
-    private void PrintSaveInfo(string[] args)
+    private void PrintSettingInfo(string[] args)
     {
         OptionsMenu.Instance.PrintAllSettingValues();
+        Write("Look in the console to see the values");
+    }
+    private void PrintSaveInfo(string[] args)
+    {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot print save info if you don't exist");
+            return;
+        }
+        SaveManager.Instance.PrintCurrentSaveInfo();
         Write("Look in the console to see the values");
     }
     private void SetDifficulty(string[] args) // Sets the difficulty. Usage: difficulty <level>
@@ -173,7 +184,7 @@ public class CheatsManager : Singleton<CheatsManager>
             return;
         }
 
-        GameManager.Instance.difficulty = (Difficulty)level;
-        Write($"Difficulty set to {GameManager.Instance.difficulty}");
+        GameManager.Instance.SetDifficulty(level);
+        Write($"Difficulty set to {GameManager.Instance.Difficulty}");
     }
 }

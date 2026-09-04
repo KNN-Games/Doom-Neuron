@@ -17,7 +17,7 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject[] saveSlots;
     [SerializeField] private SplashScreen splashScreen;
     [SerializeField] private Button[] mainMenuButtons;
-    [SerializeField] private Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
+    [SerializeField] private Button[] difficultyButtons; // 0 - easy button, 1 - medium button, 2 - hard button
     [Header("Settings")]
     [SerializeField] private float fadeInDuration;
     [HideInInspector] public bool isInSplashScreen;
@@ -109,7 +109,7 @@ public class MainMenu : Singleton<MainMenu>
         {
             difficultyButtons[i].image.color = (i + 1 == difficulty) ? Color.red : Color.white;
         }
-        GameManager.Instance.difficulty = (Difficulty)difficulty;
+        GameManager.Instance.SetDifficulty(difficulty);
     }
     //---HELPER METHODS---
     public void EndSplashScreen() // Used by SplashScreen.cs

@@ -7183,7 +7183,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   playTime: 0
   lastSaved: 0
-  difficulty: 2
   fov: 0
 --- !u!1 &6233152055649423368
 GameObject:

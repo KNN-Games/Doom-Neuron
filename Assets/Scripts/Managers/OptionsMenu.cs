@@ -23,7 +23,7 @@ using System.Collections;
 /// 1. private FloatSetting/StringSetting
 /// 2. references to the UI elements that will control the setting (slider, button, etc.). This is not always nessesary.
 /// 3. A function to set the new setting. Connect that function to the button you want in setting menu in Unity Editor.
-/// 4. modify Start() with: settingName = new FloatSetting/StringSetting("settingName", defaultValue, FunctionThatChangesThisSetting)
+/// 4. modify Start() with: settingName = new FloatSetting/StringSetting/IntSetting("settingName", defaultValue, FunctionThatChangesThisSetting)
 /// </remarks>
 public class OptionsMenu : Singleton<OptionsMenu>
 {
@@ -63,6 +63,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private static readonly WaitForSecondsRealtime _waitForSeconds0_5 = new(0.5f);
     private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by UpdateAvailableResolutions()
     private static readonly List<OptionSetting> allSettings = new(); // All settings
+    private PlayerInput playerInput;
     // Audio settings
     private FloatSetting masterVolume;
     private FloatSetting musicVolume;
@@ -81,8 +82,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
     // Gamepad Controls settings
     private StringSetting jumpGamepad;
     private StringSetting interactGamepad;
-    // Other
-    private PlayerInput playerInput;
 
     private void Start()
     {
@@ -123,10 +122,22 @@ public class OptionsMenu : Singleton<OptionsMenu>
         ApplySavedValues();
         PlayerPrefs.Save();
         playerInput = InputManager.Instance.playerInput;
-
-        PrintAllSettingValues();
     }
     //---GENERAL SETTINGS---
+    public void SetLanguage(string languageCode) // Parameter: language code - "pl" or "en"
+    {
+        language.CurrentValue = languageCode;
+        foreach (var locale in LocalizationSettings.AvailableLocales.Locales)
+        {
+            if (locale.Identifier.Code == languageCode)
+            {
+                LocalizationSettings.SelectedLocale = locale;
+                return;
+            }
+        }
+        Debug.LogError("Language not found");
+    }
+    //---GRAPHICS SETTINGS---
     public void SetResolution(int index) // Parameter: index of the Resolution in availableResolutions list
     {
         if (index < 0 || index >= availableResolutions.Count)
@@ -161,9 +172,9 @@ public class OptionsMenu : Singleton<OptionsMenu>
     private IEnumerator SetRenderScaleCoroutine(float percent)
     {
         yield return _waitForSeconds0_5;
-        SetRenderScaleImmediate(percent);
+        ApplyRenderScale(percent);
     }
-    private void SetRenderScaleImmediate(float percent)
+    private void ApplyRenderScale(float percent)
     {
         if (urpAsset != null)
         {
@@ -173,19 +184,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
         {
             Debug.LogError("URP Asset is not assigned in OptionsMenu.");
         }
-    }
-    public void SetLanguage(string languageCode) // Parameter: language code - "pl" or "en"
-    {
-        language.CurrentValue = languageCode;
-        foreach (var locale in LocalizationSettings.AvailableLocales.Locales)
-        {
-            if (locale.Identifier.Code == languageCode)
-            {
-                LocalizationSettings.SelectedLocale = locale;
-                return;
-            }
-        }
-        Debug.LogError("Language not found");
     }
     public void SetFOV(float newFov) // Parameter: 30-120
     {
@@ -358,7 +356,7 @@ public class OptionsMenu : Singleton<OptionsMenu>
         if (renderScaleCoroutine != null)
         {
             StopCoroutine(renderScaleCoroutine);
-            SetRenderScaleImmediate(renderScale.CurrentValue);
+            ApplyRenderScale(renderScale.CurrentValue);
         }
         foreach (var setting in allSettings)
         {
@@ -482,7 +480,8 @@ public class OptionsMenu : Singleton<OptionsMenu>
         $"interactGamepad: {interactGamepad.SavedValue}\n" +
         $"FOV: {fov.SavedValue}\n" +
         $"Resolution: {resolution.SavedValue}\n" +
-        $"Window Mode: {windowMode.SavedValue}\n");
+        $"Window Mode: {windowMode.SavedValue}\n" +
+        $"Render Scale: {renderScale.SavedValue}");
     }
     //--- SETTING CLASSES ---
     private abstract class OptionSetting

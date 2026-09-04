@@ -22,7 +22,7 @@ public class SaveData
     public void CollectData()
     {
         saveSlot = SaveManager.Instance.saveSlot;
-        difficulty = GameManager.Instance.difficulty;
+        difficulty = GameManager.Instance.Difficulty;
         playTime = GameManager.Instance.playTime;
         lastPlayed = DateTime.Now.Ticks;
         if(SceneManager.GetActiveScene().name == "MainMenu") // Are you starting a new game?
