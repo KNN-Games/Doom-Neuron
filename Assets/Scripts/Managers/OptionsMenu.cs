@@ -98,23 +98,10 @@ public class OptionsMenu : Singleton<OptionsMenu>
         language = new StringSetting("language", "en", SetLanguage);
         mouseSensitivity = new FloatSetting("mouseSensitivity", 10f, SetMouseSensitivity);
         // Control settings
-        // FindBindings returns int index from that array that holds binding with "<device>". Look in INTERNAL METHODS (line ~330) for how it works exactly.
-        jumpKeyboard = new StringSetting(
-            "jumpKey",
-            jumpAction.action.bindings[FindBinding(jumpAction.action, "<Keyboard>")].path,
-            value => jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Keyboard>"), value));
-        interactKeyboard = new StringSetting(
-            "interactKey",
-            interactAction.action.bindings[FindBinding(interactAction.action, "<Keyboard>")].path,
-            value => interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Keyboard>"), value));
-        jumpGamepad = new StringSetting(
-            "jumpGamepad",
-            jumpAction.action.bindings[FindBinding(jumpAction.action, "<Gamepad>")].path,
-            value => jumpAction.action.ApplyBindingOverride(FindBinding(jumpAction.action, "<Gamepad>"), value));
-        interactGamepad = new StringSetting(
-            "interactGamepad",
-            interactAction.action.bindings[FindBinding(interactAction.action, "<Gamepad>")].path,
-            value => interactAction.action.ApplyBindingOverride(FindBinding(interactAction.action, "<Gamepad>"), value));
+        jumpKeyboard = CreateBindingSetting(jumpAction.action, "<Keyboard>", "jumpKey");
+        interactKeyboard = CreateBindingSetting(interactAction.action, "<Keyboard>", "interactKey");
+        jumpGamepad = CreateBindingSetting(jumpAction.action, "<Gamepad>", "jumpGamepad");
+        interactGamepad = CreateBindingSetting(interactAction.action, "<Gamepad>", "interactGamepad");
 
         jumpButtonText = jumpButton.GetComponentInChildren<TextMeshProUGUI>();
         interactButtonText = interactButton.GetComponentInChildren<TextMeshProUGUI>();
@@ -271,31 +258,6 @@ public class OptionsMenu : Singleton<OptionsMenu>
             UpdateKeyRebindButtons();
         }
     }
-    private void UpdateKeyRebindButtons()
-    {
-        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
-        jumpButton.onClick.RemoveAllListeners();
-        interactButton.onClick.RemoveAllListeners();
-
-        Debug.Log(playerInput.currentControlScheme);
-        if (playerInput.currentControlScheme == "Gamepad")
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(false));
-            interactButton.onClick.AddListener(() => RebindInteract(false));
-            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
-        }
-        else
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(true));
-            interactButton.onClick.AddListener(() => RebindInteract(true));
-            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
-        }
-        deviceDetectedLocalizedText.RefreshString();
-    }
     public void ResetSettings() // Reset all settings
     {
         foreach (var setting in allSettings)
@@ -389,7 +351,14 @@ public class OptionsMenu : Singleton<OptionsMenu>
         Debug.LogError("Input action path not found!");
         return -1;
     }
-    // ADD: function to update all rebind button values
+    private StringSetting CreateBindingSetting(InputAction action, string device, string key)
+    {
+        int bindingIndex = FindBinding(action, device);
+        return new StringSetting(
+            key,
+            action.bindings[bindingIndex].path,
+            value => action.ApplyBindingOverride(bindingIndex, value));
+    }
     private string GetBindingDisplayName(string bindingPath)
     {
         return bindingPath.Replace("<Keyboard>/", string.Empty).Replace("<Gamepad>/", string.Empty).ToUpper();
@@ -434,6 +403,31 @@ public class OptionsMenu : Singleton<OptionsMenu>
                 Debug.Log("Rebinding cancelled.");
             })
             .Start();
+    }
+    private void UpdateKeyRebindButtons()
+    {
+        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
+        jumpButton.onClick.RemoveAllListeners();
+        interactButton.onClick.RemoveAllListeners();
+
+        Debug.Log(playerInput.currentControlScheme);
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
+            jumpButton.onClick.AddListener(() => RebindJump(false));
+            interactButton.onClick.AddListener(() => RebindInteract(false));
+            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
+            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
+        }
+        else
+        {
+            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
+            jumpButton.onClick.AddListener(() => RebindJump(true));
+            interactButton.onClick.AddListener(() => RebindInteract(true));
+            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
+            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
+        }
+        deviceDetectedLocalizedText.RefreshString();
     }
     private void UpdateAvailableResolutions() // Update the availableResolutions list (with available resolutions) and the resolution dropdown options
     {
