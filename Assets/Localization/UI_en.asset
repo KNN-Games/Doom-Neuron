@@ -148,6 +148,58 @@ MonoBehaviour:
     m_Localized: ago
     m_Metadata:
       m_Items: []
+  - m_Id: 8437757961887744
+    m_Localized: Interact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9099232753803264
+    m_Localized: You died
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11632702227013632
+    m_Localized: Mouse sensitivity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11985062585491456
+    m_Localized: Keybinds configuration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11985244576342016
+    m_Localized: Gamepad configuration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17849338311270400
+    m_Localized: Field of view
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111398864314368
+    m_Localized: Full screen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111452744343552
+    m_Localized: Maximized window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111493747859456
+    m_Localized: Window
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118096224083968
+    m_Localized: Screen resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118853346287616
+    m_Localized: Screen mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21363606579109888
+    m_Localized: Graphics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21387578041491456
+    m_Localized: Render scale
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

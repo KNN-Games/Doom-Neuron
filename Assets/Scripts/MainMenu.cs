@@ -1,57 +1,71 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
+/// <summary>
+/// Handles the main menu, including save slot selection and new game configuration.
+/// </summary>
+public class MainMenu : Singleton<MainMenu>
 {
-    //MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> (if new game)INTRO -> GAME
-    //loading game is in "SaveManager.cs"
-    //opening settings is in "OptionsMenu.cs"
-    public static MainMenu Instance;
-    public GameObject mainMenuPanel;
-    public GameObject creditsPanel;
-    public GameObject saveSlotPanel;
-    public GameObject newGameConfigPanel;
-    public Button[] difficultyButtons; // 0 - easy, 1 - medium, 2 - hard
-    public GameObject[] saveSlots;
-    private int selectedSlot = -1; // Track the selected save slot, -1 means none
-    private int selectedDifficulty = 2; // Track the selected difficulty level, 2 (medium) is default
+    // MAIN MENU -> SLOT SELECTION -> GAME CONGIFURATION -> (if new game)INTRO -> GAME
+    [Header("References")]
+    [SerializeField] private GameObject gameManagerPrefab;
+    [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private GameObject creditsPanel;
+    [SerializeField] private GameObject saveSlotPanel;
+    [SerializeField] private GameObject newGameConfigPanel;
+    [SerializeField] private GameObject[] saveSlots;
+    [SerializeField] private SplashScreen splashScreen;
+    [SerializeField] private Button[] mainMenuButtons;
+    [SerializeField] private Button[] difficultyButtons; // 0 - easy button, 1 - medium button, 2 - hard button
+    [Header("Settings")]
+    [SerializeField] private float fadeInDuration;
+    [HideInInspector] public bool isInSplashScreen;
+    private SaveManager saveManager;
 
-    void Awake()
+    protected override void Awake()
     {
-        if (Instance == null)
+        base.Awake();
+        // Ensure the GameManager exists in the scene
+        if (GameManager.Instance == null)
         {
-            Instance = this;
+            GameObject gameManager = Instantiate(gameManagerPrefab);
+            gameManager.name = "GameManager"; // Rename the instantiated GameManager for clarity
         }
-        else
+        // Destroy player if it exists, because the player is not supposed to exist in the main menu
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
         {
-            Debug.LogWarning("Multiple instances of MainMenu detected. Destroying duplicate.");
-            Destroy(gameObject);
+            Destroy(player);
         }
     }
-    public void StartGame() //open slot selection menu
+    private void Start() // Technically more efficent than calling instance every time
     {
-        //if 0 save files exist start new game immediately for dramatic effect.
+        saveManager = SaveManager.Instance;
+    }
+    //---MAIN SCREEN---
+    public void OpenSlotSelection()
+    {
+        // If 0 save files exist start new game immediately for dramatic effect.
         if (SaveManager.Instance.GetSaveCount() == 0)
         {
-            OpenNewGameConfiguration(0);
+            SaveManager.Instance.saveSlot = 0;
+            OpenNewGameConfiguration();
         }
         else
         {
+            saveSlots[0].GetComponent<Button>().Select(); // Select first slot by default for non-mouse navigation
             saveSlotPanel.SetActive(true);
             mainMenuPanel.SetActive(false);
             UpdateSaveSlotUI();
         }
     }
-    public void UpdateSaveSlotUI() //update every slot
+    public void OpenSettings()
     {
-        for (int i = 0; i <= 5; i++)
-        {
-            SaveData data = SaveManager.Instance.Load(i);
-            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
-        }
+        mainMenuPanel.SetActive(false);
+        OptionsMenu.Instance.OpenOptionsMenu();
     }
-    public void StartCreditsSequence()
+    public void StartCreditsSequence() //Tutaj, Maciej Fedorowicz. W tym miejscu dodaj kod do rozpoczęcia sekwencji napisów końcowych.
     {
         // Start the credits sequence
         creditsPanel.SetActive(true);
@@ -59,58 +73,109 @@ public class MainMenu : MonoBehaviour
 
 
     }
-    public void ExitGame() // Exit the game
+    public void ExitGame()
     {
         Debug.Log("This would exit the game");
         Application.Quit();
     }
-    public void ReturnToMainMenu() //move 1 step backwards
+    //---SLOT SELECT SCREEN---
+    public void LoadGame(int slot)
     {
-        if(newGameConfigPanel.activeSelf)
+        SaveData data = saveManager.Load(slot);
+        saveManager.saveSlot = slot; // VERY IMPORTANT! This is the only place where saveSlot is set
+        if (data == null)
         {
-            //move back to slots
-            newGameConfigPanel.SetActive(false);
-            StartGame();
-        } else //assume saveSlotPanel is active
-        {
-            mainMenuPanel.SetActive(true);
-            saveSlotPanel.SetActive(false);
+            OpenNewGameConfiguration();
+            return;
         }
+        saveManager.LoadGame(data);
     }
-    //--- New Game configuration functions ---
-    public void OpenNewGameConfiguration(int slot)
+    public void DeleteSave(int slot)
     {
-        selectedSlot = slot;
-        mainMenuPanel.SetActive(false);
-        saveSlotPanel.SetActive(false);
-        newGameConfigPanel.SetActive(true);
-        difficultyButtons[1].image.color = Color.red; //highlight medium difficulty button, because it's the default difficulty
-        selectedDifficulty = 2;
+        saveManager.DeleteSave(slot);
+        UpdateSaveSlotUI();
     }
-    public void ConfirmGame() //play intro (not implemented yet)
+    //---NEW GAME CONFIG SCREEN---
+    public void ConfirmGame() // Start new game
     {
-        // Reset game data
         GameManager.Instance.playTime = 0f;
-        GameManager.Instance.difficulty = selectedDifficulty;
-
-        // Initialize new game data
-        SaveManager.Instance.Save(selectedSlot);
-        SceneManager.LoadScene("TestArena");
+        SaveData newGameData = new();
+        newGameData.CollectData();
+        saveManager.LoadGame(newGameData);
     }
     public void SetNewGameDifficulty(int difficulty)
     {
         for (int i = 0; i < difficultyButtons.Length; i++)
         {
-            if (i + 1 == difficulty)
-            {
-                difficultyButtons[i].image.color = Color.red;
-            }
-            else
-            {
-                difficultyButtons[i].image.color = Color.white;
-            }
+            difficultyButtons[i].image.color = (i + 1 == difficulty) ? Color.red : Color.white;
         }
-        selectedDifficulty = difficulty;
-        GameManager.Instance.difficulty = difficulty;
+        GameManager.Instance.SetDifficulty(difficulty);
+    }
+    //---HELPER METHODS---
+    public void EndSplashScreen() // Used by SplashScreen.cs
+    {
+        if (!isInSplashScreen) return;
+        isInSplashScreen = false;
+        splashScreen.gameObject.SetActive(false);
+        StartCoroutine(FadeInMainMenu(fadeInDuration));
+    }
+    private void OpenMainMenu()
+    {
+        mainMenuPanel.SetActive(true);
+        saveSlotPanel.SetActive(false);
+        //Select "Start" button by default for non-mouse navigation
+        mainMenuButtons[0].Select();
+    }
+    private IEnumerator FadeInMainMenu(float duration)
+    {
+        //Activate
+        mainMenuPanel.SetActive(true);
+        foreach (Button button in mainMenuButtons)
+        {
+            button.interactable = false;
+        }
+        CanvasGroup canvasGroup = mainMenuPanel.GetComponent<CanvasGroup>();
+        float time = 0f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, time / duration);
+            yield return null;
+        }
+        canvasGroup.alpha = 1f;
+        foreach (Button button in mainMenuButtons)
+        {
+            button.interactable = true;
+        }
+    }
+    public void ReturnToMainMenu() // Used by buttons. Move 1 step backward.
+    {
+        if (newGameConfigPanel.activeSelf)
+        {
+            // Move back to slots
+            newGameConfigPanel.SetActive(false);
+            OpenSlotSelection();
+        }
+        else // Assume saveSlotPanel is active or going to from options menu - ExitSettings() in OptionsMenu.cs
+        {
+            OpenMainMenu();
+        }
+    }
+    private void OpenNewGameConfiguration() // No button does this directly, only based on context.
+    {
+        mainMenuPanel.SetActive(false);
+        saveSlotPanel.SetActive(false);
+        newGameConfigPanel.SetActive(true);
+        // Select medium difficulty by default
+        difficultyButtons[1].Select();
+        SetNewGameDifficulty(2);
+    }
+    private void UpdateSaveSlotUI() // Update every slot
+    {
+        for (int i = 0; i <= 5; i++)
+        {
+            SaveData data = saveManager.Load(i);
+            saveSlots[i].GetComponent<SlotTextHandler>().UpdateSlot(data);
+        }
     }
 }

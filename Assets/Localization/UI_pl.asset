@@ -146,6 +146,58 @@ MonoBehaviour:
     m_Localized: temu
     m_Metadata:
       m_Items: []
+  - m_Id: 8437757961887744
+    m_Localized: Interakcja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9099232753803264
+    m_Localized: "Jeste\u015B trupem"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11632702227013632
+    m_Localized: "Czu\u0142o\u015B\u0107 myszki"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11985062585491456
+    m_Localized: "Konfiguracja przycisk\xF3w"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11985244576342016
+    m_Localized: Konfiguracja pada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17849338311270400
+    m_Localized: Pole widzenia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111452744343552
+    m_Localized: "Okno bez kraw\u0119dzi"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111398864314368
+    m_Localized: "Pe\u0142en ekran"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21111493747859456
+    m_Localized: Okno
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118096224083968
+    m_Localized: "Rozdzielczo\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21118853346287616
+    m_Localized: Tryb ekranu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21363606579109888
+    m_Localized: Grafika
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21387578041491456
+    m_Localized: Skala renderowania
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

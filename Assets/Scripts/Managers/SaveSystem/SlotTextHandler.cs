@@ -3,22 +3,28 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Localization.Components;
 
+/// <summary>
+/// Use this to update the values in SelectFile prefab
+/// </summary>
 public class SlotTextHandler : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private GameObject noSaveText;
     [SerializeField] private GameObject yesSaveText;
     [SerializeField] private LocalizeStringEvent difficultyText;
     [SerializeField] private TMP_Text playTimeText;
     [SerializeField] private TMP_Text lastPlayedText;
+    
     public void UpdateSlot(SaveData data)
     {
-        //if no file found
+        // If no file found
         if (data == null)
         {
             yesSaveText.SetActive(false);
             noSaveText.SetActive(true);
             return;
         }
+
         yesSaveText.SetActive(true);
         noSaveText.SetActive(false);
 
@@ -26,9 +32,9 @@ public class SlotTextHandler : MonoBehaviour
         difficultyText.StringReference.TableReference = "UI";
         string key = data.difficulty switch
         {
-            1 => "EASY DIFFICULTY",
-            2 => "MEDIUM DIFFICULTY",
-            3 => "HARD DIFFICULTY",
+            Difficulty.Easy => "EASY DIFFICULTY",
+            Difficulty.Medium => "MEDIUM DIFFICULTY",
+            Difficulty.Hard => "HARD DIFFICULTY",
             _ => null
         };
         if (key != null)
@@ -41,11 +47,11 @@ public class SlotTextHandler : MonoBehaviour
             Debug.LogWarning($"Unknown difficulty level {data.difficulty} in save slot.");
         }
 
-        //Update time played text
+        // Update time played text
         playTimeText.text = Format(data.playTime);
 
-        //Update last played text
-        DateTime lastPlayed = new(data.lastPlayed); //conversion: long -> DateTime
+        // Update last played text
+        DateTime lastPlayed = new(data.lastPlayed); // Conversion: long -> DateTime
         lastPlayedText.text = lastPlayed.ToShortDateString();
     }
     private static string Format(float seconds)

@@ -1,0 +1,175 @@
+using System.IO;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+/// <summary>
+/// Handles saving, loading and deleting save files.
+/// Auto-saves on every viable scene change.
+/// Individual saves are divided to slots, each slot corresponds to a save file.
+/// There are 6 slots: 0,1,2,3,4,5
+/// </summary>
+public class SaveManager : Singleton<SaveManager>
+{
+    public int saveSlot; // As in: current save slot, 100 means no save slot selected
+    [SerializeField] private GameObject playerPrefab;
+    private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
+    private SaveData pendingLoadData;
+
+    //---SAVE GAME ON EVERY SCENE CHANGE---
+    protected override void Awake()
+    {
+        base.Awake();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded; // Technically unnessary, but it is "good practice"
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Load the game state
+        if (scene.name == "MainMenu") return;
+        if (pendingLoadData != null)
+        {
+            ApplyLoadedGame(pendingLoadData);
+            pendingLoadData = null;
+        }
+        Save();
+    }
+    //------
+    private void Start()
+    {
+        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
+        Directory.CreateDirectory(SaveFolder);
+    }
+    //---SAVING---
+    public void Save()
+    {
+        Save(saveSlot);
+    }
+    public void Save(int slot) // Over-writes the save slot with new save
+    {
+        // Check if data is viable
+        if (slot == 100) return; // 100 means no save slot selected (so you skipped main menu), so don't save
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            Debug.LogError("SAVE FAILURE. CANNOT SAVE IN MAIN MENU");
+            return;
+        }
+        if (slot < 0 || slot > 5)
+        {
+            Debug.LogError("SAVE FAILURE. INVALID SLOT: " + slot);
+            return;
+        }
+        Difficulty diff = GameManager.Instance.Difficulty;
+        if (diff < Difficulty.Easy || diff > Difficulty.Hard)
+        {
+            Debug.LogError("SAVE FAILURE. INVALID DIFFICULTY: " + diff);
+            return;
+        }
+
+        // Create save data object
+        SaveData data = new();
+        data.CollectData();
+
+        // Save to a json file
+        string json = JsonUtility.ToJson(data, true);
+        string path = Path.Combine(SaveFolder, $"save_{slot}.json");
+        File.WriteAllText(path, json);
+
+        GameManager.Instance.lastSaved = 0;
+        Debug.Log($"Game saved to {path} in slot {slot}");
+    }
+    //---LOADING---
+    public SaveData Load(int slot) // Returns the save data from the specified slot, or null if no save data exists for that slot
+    {
+        if (slot < 0 || slot > 5)
+        {
+            Debug.LogError("LOAD FAILURE. INVALID SLOT: " + slot);
+            return null;
+        }
+        string path = Path.Combine(SaveFolder, $"save_{slot}.json");
+        if (!File.Exists(path)) return null;
+
+        try // This make it so if you mess up the JSON save file, it won't crash the game, but instead just return null and log an error
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json); // Because of this we can't use constructors :(
+
+            if (data.difficulty < Difficulty.Easy || data.difficulty > Difficulty.Hard)
+            {
+                Debug.LogError($"LOAD FAILURE. CORRUPTED DIFFICULTY IN SLOT {slot}: {data.difficulty}");
+                return null;
+            }
+
+            return data;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"LOAD FAILURE. CORRUPTED SAVE FILE IN SLOT {slot}: {e.Message}");
+            return null;
+        }
+    }
+    public void LoadGame()
+    {
+        LoadGame(Load(saveSlot));
+    }
+    public void LoadGame(SaveData data) // The pipeline is this: LoadGame() -> OnSceneLoaded() -> ApplyLoadedGame()
+    {
+        if (data == null)
+        {
+            Debug.LogError("LOAD FAILURE. SAVE DATA IS MISSING.");
+            return;
+        }
+        GameManager.Instance.lastSaved = 0;
+        pendingLoadData = data;
+        SceneManager.LoadScene(data.sceneName);
+    }
+    private void ApplyLoadedGame(SaveData data)
+    {
+        // Create player in the scene, if it doesn't already exist
+        if (PlayerController.Instance == null)
+        {
+            GameObject player = Instantiate(playerPrefab);
+            player.name = "Player"; // Set the name of the instantiated player object
+            InputManager.Instance.SetPlayer(player);
+        }
+        // Set the variables for player
+        CharacterController controller = PlayerController.Instance.GetComponent<CharacterController>();
+        controller.enabled = false;
+        PlayerController.Instance.transform.position = data.playerPosition;
+        PlayerController.Instance.SetRotation(data.playerRotation);
+        controller.enabled = true;
+        // Set the variables for game manager
+        GameManager.Instance.playTime = data.playTime;
+        GameManager.Instance.SetDifficulty(data.difficulty);
+        saveSlot = data.saveSlot;
+    }
+    //------
+    public void PrintCurrentSaveInfo()
+    {
+        SaveData data = Load(saveSlot);
+        if (data == null)
+        {
+            Debug.LogWarning($"No save data found in slot {saveSlot}");
+            return;
+        }
+        data.PrintSaveInfo();
+    }
+    public void DeleteSave(int slot) // Used in main menu slot selection screen via mainMenu.cs
+    {
+        string path = Path.Combine(SaveFolder, $"save_{slot}.json");
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+        else
+        {
+            Debug.LogWarning($"Save file not found at {path}");
+        }
+    }
+    public int GetSaveCount()
+    {
+        return Directory.GetFiles(SaveFolder, "save_*.json").Length;
+    }
+}
