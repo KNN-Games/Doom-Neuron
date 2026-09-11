@@ -11,7 +11,7 @@ public class InputManager : Singleton<InputManager>
     [HideInInspector] public PlayerInput playerInput;
     private PlayerController playerController;
     private PlayerUI playerUI;
-
+    private string lastKnownControlScheme = "none"; // Used to detect device changes
     protected override void Awake()
     {
         base.Awake();
@@ -21,10 +21,10 @@ public class InputManager : Singleton<InputManager>
     {
         SetActiveInputMap("UI");
         // Try to find player
-        if(!IsPlayerPresent)
+        if (!IsPlayerPresent)
         {
             GameObject potentialPlayer = GameObject.FindWithTag("Player");
-            if(potentialPlayer != null)
+            if (potentialPlayer != null)
             {
                 SetPlayer(potentialPlayer);
             }
@@ -44,18 +44,36 @@ public class InputManager : Singleton<InputManager>
             case "Gameplay":
                 playerInput.actions.FindActionMap("Gameplay").Enable();
                 playerInput.actions.FindActionMap("UI").Disable();
+                Debug.Log("Gameplay map enabled");
                 break;
             case "UI":
                 playerInput.actions.FindActionMap("UI").Enable();
                 playerInput.actions.FindActionMap("Gameplay").Disable();
+                Debug.Log("UI map enabled");
                 break;
             default:
                 Debug.LogError("Action map not found");
                 break;
-
         }
     }
     //---HANDLE INPUT ACTIONS---
+    // Special functions
+    public void OnDeviceLost()
+    {
+        Debug.LogWarning("Device lost");
+    }
+    public void OnDeviceRegained()
+    {
+        Debug.Log("Device regained");
+    }
+    public void OnDeviceChange()
+    {
+        if(playerInput == null) return; // Prevents errors if playerInput is null (before Awake()??? weird)
+        if (playerInput.currentControlScheme == lastKnownControlScheme) return; // Prevent spamming the log if the device is the same as last time
+
+        lastKnownControlScheme = playerInput.currentControlScheme;
+        Debug.Log($"Device change: {lastKnownControlScheme}");
+    }
     // Gameplay map - these do not check if player does not exist so that Unity throws an error if u forget to disable this map when player doesn't exist.
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -63,6 +81,7 @@ public class InputManager : Singleton<InputManager>
     }
     public void OnJump(InputAction.CallbackContext context)
     {
+        if (!context.started) return;
         playerController.Jump();
     }
     public void OnLook(InputAction.CallbackContext context)
@@ -79,12 +98,12 @@ public class InputManager : Singleton<InputManager>
     {
         if (!context.started) return;
         CheatsManager.Instance.SubmitCommand(); // If cheats menu is open: Submit command
-        if(OptionsMenu.Instance.IsOptionsMenuOpen) // If options menu is open: Save changes
+        if (OptionsMenu.Instance.IsOptionsMenuOpen) // If options menu is open: Save changes
         {
             OptionsMenu.Instance.SaveChanges();
             return;
         }
-        if(MainMenu.Instance.isInSplashScreen) // If splash screen is open: skip it
+        if (MainMenu.Instance.isInSplashScreen) // If splash screen is open: skip it
         {
             MainMenu.Instance.EndSplashScreen();
         }

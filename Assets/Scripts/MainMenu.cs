@@ -47,9 +47,9 @@ public class MainMenu : Singleton<MainMenu>
     public void OpenSlotSelection()
     {
         // If 0 save files exist start new game immediately for dramatic effect.
-        if (SaveManager.Instance.GetSaveCount() == 0)
+        if (saveManager.GetSaveCount() == 0)
         {
-            SaveManager.Instance.saveSlot = 0;
+            saveManager.saveSlot = 0;
             OpenNewGameConfiguration();
         }
         else
@@ -103,8 +103,10 @@ public class MainMenu : Singleton<MainMenu>
         newGameData.CollectData();
         saveManager.LoadGame(newGameData);
     }
-    public void SetNewGameDifficulty(int difficulty)
+    public void SetNewGameDifficulty(int difficulty) 
     {
+        // This will be changed when graphical assets are added, 
+        // but for now it will just change the button color to red for the selected difficulty.
         for (int i = 0; i < difficultyButtons.Length; i++)
         {
             difficultyButtons[i].image.color = (i + 1 == difficulty) ? Color.red : Color.white;
@@ -123,12 +125,11 @@ public class MainMenu : Singleton<MainMenu>
     {
         mainMenuPanel.SetActive(true);
         saveSlotPanel.SetActive(false);
-        //Select "Start" button by default for non-mouse navigation
+        // Select "Start" button by default for non-mouse navigation
         mainMenuButtons[0].Select();
     }
     private IEnumerator FadeInMainMenu(float duration)
     {
-        //Activate
         mainMenuPanel.SetActive(true);
         foreach (Button button in mainMenuButtons)
         {
@@ -147,11 +148,20 @@ public class MainMenu : Singleton<MainMenu>
         {
             button.interactable = true;
         }
+        // Select "Start" button by default for non-mouse navigation
+        mainMenuButtons[0].Select();
     }
     public void ReturnToMainMenu() // Used by buttons. Move 1 step backward.
     {
         if (newGameConfigPanel.activeSelf)
         {
+            // If no save files exist, return to main menu instead of slots
+            if(saveManager.GetSaveCount() == 0)
+            {
+                newGameConfigPanel.SetActive(false);
+                OpenMainMenu();
+                return;
+            }
             // Move back to slots
             newGameConfigPanel.SetActive(false);
             OpenSlotSelection();

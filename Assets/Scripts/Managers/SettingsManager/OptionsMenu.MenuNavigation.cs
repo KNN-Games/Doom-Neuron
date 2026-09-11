@@ -100,6 +100,7 @@ public partial class OptionsMenu
     public void Cancel()
     {
         saveChangesPrompt.SetActive(false);
+        generalSettingsButton.Select();
     }
     private void ExitSettings()
     {

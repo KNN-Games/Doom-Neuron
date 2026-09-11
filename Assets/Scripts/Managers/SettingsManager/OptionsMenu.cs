@@ -216,11 +216,19 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     }
     public void RebindJump(bool isforKeyboard)
     {
-        BeginRebind(jumpAction, jumpKeyboard, isforKeyboard, jumpButtonText);
+        BeginRebind(
+        jumpAction,
+        isforKeyboard ? jumpKeyboard : jumpGamepad,
+        isforKeyboard,
+        jumpButtonText);
     }
     public void RebindInteract(bool isforKeyboard)
     {
-        BeginRebind(interactAction, interactKeyboard, isforKeyboard, interactButtonText);
+        BeginRebind(
+        interactAction,
+        isforKeyboard ? interactKeyboard : interactGamepad,
+        isforKeyboard,
+        interactButtonText);
     }
     //---INTERNAL FUNCTIONS---
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
@@ -259,94 +267,6 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
             }
         }
         return false;
-    }
-    private int FindBinding(InputAction action, string device)
-    {
-        for (int i = 0; i < action.bindings.Count; i++)
-        {
-            string path = action.bindings[i].path;
-            if (path.StartsWith(device)) return i;
-        }
-        Debug.LogError("Input action path not found!");
-        return -1;
-    }
-    private StringSetting CreateBindingSetting(InputAction action, string device, string key)
-    {
-        int bindingIndex = FindBinding(action, device);
-        return new StringSetting(
-            key,
-            action.bindings[bindingIndex].path,
-            value => action.ApplyBindingOverride(bindingIndex, value));
-    }
-    private string GetBindingDisplayName(string bindingPath)
-    {
-        return bindingPath.Replace("<Keyboard>/", string.Empty).Replace("<Gamepad>/", string.Empty).ToUpper();
-    }
-    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard, TextMeshProUGUI buttonText)
-    {
-        string device = string.Empty;
-        string cancelKey = string.Empty;
-        if (isForKeyboard)
-        {
-            device = "<Keyboard>";
-            cancelKey = "<Keyboard>/escape";
-        }
-        else // assume it's for Gamepad
-        {
-            device = "<Gamepad>";
-            cancelKey = "<Gamepad>/start";
-        }
-        int bindingIndex = FindBinding(action, device);
-        if (bindingIndex < 0) return;
-
-        action.Disable();
-
-        // Oh my goodness gracious
-        // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperation.html
-        action.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsHavingToMatchPath(device)
-            .WithCancelingThrough(cancelKey)
-            .OnComplete(operation =>
-            {
-                string newBinding = action.bindings[bindingIndex].overridePath;
-                setting.CurrentValue = newBinding;
-                Debug.Log($"{action.name} rebound to {newBinding}");
-                buttonText.text = GetBindingDisplayName(newBinding);
-                operation.Dispose();
-                action.Enable();
-            })
-            .OnCancel(operation =>
-            {
-                operation.Dispose();
-                action.Enable();
-                Debug.Log("Rebinding cancelled.");
-            })
-            .Start();
-    }
-    private void UpdateKeyRebindButtons()
-    {
-        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
-        jumpButton.onClick.RemoveAllListeners();
-        interactButton.onClick.RemoveAllListeners();
-
-        Debug.Log(playerInput.currentControlScheme);
-        if (playerInput.currentControlScheme == "Gamepad")
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(false));
-            interactButton.onClick.AddListener(() => RebindInteract(false));
-            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
-        }
-        else
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(true));
-            interactButton.onClick.AddListener(() => RebindInteract(true));
-            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
-        }
-        deviceDetectedLocalizedText.RefreshString();
     }
     private void UpdateAvailableResolutions() // Update the availableResolutions list (with available resolutions) and the resolution dropdown options
     {
