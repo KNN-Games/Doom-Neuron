@@ -55,13 +55,12 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [Header("Controls UI References")]
     [SerializeField] private LocalizeStringEvent deviceDetectedLocalizedText;
     [SerializeField] private SettingSlider mouseSensitivitySlider;
-    [SerializeField] private Button jumpButton;
-    [SerializeField] private Button interactButton;
-    private TextMeshProUGUI jumpButtonText;
-    private TextMeshProUGUI interactButtonText;
+    [SerializeField] private RebindButton jumpButton;
+    [SerializeField] private RebindButton interactButton;
     private Coroutine renderScaleCoroutine;
     private static readonly WaitForSecondsRealtime _waitForSeconds0_5 = new(0.5f);
     private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by UpdateAvailableResolutions()
+    private static readonly List<RebindSetting> rebinds = new(); // List of all rebinds.
     private static readonly List<OptionSetting> allSettings = new(); // All settings
     private PlayerInput playerInput;
     // Audio settings
@@ -77,11 +76,11 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     private FloatSetting renderScale;
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
-    private StringSetting jumpKeyboard;
-    private StringSetting interactKeyboard;
+    private RebindSetting jumpKeyboard;
+    private RebindSetting interactKeyboard;
     // Gamepad Controls settings
-    private StringSetting jumpGamepad;
-    private StringSetting interactGamepad;
+    private RebindSetting jumpGamepad;
+    private RebindSetting interactGamepad;
 
     private void Start()
     {
@@ -98,13 +97,10 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         language = new StringSetting("language", "en", SetLanguage);
         mouseSensitivity = new FloatSetting("mouseSensitivity", 10f, SetMouseSensitivity);
         // Control settings
-        jumpKeyboard = CreateBindingSetting(jumpAction.action, "<Keyboard>", "jumpKey");
-        interactKeyboard = CreateBindingSetting(interactAction.action, "<Keyboard>", "interactKey");
-        jumpGamepad = CreateBindingSetting(jumpAction.action, "<Gamepad>", "jumpGamepad");
-        interactGamepad = CreateBindingSetting(interactAction.action, "<Gamepad>", "interactGamepad");
-
-        jumpButtonText = jumpButton.GetComponentInChildren<TextMeshProUGUI>();
-        interactButtonText = interactButton.GetComponentInChildren<TextMeshProUGUI>();
+        jumpKeyboard = CreateBindingSetting(jumpAction.action, "<Keyboard>", "jumpKey", jumpButton);
+        interactKeyboard = CreateBindingSetting(interactAction.action, "<Keyboard>", "interactKey", interactButton);
+        jumpGamepad = CreateBindingSetting(jumpAction.action, "<Gamepad>", "jumpGamepad", jumpButton);
+        interactGamepad = CreateBindingSetting(interactAction.action, "<Gamepad>", "interactGamepad", interactButton);
 
         ApplySavedValues();
         PlayerPrefs.Save();
@@ -149,7 +145,7 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         // To prevent the render scale from being set too often, we use a coroutine to delay the actual setting of the render scale. 
         // This is because changing the render scale can be expensive and we don't want to do it on every slider change.
         renderScale.CurrentValue = percent;
-        renderScaleSlider.UpdateSlider(percent, percent + "%", percent != renderScale.DefaultValue);
+        renderScaleSlider.UpdateSlider(percent, percent + "%", renderScale.NotDefault());
         if (renderScaleCoroutine != null)
         {
             StopCoroutine(renderScaleCoroutine);
@@ -181,27 +177,27 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         {
             PlayerController.Instance.camera.fieldOfView = newFov;
         }
-        fovSlider.UpdateSlider(newFov, newFov.ToString(), newFov != fov.DefaultValue);
+        fovSlider.UpdateSlider(newFov, newFov.ToString(), fov.NotDefault());
     }
     //---AUDIO SETTINGS---
     public void SetMasterVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         masterVolume.CurrentValue = volume;
-        masterVolumeSlider.UpdateSlider(volume, volume + "%", volume != masterVolume.DefaultValue);
+        masterVolumeSlider.UpdateSlider(volume, volume + "%", masterVolume.NotDefault());
         float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MasterVolume", dB);
     }
     public void SetMusicVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         musicVolume.CurrentValue = volume;
-        musicVolumeSlider.UpdateSlider(volume, volume + "%", volume != musicVolume.DefaultValue);
+        musicVolumeSlider.UpdateSlider(volume, volume + "%", musicVolume.NotDefault());
         float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MusicVolume", dB);
     }
     public void SetSFXVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         sfxVolume.CurrentValue = volume;
-        sfxVolumeSlider.UpdateSlider(volume, volume + "%", volume != sfxVolume.DefaultValue);
+        sfxVolumeSlider.UpdateSlider(volume, volume + "%", sfxVolume.NotDefault());
         float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("SoundEffectsVolume", dB);
     }
@@ -212,24 +208,9 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         mouseSensitivitySlider.UpdateSlider(
             sensitivity,
             (mouseSensitivity.CurrentValue / 10).ToString(),
-            sensitivity != mouseSensitivity.DefaultValue);
+            mouseSensitivity.NotDefault());
     }
-    public void RebindJump(bool isforKeyboard)
-    {
-        BeginRebind(
-        jumpAction,
-        isforKeyboard ? jumpKeyboard : jumpGamepad,
-        isforKeyboard,
-        jumpButtonText);
-    }
-    public void RebindInteract(bool isforKeyboard)
-    {
-        BeginRebind(
-        interactAction,
-        isforKeyboard ? interactKeyboard : interactGamepad,
-        isforKeyboard,
-        interactButtonText);
-    }
+    // Rebinds are made entirely via AddListener, so they don't need to be written here
     //---INTERNAL FUNCTIONS---
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {

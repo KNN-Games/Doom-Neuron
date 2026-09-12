@@ -74,6 +74,7 @@ public partial class OptionsMenu
             if (setting.Key != settingName) continue;
             setting.ResetToDefault();
             setting.InvokeChangeSettingFunction();
+            Debug.Log("Reset setting: " + settingName);
             return;
         }
         Debug.LogError("Setting not found");
