@@ -220,6 +220,7 @@ MonoBehaviour:
   creditsPanel: {fileID: 1977344984}
   saveSlotPanel: {fileID: 1906833284}
   deleteSavePrompt: {fileID: 1719937189}
+  yesPromptButton: {fileID: 1473916485}
   newGameConfigPanel: {fileID: 1391580914}
   saveSlots:
   - {fileID: 1296504019}
@@ -3788,6 +3789,17 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &1473916485 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5985953974960367706, guid: 5ac2b4fdc0245314c9dbb36e155d1060, type: 3}
+  m_PrefabInstance: {fileID: 1582358973}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1001 &1582358973
 PrefabInstance:
   m_ObjectHideFlags: 0

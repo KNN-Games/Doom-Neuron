@@ -54,22 +54,20 @@ public class PlayerUI : Singleton<PlayerUI>
     }
     //---DIRECT PAUSE---
     public void PauseGame()
-    { 
+    {
         isPaused = true;
         Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        InputManager.Instance.UpdateCursorState();
         hud.SetActive(false);
         InputManager.Instance.SetActiveInputMap("UI");
         Debug.Log("Paused Game");
     }
     public void UnpauseGame()
     {
-        if(PlayerHealth.Instance.IsDead) return; // Do not allow unpause if player is dead
+        if (PlayerHealth.Instance.IsDead) return; // Do not allow unpause if player is dead
         isPaused = false;
         Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        InputManager.Instance.UpdateCursorState();
         hud.SetActive(true);
         InputManager.Instance.SetActiveInputMap("Gameplay");
         Debug.Log("Unpaused Game");

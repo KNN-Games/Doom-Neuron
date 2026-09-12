@@ -11,7 +11,7 @@ public class InputManager : Singleton<InputManager>
     [HideInInspector] public PlayerInput playerInput;
     private PlayerController playerController;
     private PlayerUI playerUI;
-    private string lastKnownControlScheme = "none"; // Used to detect device changes
+    public string CurrentDevice { get; private set; }
     protected override void Awake()
     {
         base.Awake();
@@ -56,11 +56,17 @@ public class InputManager : Singleton<InputManager>
                 break;
         }
     }
+    public void UpdateCursorState()
+    {
+        bool showCursor = (PlayerUI.Instance == null || PlayerUI.Instance.isPaused) && CurrentDevice != "Gamepad";
+        Cursor.lockState = showCursor ? CursorLockMode.None : CursorLockMode.Locked;
+        Cursor.visible = showCursor;
+    }
     //---HANDLE INPUT ACTIONS---
     // Special functions
     public void OnDeviceLost()
     {
-        Debug.LogWarning("Device lost");
+        Debug.Log("Device lost");
     }
     public void OnDeviceRegained()
     {
@@ -68,11 +74,13 @@ public class InputManager : Singleton<InputManager>
     }
     public void OnDeviceChange()
     {
-        if(playerInput == null) return; // Prevents errors if playerInput is null (before Awake()??? weird)
-        if (playerInput.currentControlScheme == lastKnownControlScheme) return; // Prevent spamming the log if the device is the same as last time
+        if (playerInput == null) return; // Prevents errors if playerInput is null (before Awake()??? weird)
+        if (playerInput.currentControlScheme == CurrentDevice) return; // Prevent spamming the log if the device is the same as last time
 
-        lastKnownControlScheme = playerInput.currentControlScheme;
-        Debug.Log($"Device change: {lastKnownControlScheme}");
+        CurrentDevice = playerInput.currentControlScheme;
+        UpdateCursorState();
+
+        Debug.Log($"Device change: {CurrentDevice}");
     }
     // Gameplay map - these do not check if player does not exist so that Unity throws an error if u forget to disable this map when player doesn't exist.
     public void OnMove(InputAction.CallbackContext context)
