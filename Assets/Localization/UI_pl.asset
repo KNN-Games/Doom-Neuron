@@ -198,6 +198,18 @@ MonoBehaviour:
     m_Localized: Skala renderowania
     m_Metadata:
       m_Items: []
+  - m_Id: 24697756220448768
+    m_Localized: Skok
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24697846842580992
+    m_Localized: Interakcja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24732902038495232
+    m_Localized: "Czy na pewno chcesz usun\u0105\u0107 ten zapis?"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

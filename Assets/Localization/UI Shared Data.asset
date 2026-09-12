@@ -195,6 +195,18 @@ MonoBehaviour:
     m_Key: RENDER SCALE
     m_Metadata:
       m_Items: []
+  - m_Id: 24697756220448768
+    m_Key: JUMP REBIND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24697846842580992
+    m_Key: INTERACT REBIND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24732902038495232
+    m_Key: DELETE SAVE PROMPT
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

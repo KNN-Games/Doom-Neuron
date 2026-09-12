@@ -200,6 +200,18 @@ MonoBehaviour:
     m_Localized: Render scale
     m_Metadata:
       m_Items: []
+  - m_Id: 24697756220448768
+    m_Localized: Jump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24697846842580992
+    m_Localized: Interaction
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24732902038495232
+    m_Localized: Are you sure you want to delete this save?
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

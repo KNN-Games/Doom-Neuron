@@ -13,6 +13,8 @@ public class MainMenu : Singleton<MainMenu>
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject creditsPanel;
     [SerializeField] private GameObject saveSlotPanel;
+    [SerializeField] private GameObject deleteSavePrompt;
+    [SerializeField] private Button yesPromptButton;
     [SerializeField] private GameObject newGameConfigPanel;
     [SerializeField] private GameObject[] saveSlots;
     [SerializeField] private SplashScreen splashScreen;
@@ -90,10 +92,24 @@ public class MainMenu : Singleton<MainMenu>
         }
         saveManager.LoadGame(data);
     }
-    public void DeleteSave(int slot)
+    public void OpenDeleteSavePrompt(int slot)
     {
-        saveManager.DeleteSave(slot);
+        deleteSavePrompt.SetActive(true);
+        yesPromptButton.Select();
+        saveManager.saveSlot = slot; // Slot to delete
+    }
+    public void CloseDeleteSavePrompt()
+    {
+        deleteSavePrompt.SetActive(false);
+        saveSlots[saveManager.saveSlot].GetComponent<Button>().Select();
+        saveManager.saveSlot = -1; // Reset slot
+    }
+    public void DeleteSave()
+    {
+        deleteSavePrompt.SetActive(false);
+        saveManager.DeleteSave();
         UpdateSaveSlotUI();
+        saveSlots[saveManager.saveSlot].GetComponent<Button>().Select();
     }
     //---NEW GAME CONFIG SCREEN---
     public void ConfirmGame() // Start new game
