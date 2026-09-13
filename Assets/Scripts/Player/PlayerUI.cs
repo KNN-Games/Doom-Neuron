@@ -14,9 +14,13 @@ public class PlayerUI : Singleton<PlayerUI>
     public GameObject pauseMenu; // CheatsManager.cs needs this to be public
     [SerializeField] private Button resumeButton;
     [SerializeField] private GameObject backToMainMenuPrompt;
+    [SerializeField] private Button backToMainMenuButton;
     [SerializeField] private TextMeshProUGUI lastSavedText;
     [SerializeField] private GameObject hud;
     [SerializeField] private GameObject deathScreen;
+    [SerializeField] private Button respawnButton;
+    [SerializeField] private GameObject deviceLostPrompt;
+    [SerializeField] private Button deviceLostPromptButton;
     public void TogglePauseMenu()
     {
         if (!isPaused) //open menu
@@ -77,6 +81,7 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         backToMainMenuPrompt.SetActive(true);
         lastSavedText.text = Format(GameManager.Instance.lastSaved);
+        backToMainMenuButton.Select();
     }
     public void ConfirmReturn()
     {
@@ -86,6 +91,7 @@ public class PlayerUI : Singleton<PlayerUI>
     public void CancelReturn()
     {
         backToMainMenuPrompt.SetActive(false);
+        resumeButton.Select();
     }
     private static string Format(float seconds)
     {
@@ -103,15 +109,29 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         PlayerHealth.Instance.Resurrect();
         SaveManager.Instance.LoadGame();
+        ClosePauseMenu();
     }
     public void ShowDeathScreen()
     {
         PauseGame();
         deathScreen.SetActive(true);
+        respawnButton.Select();
     }
     public void HideDeathScreen()
     {
         UnpauseGame();
         deathScreen.SetActive(false);
+    }
+    //---DEVICE LOST PROMPT---
+    public void OpenDeviceLostPrompt()
+    {
+        OpenPauseMenu();
+        deviceLostPrompt.SetActive(true);
+        deviceLostPromptButton.Select();
+    }
+    public void CloseDeviceLostPrompt()
+    {
+        deviceLostPrompt.SetActive(false);
+        resumeButton.Select();
     }
 }

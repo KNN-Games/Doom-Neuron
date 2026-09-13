@@ -210,6 +210,11 @@ MonoBehaviour:
     m_Localized: "Czy na pewno chcesz usun\u0105\u0107 ten zapis?"
     m_Metadata:
       m_Items: []
+  - m_Id: 25014242235441152
+    m_Localized: "Nie wykryto urz\u0105dzenia wej\u015Bcia.\nPonownie pod\u0142\u0105cz
+      urz\u0105dzenie, by kontynuowa\u0107 gr\u0119."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

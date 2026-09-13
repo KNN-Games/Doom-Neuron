@@ -66,6 +66,10 @@ public class InputManager : Singleton<InputManager>
     // Special functions
     public void OnDeviceLost()
     {
+        if(IsPlayerPresent)
+        {
+            PlayerUI.Instance.OpenDeviceLostPrompt();
+        }
         Debug.Log("Device lost");
     }
     public void OnDeviceRegained()
