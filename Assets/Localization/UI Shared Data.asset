@@ -211,6 +211,10 @@ MonoBehaviour:
     m_Key: DEVICE LOST PROMPT
     m_Metadata:
       m_Items: []
+  - m_Id: 25023634527805440
+    m_Key: PAUSE REBIND
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

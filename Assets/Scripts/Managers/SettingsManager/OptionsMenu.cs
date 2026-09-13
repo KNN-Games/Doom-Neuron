@@ -20,10 +20,11 @@ using System.Collections;
 /// When you change a slider/button/whatever you should feel the effects immediately, but not save them until you hit the save button.
 /// 
 /// When adding a new setting you have to add:
-/// 1. private FloatSetting/StringSetting
+/// 1. private FloatSetting/StringSetting/IntSetting/RebindSetting
 /// 2. references to the UI elements that will control the setting (slider, button, etc.). This is not always nessesary.
 /// 3. A function to set the new setting. Connect that function to the button you want in setting menu in Unity Editor.
 /// 4. modify Start() with: settingName = new FloatSetting/StringSetting/IntSetting("settingName", defaultValue, FunctionThatChangesThisSetting)
+/// It's a bit different with rebind settings: only call CreateBindingSettings(inputActionReference.action, "name", rebindButton);
 /// </remarks>
 public partial class OptionsMenu : Singleton<OptionsMenu>
 {
@@ -32,6 +33,7 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [Header("Input action References")]
     [SerializeField] private InputActionReference jumpAction;
     [SerializeField] private InputActionReference interactAction;
+    [SerializeField] private InputActionReference pauseAction;
     [Header("URP asset reference")]
     [SerializeField] private UniversalRenderPipelineAsset urpAsset;
     [Header("Main UI References")]
@@ -57,6 +59,7 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private SettingSlider mouseSensitivitySlider;
     [SerializeField] private RebindButton jumpButton;
     [SerializeField] private RebindButton interactButton;
+    [SerializeField] private RebindButton pauseButton; // as in: pause rebind button
     private Coroutine renderScaleCoroutine;
     private static readonly WaitForSecondsRealtime _waitForSeconds0_5 = new(0.5f);
     private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by UpdateAvailableResolutions()
@@ -76,11 +79,6 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     private FloatSetting renderScale;
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
-    private RebindSetting jumpKeyboard;
-    private RebindSetting interactKeyboard;
-    // Gamepad Controls settings
-    private RebindSetting jumpGamepad;
-    private RebindSetting interactGamepad;
 
     private void Start()
     {
@@ -97,10 +95,9 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         language = new StringSetting("language", "en", SetLanguage);
         mouseSensitivity = new FloatSetting("mouseSensitivity", 10f, SetMouseSensitivity);
         // Control settings
-        jumpKeyboard = CreateBindingSetting(jumpAction.action, "<Keyboard>", "jumpKey", jumpButton);
-        interactKeyboard = CreateBindingSetting(interactAction.action, "<Keyboard>", "interactKey", interactButton);
-        jumpGamepad = CreateBindingSetting(jumpAction.action, "<Gamepad>", "jumpGamepad", jumpButton);
-        interactGamepad = CreateBindingSetting(interactAction.action, "<Gamepad>", "interactGamepad", interactButton);
+        CreateBindingSettings(jumpAction.action, "jump", jumpButton);
+        CreateBindingSettings(interactAction.action, "interact", interactButton);
+        CreateBindingSettings(pauseAction.action, "pause", pauseButton);
 
         ApplySavedValues();
         PlayerPrefs.Save();
@@ -281,20 +278,11 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     }
     public void PrintAllSettingValues()
     {
-        Debug.Log(
-        $"Settings loaded. Values:\n" +
-        $"Master Volume: {masterVolume.SavedValue}\n" +
-        $"Music Volume: {musicVolume.SavedValue}\n" +
-        $"SFX Volume: {sfxVolume.SavedValue}\n" +
-        $"Language: {language.SavedValue}\n" +
-        $"Mouse Sensitivity: {mouseSensitivity.SavedValue}\n" +
-        $"jumpKeyboard: {jumpKeyboard.SavedValue}\n" +
-        $"interactKeyboard: {interactKeyboard.SavedValue}\n" +
-        $"jumpGamepad: {jumpGamepad.SavedValue}\n" +
-        $"interactGamepad: {interactGamepad.SavedValue}\n" +
-        $"FOV: {fov.SavedValue}\n" +
-        $"Resolution: {resolution.SavedValue}\n" +
-        $"Window Mode: {windowMode.SavedValue}\n" +
-        $"Render Scale: {renderScale.SavedValue}");
+        var sb = new System.Text.StringBuilder("Settings loaded. Values:\n");
+        foreach (var setting in allSettings)
+        {
+            sb.AppendLine(setting.DebugLine());
+        }
+        Debug.Log(sb.ToString());
     }
 }

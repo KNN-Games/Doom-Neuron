@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XInput;
@@ -89,10 +88,15 @@ public partial class OptionsMenu
         Debug.LogError("Input action path not found!");
         return -1;
     }
-    private RebindSetting CreateBindingSetting(InputAction action, string device, string key, RebindButton button)
+    private void CreateBindingSetting(InputAction action, string device, string key, RebindButton button)
     {
         int bindingIndex = FindBinding(action, device);
-        return new RebindSetting(key, action, bindingIndex, device, button);
+        new RebindSetting(key, action, bindingIndex, device, button); // Automatically adds to rebinds List
+    }
+    private void CreateBindingSettings(InputAction action, string keyBase, RebindButton button) // Creates a pair of rebind Settings
+    {
+        CreateBindingSetting(action, "<Keyboard>", keyBase + "Keyboard", button);
+        CreateBindingSetting(action, "<Gamepad>", keyBase + "Gamepad", button);
     }
     private string GetBindingDisplayName(string bindingPath)
     {
@@ -115,33 +119,33 @@ public partial class OptionsMenu
         }
         return bindingPath.ToUpper().Replace("/", " ");
     }
-    private void BeginRebind(InputAction action, StringSetting setting, string device, RebindButton button)
+    private void BeginRebind(RebindSetting setting)
     {
-        string cancelKey = device == "<Keyboard>" ? "<Keyboard>/escape" : "<Gamepad>/start";
+        string cancelKey = setting.Device == "<Keyboard>" ? "<Keyboard>/escape" : "<Gamepad>/start";
 
-        int bindingIndex = FindBinding(action, device);
+        int bindingIndex = FindBinding(setting.Action, setting.Device);
         if (bindingIndex < 0) return;
 
-        bool wasEnabled = action.enabled;
-        action.Disable();
+        bool wasEnabled = setting.Action.enabled;
+        setting.Action.Disable();
 
-        action.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsHavingToMatchPath(device)
+        setting.Action.PerformInteractiveRebinding(bindingIndex)
+            .WithControlsHavingToMatchPath(setting.Device)
             .WithCancelingThrough(cancelKey)
             .OnComplete(operation =>
             {
                 Debug.Log($"Selected control: {operation.selectedControl.path} (device: {operation.selectedControl.device.name})");
-                string newBinding = action.bindings[bindingIndex].overridePath;
+                string newBinding = setting.Action.bindings[bindingIndex].overridePath;
                 setting.CurrentValue = newBinding;
-                Debug.Log($"{action.name} rebound to {newBinding}");
-                button.UpdateButton(GetBindingDisplayName(newBinding), setting.NotDefault());
+                Debug.Log($"{setting.Action.name} rebound to {newBinding}");
+                setting.Button.UpdateButton(GetBindingDisplayName(newBinding), setting.NotDefault());
                 operation.Dispose();
-                if (wasEnabled) action.Enable();
+                if (wasEnabled) setting.Action.Enable();
             })
             .OnCancel(operation =>
             {
                 operation.Dispose();
-                if (wasEnabled) action.Enable();
+                if (wasEnabled) setting.Action.Enable();
                 Debug.Log("Rebinding cancelled.");
             })
             .Start();
@@ -156,7 +160,7 @@ public partial class OptionsMenu
             if (rebind.Device != activeDevice) continue;
 
             rebind.Button.ChangeOnClickAction(
-                () => BeginRebind(rebind.Action, rebind, rebind.Device, rebind.Button),
+                () => BeginRebind(rebind),
                 () => ResetSetting(rebind.Key));
             rebind.Button.UpdateButton(GetBindingDisplayName(rebind.CurrentValue), rebind.NotDefault());
         }

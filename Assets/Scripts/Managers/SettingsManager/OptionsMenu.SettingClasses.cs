@@ -20,6 +20,7 @@ public partial class OptionsMenu
         public abstract void ResetToDefault();
         public abstract bool Changed(); // As in: is value changed?
         public abstract bool NotDefault(); // As in: is value not default?
+        public abstract string DebugLine();
     }
     private class StringSetting : OptionSetting
     {
@@ -72,6 +73,7 @@ public partial class OptionsMenu
         {
             return !string.Equals(DefaultValue, CurrentValue);
         }
+        public override string DebugLine() => $"{Key}: {SavedValue}";
     }
     private class FloatSetting : OptionSetting
     {
@@ -124,6 +126,7 @@ public partial class OptionsMenu
         {
             return !Mathf.Approximately(DefaultValue, CurrentValue);
         }
+        public override string DebugLine() => $"{Key}: {SavedValue}";
     }
     private class IntSetting : OptionSetting
     {
@@ -176,6 +179,7 @@ public partial class OptionsMenu
         {
             return CurrentValue != DefaultValue;
         }
+        public override string DebugLine() => $"{Key}: {SavedValue}";
     }
     // Special class for rebind settings
     private class RebindSetting : StringSetting
