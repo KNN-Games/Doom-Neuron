@@ -220,6 +220,14 @@ MonoBehaviour:
     m_Localized: Pause
     m_Metadata:
       m_Items: []
+  - m_Id: 25711475972956160
+    m_Localized: Change bindings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25714057613205504
+    m_Localized: Click any button to rebind this action to it
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

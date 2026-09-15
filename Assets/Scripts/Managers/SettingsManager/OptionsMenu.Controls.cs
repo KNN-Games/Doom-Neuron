@@ -10,6 +10,7 @@ using System;
 /// </summary>
 public partial class OptionsMenu
 {
+    // These dictionaries hold "the input name that Unity will detect", "what to write in the TMPRO text"
     private static readonly Dictionary<string, string> xboxButtonNames = new() // Why doesn't this shit format properly?
 {
     { "buttonSouth", "<sprite name=\"xbox_a\">" },
@@ -48,9 +49,14 @@ public partial class OptionsMenu
     { "dpad/left", "<sprite name=\"ps_dpad_left\">" },
     { "dpad/right", "<sprite name=\"ps_dpad_right\">" },
 };
+    // Do this thing to a string to make change "ExampleExample" to "EXAMPLE EXAMPLE"
     private static readonly System.Text.RegularExpressions.Regex camelCaseSpacer =
         new(@"(?<!^)([A-Z])", System.Text.RegularExpressions.RegexOptions.Compiled);
     private enum GamepadType { Xbox, PlayStation, Generic }
+    private enum DeviceType { Keyboard, Gamepad }
+    private static string DevicePath(DeviceType device) => device == DeviceType.Keyboard ? "<Keyboard>" : "<Gamepad>"; // Convert DeviceType to string
+
+    // Detect what type of gamepad player uses: xbox, playstation or generic. Used in checking which sprite to use in GetBindingDisplayName(string bindingPath)
     private GamepadType DetectGamepadType()
     {
         var pad = Gamepad.current;
@@ -74,35 +80,11 @@ public partial class OptionsMenu
 
         return GamepadType.Generic;
     }
-    private int FindBinding(InputAction action, string deviceGroup)
-    {
-        for (int i = 0; i < action.bindings.Count; i++)
-        {
-            string path = action.bindings[i].path;
-            bool matches = deviceGroup == "<Keyboard>"
-                ? path.StartsWith("<Keyboard>") || path.StartsWith("<Mouse>")
-                : path.StartsWith(deviceGroup);
-
-            if (matches) return i;
-        }
-        Debug.LogError("Input action path not found!");
-        return -1;
-    }
-    private void CreateBindingSetting(InputAction action, string device, string key, RebindButton button)
-    {
-        int bindingIndex = FindBinding(action, device);
-        new RebindSetting(key, action, bindingIndex, device, button); // Automatically adds to rebinds List
-    }
-    private void CreateBindingSettings(InputAction action, string keyBase, RebindButton button) // Creates a pair of rebind Settings
-    {
-        CreateBindingSetting(action, "<Keyboard>", keyBase + "Keyboard", button);
-        CreateBindingSetting(action, "<Gamepad>", keyBase + "Gamepad", button);
-    }
-    private string GetBindingDisplayName(string bindingPath)
+    private string GetBindingDisplayName(string bindingPath) // Input string example: "<Gamepad>/ButtonSouth"
     {
         if (bindingPath.StartsWith("<Gamepad>/"))
         {
-            string controlPath = bindingPath["<Gamepad>/".Length..];
+            string controlPath = bindingPath["<Gamepad>/".Length..]; // That means "delete "<Gamepad>/" from the string. VS code auto-changes .Substring() into this
             GamepadType type = DetectGamepadType();
             if (type == GamepadType.Xbox && xboxButtonNames.TryGetValue(controlPath, out string xboxName)) return xboxName;
             if (type == GamepadType.PlayStation && playstationButtonNames.TryGetValue(controlPath, out string psName)) return psName;
@@ -110,6 +92,7 @@ public partial class OptionsMenu
         }
         if (bindingPath.StartsWith("<Keyboard>/"))
         {
+            // TO DO: Maybe add camelCaseSpacer here too? Check if needed
             return bindingPath["<Keyboard>/".Length..].ToUpper();
         }
         if (bindingPath.StartsWith("<Mouse>/"))
@@ -119,41 +102,98 @@ public partial class OptionsMenu
         }
         return bindingPath.ToUpper().Replace("/", " ");
     }
+    /// <summary>
+    /// Find the index of the exact binding based on device
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="deviceGroup">"Keyboard" or "Gamepad"</param>
+    /// <returns>the index</returns>
+    /// <remarks>
+    /// most action bindings look like this (exapmle: Interact)
+    /// Interact (action)
+    /// [0] <Keyboard/e> on device Keyboard or Mouse (treat keyboard and mouse as the same device. No one sane plays mouse + gamepad anyway)
+    /// [1] <Gamepad/ButtonWest> on device Gamepad
+    /// But the order may be reversed, we don't know from the code if [0] is for keyboard or gamepad, so you need to find it
+    /// </remarks>
+    private int FindBinding(InputAction action, DeviceType device)
+    {
+        string deviceGroup = DevicePath(device);
+        for (int i = 0; i < action.bindings.Count; i++)
+        {
+            string path = action.bindings[i].path;
+            bool matches = device == DeviceType.Keyboard
+                ? path.StartsWith("<Keyboard>") || path.StartsWith("<Mouse>")
+                : path.StartsWith(deviceGroup);
+
+            if (matches) return i;
+        }
+        Debug.LogError("Input action path not found!");
+        return -1;
+    }
+    /// <summary>
+    /// Create one RebindSetting with the specified device. Do not use directly.
+    /// </summary>
+    private void CreateBindingSetting(InputAction action, DeviceType device, string key, RebindButton button)
+    {
+        int bindingIndex = FindBinding(action, device);
+        new RebindSetting(key, action, bindingIndex, device, button);
+    }
+    /// <summary>
+    /// Create a pair of RebindSetting, one for Keyboard and one for gamepad
+    /// </summary>
+    private void CreateBindingSettings(InputAction action, string keyBase, RebindButton button)
+    {
+        CreateBindingSetting(action, DeviceType.Keyboard, keyBase + "Keyboard", button);
+        CreateBindingSetting(action, DeviceType.Gamepad, keyBase + "Gamepad", button);
+    }
+    /// <summary>
+    /// Perform an interactive rebind
+    /// </summary>
+    /// <param name="setting">The setting that holds the action you want to rebind</param>
     private void BeginRebind(RebindSetting setting)
     {
-        string cancelKey = setting.Device == "<Keyboard>" ? "<Keyboard>/escape" : "<Gamepad>/start";
+        string cancelKey = setting.Device == DeviceType.Keyboard ? "<Keyboard>/escape" : "<Gamepad>/start";
 
         int bindingIndex = FindBinding(setting.Action, setting.Device);
         if (bindingIndex < 0) return;
 
         bool wasEnabled = setting.Action.enabled;
+        ChangeBindingsText(true);
         setting.Action.Disable();
 
+        // Perform an interactive rebind. Man, just look at the Unity documentation
         setting.Action.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsHavingToMatchPath(setting.Device)
+            .WithControlsHavingToMatchPath(DevicePath(setting.Device))
             .WithCancelingThrough(cancelKey)
             .OnComplete(operation =>
             {
-                Debug.Log($"Selected control: {operation.selectedControl.path} (device: {operation.selectedControl.device.name})");
                 string newBinding = setting.Action.bindings[bindingIndex].overridePath;
                 setting.CurrentValue = newBinding;
                 Debug.Log($"{setting.Action.name} rebound to {newBinding}");
                 setting.Button.UpdateButton(GetBindingDisplayName(newBinding), setting.NotDefault());
                 operation.Dispose();
                 if (wasEnabled) setting.Action.Enable();
+                ChangeBindingsText(false);
             })
             .OnCancel(operation =>
             {
                 operation.Dispose();
                 if (wasEnabled) setting.Action.Enable();
+                ChangeBindingsText(false);
                 Debug.Log("Rebinding cancelled.");
             })
             .Start();
     }
+    private void ChangeBindingsText(bool rebindStatus)
+    {
+        string newText = rebindStatus ? "REBIND" : "CHANGE BINDINGS";
+        changeBindingsLocalizedText.StringReference.TableEntryReference = newText;
+        changeBindingsLocalizedText.RefreshString();
+    }
     public void UpdateKeyRebindButtons()
     {
         bool isGamepad = playerInput.currentControlScheme == "Gamepad";
-        string activeDevice = isGamepad ? "<Gamepad>" : "<Keyboard>";
+        DeviceType activeDevice = isGamepad ? DeviceType.Gamepad : DeviceType.Keyboard;
         deviceDetectedLocalizedText.StringReference.TableEntryReference = isGamepad ? "GAMEPAD DETECTED" : "KEYBOARD AND MOUSE DETECTED";
         foreach (var rebind in rebinds)
         {

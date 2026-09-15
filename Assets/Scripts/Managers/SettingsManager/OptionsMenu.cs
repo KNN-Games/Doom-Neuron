@@ -55,6 +55,7 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private SettingSlider musicVolumeSlider;
     [SerializeField] private SettingSlider sfxVolumeSlider;
     [Header("Controls UI References")]
+    [SerializeField] private LocalizeStringEvent changeBindingsLocalizedText;
     [SerializeField] private LocalizeStringEvent deviceDetectedLocalizedText;
     [SerializeField] private SettingSlider mouseSensitivitySlider;
     [SerializeField] private RebindButton jumpButton;

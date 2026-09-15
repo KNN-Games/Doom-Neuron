@@ -186,9 +186,9 @@ public partial class OptionsMenu
     {
         public readonly RebindButton Button;
         public readonly InputAction Action;
-        public readonly string Device;
+        public readonly DeviceType Device;
 
-        public RebindSetting(string key, InputAction action, int bindingIndex, string device, RebindButton button)
+        public RebindSetting(string key, InputAction action, int bindingIndex, DeviceType device, RebindButton button)
             : base(key, action.bindings[bindingIndex].path, value => action.ApplyBindingOverride(bindingIndex, value))
         {
             Action = action;
