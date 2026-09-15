@@ -57,7 +57,12 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [Header("Controls UI References")]
     [SerializeField] private LocalizeStringEvent changeBindingsLocalizedText;
     [SerializeField] private LocalizeStringEvent deviceDetectedLocalizedText;
+    [SerializeField] private GameObject keyboardSection;
+    [SerializeField] private GameObject gamepadSection;
     [SerializeField] private SettingSlider mouseSensitivitySlider;
+    [SerializeField] private SettingSlider gamepadSensitivitySlider;
+    [SerializeField] private Toggle gamepadInvertYToggle;
+    // Rebind section
     [SerializeField] private RebindButton jumpButton;
     [SerializeField] private RebindButton interactButton;
     [SerializeField] private RebindButton pauseButton; // as in: pause rebind button
@@ -80,6 +85,9 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     private FloatSetting renderScale;
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
+    // Gamepad Controls settings
+    private FloatSetting gamepadSensitivity;
+    private IntSetting gamepadInvertY; // 1 = on, 0 = off
 
     private void Start()
     {
@@ -95,6 +103,8 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         sfxVolume = new FloatSetting("sfxVolume", 100f, SetSFXVolume);
         language = new StringSetting("language", "en", SetLanguage);
         mouseSensitivity = new FloatSetting("mouseSensitivity", 10f, SetMouseSensitivity);
+        gamepadSensitivity = new FloatSetting("gamepadSensitivity", 10f, SetGamepadSensitivity);
+        gamepadInvertY = new IntSetting("gamepadInvertY", 0, SetInvertedLookDirection);
         // Control settings
         CreateBindingSettings(jumpAction.action, "jump", jumpButton);
         CreateBindingSettings(interactAction.action, "interact", interactButton);
@@ -200,13 +210,40 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         audioMixer.SetFloat("SoundEffectsVolume", dB);
     }
     //---CONTROLS SETTINGS---
+    //TO DO: merge these two?
     public void SetMouseSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
         mouseSensitivity.CurrentValue = sensitivity;
-        mouseSensitivitySlider.UpdateSlider(
-            sensitivity,
-            (mouseSensitivity.CurrentValue / 10).ToString(),
-            mouseSensitivity.NotDefault());
+        mouseSensitivitySlider.UpdateSlider(sensitivity, (mouseSensitivity.CurrentValue / 10).ToString(), mouseSensitivity.NotDefault());
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.mouseSensitivity = sensitivity / 10;
+            PlayerController.Instance.UpdateSensitivity();
+        }
+    }
+    public void SetGamepadSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
+    {
+        gamepadSensitivity.CurrentValue = sensitivity;
+        gamepadSensitivitySlider.UpdateSlider(sensitivity, (gamepadSensitivity.CurrentValue / 10).ToString(), gamepadSensitivity.NotDefault());
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.gamepadSensitivity = sensitivity / 10;
+            PlayerController.Instance.UpdateSensitivity();
+        }
+    }
+    public void SetInvertedLookDirection(int value) // 0 = off, 1 = on
+    {
+        gamepadInvertY.CurrentValue = value;
+        gamepadInvertYToggle.SetIsOnWithoutNotify(value == 1);
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.invertGamepadY = value == 1;
+            PlayerController.Instance.UpdateSensitivity();
+        }
+    }
+    public void SetInvertedLookDirection(bool isOn)
+    {
+        SetInvertedLookDirection(isOn ? 1 : 0);
     }
     // Rebinds are made entirely via AddListener, so they don't need to be written here
     //---INTERNAL FUNCTIONS---

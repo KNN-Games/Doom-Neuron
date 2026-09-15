@@ -23,7 +23,12 @@ public class PlayerController : Singleton<PlayerController>
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
-    private float MouseSensitivity => PlayerPrefs.GetFloat("mouseSensitivity") / 10;
+    private float lookSensitivity = 1f; 
+    private int lookInvertY = 1; // works only on gamepad, 1f = normal, -1f = inverted
+    // Get these from settings
+    [HideInInspector] public float mouseSensitivity = 1f;
+    [HideInInspector] public float gamepadSensitivity = 1f;
+    [HideInInspector] public bool invertGamepadY = false;
 
     protected override void Awake()
     {
@@ -35,9 +40,14 @@ public class PlayerController : Singleton<PlayerController>
     {
         playerTransform = GetComponent<Transform>();
         characterController = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        InputManager.Instance.UpdateCursorState();
         camera.fieldOfView = GameManager.Instance.fov;
+        // These are also changed if player does stuff in OptionsMenu during gameplay (not in main menu)
+        mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity", 10f) / 10;
+        gamepadSensitivity = PlayerPrefs.GetFloat("gamepadSensitivity", 10f) / 10;
+        invertGamepadY = PlayerPrefs.GetInt("invertGamepadY", 0) == 1;
+
+        UpdateSensitivity();
     }
     private void Update()
     {
@@ -57,8 +67,9 @@ public class PlayerController : Singleton<PlayerController>
         characterController.Move(velocity * Time.deltaTime);
 
         // Looking around
-        float mouseX = lookInput.x * MouseSensitivity;
-        float mouseY = lookInput.y * MouseSensitivity;
+        float mouseX = lookInput.x * lookSensitivity;
+        float mouseY = lookInput.y * lookSensitivity * lookInvertY;
+
         transform.Rotate(Vector3.up * mouseX); // left-right
         xRotation -= mouseY; // up-down
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -89,6 +100,13 @@ public class PlayerController : Singleton<PlayerController>
     {
         if (interactable == null) return;
         interactable.Interact();
+    }
+    public void UpdateSensitivity()
+    {
+        bool isGamepad = InputManager.Instance.CurrentDevice == "Gamepad";
+        lookSensitivity = isGamepad ? gamepadSensitivity : mouseSensitivity;
+        lookInvertY = (int)((isGamepad && invertGamepadY) ? -1f : 1f);
+        Debug.Log("Updated sensitivity");
     }
     // Used to get and set player location
     public void SetRotation(Vector3 rotation)

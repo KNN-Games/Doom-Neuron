@@ -193,6 +193,7 @@ public partial class OptionsMenu
     public void UpdateKeyRebindButtons()
     {
         bool isGamepad = playerInput.currentControlScheme == "Gamepad";
+        // Handle Rebind section
         DeviceType activeDevice = isGamepad ? DeviceType.Gamepad : DeviceType.Keyboard;
         deviceDetectedLocalizedText.StringReference.TableEntryReference = isGamepad ? "GAMEPAD DETECTED" : "KEYBOARD AND MOUSE DETECTED";
         foreach (var rebind in rebinds)
@@ -205,5 +206,8 @@ public partial class OptionsMenu
             rebind.Button.UpdateButton(GetBindingDisplayName(rebind.CurrentValue), rebind.NotDefault());
         }
         deviceDetectedLocalizedText.RefreshString();
+        // Decide which section (keyboard or gamepad) to show
+        gamepadSection.SetActive(isGamepad);
+        keyboardSection.SetActive(!isGamepad);
     }
 }

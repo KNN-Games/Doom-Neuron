@@ -228,6 +228,14 @@ MonoBehaviour:
       t\u0105 akcj\u0119. "
     m_Metadata:
       m_Items: []
+  - m_Id: 25747930288021504
+    m_Localized: "czu\u0142o\u015B\u0107 obrotu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25748587707424768
+    m_Localized: "Odwr\xF3\u0107 o\u015B Y"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

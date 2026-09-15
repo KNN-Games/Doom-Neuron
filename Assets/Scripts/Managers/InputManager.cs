@@ -83,6 +83,10 @@ public class InputManager : Singleton<InputManager>
 
         CurrentDevice = playerInput.currentControlScheme;
         UpdateCursorState();
+        if(IsPlayerPresent)
+        {
+            PlayerController.Instance.UpdateSensitivity();
+        }
 
         Debug.Log($"Device change: {CurrentDevice}");
     }
