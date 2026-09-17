@@ -22,7 +22,7 @@ public class CheatsManager : Singleton<CheatsManager>
     private void Start()
     {
         commands = new() // List of commands
-        {
+        { // This must be in Start and not in declaration because of error CS0236. Doesn't matter what that means, just don't move this.
             {"blood", AddHealth},
             {"hp", AddHealth},
             {"blackbile", AddHardDamage},
@@ -102,7 +102,7 @@ public class CheatsManager : Singleton<CheatsManager>
             return;
         }
         int amount = int.Parse(args[0]);
-        PlayerHealth.Instance.GainBlood(amount);
+        PlayerHealth.Instance.RegenerateHealth(amount);
         Write($"Added {amount} HP");
     }
     private void AddHardDamage(string[] args) // Add black bile (as in: black damage) to the player. Usage: blackbile <amount>

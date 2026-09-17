@@ -162,6 +162,7 @@ public class SaveManager : Singleton<SaveManager>
             Debug.LogWarning($"Save file not found at {path}");
         }
     }
+    //------
     public int GetSaveCount()
     {
         return Directory.GetFiles(SaveFolder, "save_*.json").Length;

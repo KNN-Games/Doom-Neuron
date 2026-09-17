@@ -4,64 +4,79 @@ using UnityEngine;
 /// <summary>
 /// Handles player health, hard damage and dying
 /// </summary>
+/// <remarks>
+/// We coudl eadily change lose health + gain health into a single function, but I fear this might make this just more confusing.
+/// Same with black bile
+/// </remarks>
 public class PlayerHealth : Singleton<PlayerHealth>
 {
     [Header("Stats")]
     public int maxBlood;
-    public float damageReduction = 0; //0 means 0%, 1 means 100%. Modify this additively please.
     public bool isInvulnerable = false;
-    [Header("References")]
-    public int CurrentBlood { get; private set; } //as in: current blood
-    public int CurrentBlackBile { get; private set; } //as in: current black bile
+    // Health related values
+    public int CurrentBlood { get; private set; } // this is player health/mana (that's the same thing in this game really)
+    public int CurrentBlackBile { get; private set; } // alternative names: black damage, hard damage
     public bool IsDead { get; private set; }
-    
+    private float damageReduction = 0; //0 means 0%, 1 means 100% (invincibility).
+
     private void Start()
     {
         CurrentBlood = maxBlood;
         CurrentBlackBile = 0;
     }
+    // Health
     public void TakeDamage(int damage)
     {
-        if(isInvulnerable) return;
+        if (isInvulnerable || IsDead || damage <= 0) return;
         CurrentBlood -= Mathf.RoundToInt(damage * (1 - damageReduction));
-        if(CurrentBlood <= 0)
-        {
-            Die();
-        }
+        CurrentBlood = Mathf.Max(0, CurrentBlood); // Never go negative
+        if (CurrentBlood <= 0) Die();
     }
-    public void GainBlood(int amount)
+    public void RegenerateHealth(int amount)
     {
+        if(amount <= 0) return;
+        // Maybe we could make it so that RegenerateHealth() while dead causes Resurrect()? But that would require for death to not cause pause.
         CurrentBlood += Math.Clamp(amount, 0, maxBlood - CurrentBlackBile - CurrentBlood);
     }
-    public void TakeHardDamage(int damage) //as in: black bile
+    // Hard damage/black damage/black bile. We really should decide on the name!
+    public void TakeHardDamage(int damage)
     {
-        if(isInvulnerable) return;
-        CurrentBlackBile += damage;
+        if (isInvulnerable || IsDead || damage <= 0) return;
+        CurrentBlackBile = Math.Clamp(CurrentBlackBile + damage, 0, maxBlood); // Keep bile in valid range
         CurrentBlood = Math.Clamp(CurrentBlood, 0, maxBlood - CurrentBlackBile);
-        if(CurrentBlood <= 0)
-        {
-            Die();
-        }
+        if (CurrentBlood <= 0) Die();
     }
     public void LoseHardDamage(int amount)
     {
+        if(amount <= 0) return;
         CurrentBlackBile -= amount;
         CurrentBlackBile = Math.Clamp(CurrentBlackBile, 0, maxBlood);
     }
+    // Death
     public void Die()
     {
+        if (IsDead) return;
         IsDead = true;
         PlayerUI.Instance.ShowDeathScreen();
         Debug.Log("You died!");
     }
-    public  void Resurrect() // Resurrect and/ top of player health
+    public void Resurrect() // Resurrect and/ top of player health
     {
-        if(IsDead)
+        if (IsDead)
         {
             IsDead = false;
             PlayerUI.Instance.HideDeathScreen();
-        }
+        } // Resurrection if player is not dead just makes you max out health
         CurrentBlackBile = 0;
         CurrentBlood = maxBlood;
+    }
+    // Damage reduction
+    public void ChangeDamageReduction(float value)
+    {
+        damageReduction = Math.Clamp(damageReduction + value, 0, 1); // clamp the total, allow negative deltas to remove buffs
+        if (damageReduction >= 1f)
+        {
+            Debug.LogWarning("damage reduction made the player invincible. Is this intended?");
+        }
     }
 }

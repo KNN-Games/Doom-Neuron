@@ -3,39 +3,41 @@ using UnityEngine;
 /// <summary>
 /// The main player Script.
 /// Handles player movement, looking around, and interaction with objects in the game world. Also handles the camera and some other generic player functions.
-/// Remember to not directly reference the player GameObject in scenes, but instead use PlayerController.Instance to access the singleton instance.
 /// </summary>
+/// <remarks>
+/// Remember to not directly reference the player GameObject in scenes, but instead use PlayerController.Instance to access the singleton instance.
+/// </remarks>
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Transform))]
 public class PlayerController : Singleton<PlayerController>
 {
     [HideInInspector] public Transform playerTransform;
-    [Header("Movement")]
+    [Header("Stats")]
     public float moveSpeed = 8f;
     public float jumpHeight = 1.5f;
     public float gravity = -9.81f; // Earth gravity
     [Header("References")]
     public Camera camera; // As in: player camera
     [SerializeField] private GameObject interactionText;
-    private CharacterController characterController;
+    // Get these from InputManager.cs
     [HideInInspector] public Vector2 moveInput;
     [HideInInspector] public Vector2 lookInput;
+    // Get these from settings
+    [HideInInspector] public float mouseSensitivity = 1f;
+    [HideInInspector] public float gamepadSensitivity = 1f;
+    [HideInInspector] public bool invertGamepadY = false;
+    private CharacterController characterController;
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
     private float lookSensitivity = 1f; 
     private int lookInvertY = 1; // works only on gamepad, 1f = normal, -1f = inverted
-    // Get these from settings
-    [HideInInspector] public float mouseSensitivity = 1f;
-    [HideInInspector] public float gamepadSensitivity = 1f;
-    [HideInInspector] public bool invertGamepadY = false;
 
     protected override void Awake()
     {
         base.Awake();
         DontDestroyOnLoad(gameObject);
     }
-
     private void Start()
     {
         playerTransform = GetComponent<Transform>();

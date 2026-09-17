@@ -7,11 +7,12 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class InputManager : Singleton<InputManager>
 {
-    private bool IsPlayerPresent => playerController != null;
+    public string CurrentDevice { get; private set; }
     [HideInInspector] public PlayerInput playerInput;
+    private bool IsPlayerPresent => playerController != null;
     private PlayerController playerController;
     private PlayerUI playerUI;
-    public string CurrentDevice { get; private set; }
+
     protected override void Awake()
     {
         base.Awake();
@@ -19,7 +20,7 @@ public class InputManager : Singleton<InputManager>
     }
     private void Start()
     {
-        SetActiveInputMap("UI");
+        SetActiveInputMap("UI"); // because you are most likely in the main menu
         // Try to find player
         if (!IsPlayerPresent)
         {
@@ -66,7 +67,7 @@ public class InputManager : Singleton<InputManager>
     // Special functions
     public void OnDeviceLost()
     {
-        if(IsPlayerPresent)
+        if (IsPlayerPresent)
         {
             PlayerUI.Instance.OpenDeviceLostPrompt();
         }
@@ -83,7 +84,7 @@ public class InputManager : Singleton<InputManager>
 
         CurrentDevice = playerInput.currentControlScheme;
         UpdateCursorState();
-        if(IsPlayerPresent)
+        if (IsPlayerPresent)
         {
             PlayerController.Instance.UpdateSensitivity();
         }
@@ -110,12 +111,12 @@ public class InputManager : Singleton<InputManager>
         playerController.Interact();
     }
     // UI map
-    public void OnConfirm(InputAction.CallbackContext context) // TO DO: If this function gets too long replace this with something more optimized! 
+    public void OnConfirm(InputAction.CallbackContext context) // TO DO: If this function gets too long replace this with something more optimized! And by that I means change it to UnityEvents
     {
         if (!context.started) return;
-        if(CheatsManager.Instance.IsConsoleActive) // If cheats menu is open: Submit command
+        if (CheatsManager.Instance.IsConsoleActive) // If cheats menu is open: Submit command
         {
-            CheatsManager.Instance.SubmitCommand(); 
+            CheatsManager.Instance.SubmitCommand();
             return;
         }
         if (OptionsMenu.Instance.IsOptionsMenuOpen) // If options menu is open: Save changes

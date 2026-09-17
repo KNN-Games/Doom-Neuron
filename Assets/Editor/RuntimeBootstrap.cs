@@ -4,6 +4,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Ensures that you do not need to load the game from main menu when testing in Editor.
+/// </summary>
 public static class RuntimeBootstrap
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
