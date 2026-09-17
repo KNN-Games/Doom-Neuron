@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// This file contains the classes for the different types of settings that can be used in the OptionsMenu.
@@ -18,6 +19,8 @@ public partial class OptionsMenu
         public abstract void WriteToPlayerPrefs();
         public abstract void ResetToDefault();
         public abstract bool Changed(); // As in: is value changed?
+        public abstract bool NotDefault(); // As in: is value not default?
+        public abstract string DebugLine();
     }
     private class StringSetting : OptionSetting
     {
@@ -66,6 +69,11 @@ public partial class OptionsMenu
         {
             return !string.Equals(SavedValue, CurrentValue);
         }
+        public override bool NotDefault()
+        {
+            return !string.Equals(DefaultValue, CurrentValue);
+        }
+        public override string DebugLine() => $"{Key}: {SavedValue}";
     }
     private class FloatSetting : OptionSetting
     {
@@ -114,6 +122,11 @@ public partial class OptionsMenu
         {
             return !Mathf.Approximately(CurrentValue, SavedValue);
         }
+        public override bool NotDefault()
+        {
+            return !Mathf.Approximately(DefaultValue, CurrentValue);
+        }
+        public override string DebugLine() => $"{Key}: {SavedValue}";
     }
     private class IntSetting : OptionSetting
     {
@@ -161,6 +174,27 @@ public partial class OptionsMenu
         public override bool Changed()
         {
             return CurrentValue != SavedValue;
+        }
+        public override bool NotDefault()
+        {
+            return CurrentValue != DefaultValue;
+        }
+        public override string DebugLine() => $"{Key}: {SavedValue}";
+    }
+    // Special class for rebind settings
+    private class RebindSetting : StringSetting
+    {
+        public readonly RebindButton Button;
+        public readonly InputAction Action;
+        public readonly DeviceType Device;
+
+        public RebindSetting(string key, InputAction action, int bindingIndex, DeviceType device, RebindButton button)
+            : base(key, action.bindings[bindingIndex].path, value => action.ApplyBindingOverride(bindingIndex, value))
+        {
+            Action = action;
+            Device = device;
+            Button = button;
+            rebinds.Add(this);
         }
     }
 }

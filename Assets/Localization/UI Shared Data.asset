@@ -195,6 +195,42 @@ MonoBehaviour:
     m_Key: RENDER SCALE
     m_Metadata:
       m_Items: []
+  - m_Id: 24697756220448768
+    m_Key: JUMP REBIND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24697846842580992
+    m_Key: INTERACT REBIND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24732902038495232
+    m_Key: DELETE SAVE PROMPT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25014242235441152
+    m_Key: DEVICE LOST PROMPT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25023634527805440
+    m_Key: PAUSE REBIND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25711475972956160
+    m_Key: CHANGE BINDINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25714057613205504
+    m_Key: REBIND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25747930288021504
+    m_Key: GAMEPAD SENSITIVITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25748587707424768
+    m_Key: INVERT Y
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

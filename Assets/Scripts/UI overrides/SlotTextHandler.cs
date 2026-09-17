@@ -14,6 +14,7 @@ public class SlotTextHandler : MonoBehaviour
     [SerializeField] private LocalizeStringEvent difficultyText;
     [SerializeField] private TMP_Text playTimeText;
     [SerializeField] private TMP_Text lastPlayedText;
+    private int slot = -1;
     
     public void UpdateSlot(SaveData data)
     {
@@ -25,6 +26,7 @@ public class SlotTextHandler : MonoBehaviour
             return;
         }
 
+        slot = data.saveSlot;
         yesSaveText.SetActive(true);
         noSaveText.SetActive(false);
 
@@ -53,6 +55,14 @@ public class SlotTextHandler : MonoBehaviour
         // Update last played text
         DateTime lastPlayed = new(data.lastPlayed); // Conversion: long -> DateTime
         lastPlayedText.text = lastPlayed.ToShortDateString();
+    }
+    public void DeleteSave()
+    {
+        if(slot < 0 || slot > 6)
+        {
+            Debug.LogError("wrong slot: " + slot);
+        }
+        MainMenu.Instance.OpenDeleteSavePrompt(slot);
     }
     private static string Format(float seconds)
     {

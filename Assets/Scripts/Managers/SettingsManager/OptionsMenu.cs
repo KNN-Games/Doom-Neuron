@@ -20,10 +20,11 @@ using System.Collections;
 /// When you change a slider/button/whatever you should feel the effects immediately, but not save them until you hit the save button.
 /// 
 /// When adding a new setting you have to add:
-/// 1. private FloatSetting/StringSetting
+/// 1. private FloatSetting/StringSetting/IntSetting/RebindSetting
 /// 2. references to the UI elements that will control the setting (slider, button, etc.). This is not always nessesary.
 /// 3. A function to set the new setting. Connect that function to the button you want in setting menu in Unity Editor.
 /// 4. modify Start() with: settingName = new FloatSetting/StringSetting/IntSetting("settingName", defaultValue, FunctionThatChangesThisSetting)
+/// It's a bit different with rebind settings: only call CreateBindingSettings(inputActionReference.action, "name", rebindButton);
 /// </remarks>
 public partial class OptionsMenu : Singleton<OptionsMenu>
 {
@@ -32,6 +33,7 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [Header("Input action References")]
     [SerializeField] private InputActionReference jumpAction;
     [SerializeField] private InputActionReference interactAction;
+    [SerializeField] private InputActionReference pauseAction;
     [Header("URP asset reference")]
     [SerializeField] private UniversalRenderPipelineAsset urpAsset;
     [Header("Main UI References")]
@@ -53,15 +55,21 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     [SerializeField] private SettingSlider musicVolumeSlider;
     [SerializeField] private SettingSlider sfxVolumeSlider;
     [Header("Controls UI References")]
+    [SerializeField] private LocalizeStringEvent changeBindingsLocalizedText;
     [SerializeField] private LocalizeStringEvent deviceDetectedLocalizedText;
+    [SerializeField] private GameObject keyboardSection;
+    [SerializeField] private GameObject gamepadSection;
     [SerializeField] private SettingSlider mouseSensitivitySlider;
-    [SerializeField] private Button jumpButton;
-    [SerializeField] private Button interactButton;
-    private TextMeshProUGUI jumpButtonText;
-    private TextMeshProUGUI interactButtonText;
+    [SerializeField] private SettingSlider gamepadSensitivitySlider;
+    [SerializeField] private Toggle gamepadInvertYToggle;
+    // Rebind section
+    [SerializeField] private RebindButton jumpButton;
+    [SerializeField] private RebindButton interactButton;
+    [SerializeField] private RebindButton pauseButton; // as in: pause rebind button
     private Coroutine renderScaleCoroutine;
     private static readonly WaitForSecondsRealtime _waitForSeconds0_5 = new(0.5f);
     private List<Resolution> availableResolutions; // List of available resolutions for the resolution dropdown. Populated in Start() by UpdateAvailableResolutions()
+    private static readonly List<RebindSetting> rebinds = new(); // List of all rebinds.
     private static readonly List<OptionSetting> allSettings = new(); // All settings
     private PlayerInput playerInput;
     // Audio settings
@@ -77,11 +85,9 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     private FloatSetting renderScale;
     // Keyboard Controls settings
     private FloatSetting mouseSensitivity;
-    private StringSetting jumpKeyboard;
-    private StringSetting interactKeyboard;
     // Gamepad Controls settings
-    private StringSetting jumpGamepad;
-    private StringSetting interactGamepad;
+    private FloatSetting gamepadSensitivity;
+    private IntSetting gamepadInvertY; // 1 = on, 0 = off
 
     private void Start()
     {
@@ -97,14 +103,12 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         sfxVolume = new FloatSetting("sfxVolume", 100f, SetSFXVolume);
         language = new StringSetting("language", "en", SetLanguage);
         mouseSensitivity = new FloatSetting("mouseSensitivity", 10f, SetMouseSensitivity);
+        gamepadSensitivity = new FloatSetting("gamepadSensitivity", 10f, SetGamepadSensitivity);
+        gamepadInvertY = new IntSetting("gamepadInvertY", 0, SetInvertedLookDirection);
         // Control settings
-        jumpKeyboard = CreateBindingSetting(jumpAction.action, "<Keyboard>", "jumpKey");
-        interactKeyboard = CreateBindingSetting(interactAction.action, "<Keyboard>", "interactKey");
-        jumpGamepad = CreateBindingSetting(jumpAction.action, "<Gamepad>", "jumpGamepad");
-        interactGamepad = CreateBindingSetting(interactAction.action, "<Gamepad>", "interactGamepad");
-
-        jumpButtonText = jumpButton.GetComponentInChildren<TextMeshProUGUI>();
-        interactButtonText = interactButton.GetComponentInChildren<TextMeshProUGUI>();
+        CreateBindingSettings(jumpAction.action, "jump", jumpButton);
+        CreateBindingSettings(interactAction.action, "interact", interactButton);
+        CreateBindingSettings(pauseAction.action, "pause", pauseButton);
 
         ApplySavedValues();
         PlayerPrefs.Save();
@@ -149,7 +153,7 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         // To prevent the render scale from being set too often, we use a coroutine to delay the actual setting of the render scale. 
         // This is because changing the render scale can be expensive and we don't want to do it on every slider change.
         renderScale.CurrentValue = percent;
-        renderScaleSlider.UpdateSlider(percent, percent + "%", percent != renderScale.DefaultValue);
+        renderScaleSlider.UpdateSlider(percent, percent + "%", renderScale.NotDefault());
         if (renderScaleCoroutine != null)
         {
             StopCoroutine(renderScaleCoroutine);
@@ -181,47 +185,67 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         {
             PlayerController.Instance.camera.fieldOfView = newFov;
         }
-        fovSlider.UpdateSlider(newFov, newFov.ToString(), newFov != fov.DefaultValue);
+        fovSlider.UpdateSlider(newFov, newFov.ToString(), fov.NotDefault());
     }
     //---AUDIO SETTINGS---
     public void SetMasterVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         masterVolume.CurrentValue = volume;
-        masterVolumeSlider.UpdateSlider(volume, volume + "%", volume != masterVolume.DefaultValue);
+        masterVolumeSlider.UpdateSlider(volume, volume + "%", masterVolume.NotDefault());
         float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MasterVolume", dB);
     }
     public void SetMusicVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         musicVolume.CurrentValue = volume;
-        musicVolumeSlider.UpdateSlider(volume, volume + "%", volume != musicVolume.DefaultValue);
+        musicVolumeSlider.UpdateSlider(volume, volume + "%", musicVolume.NotDefault());
         float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("MusicVolume", dB);
     }
     public void SetSFXVolume(float volume) // Parameter: 0-100 -> 0%-100%
     {
         sfxVolume.CurrentValue = volume;
-        sfxVolumeSlider.UpdateSlider(volume, volume + "%", volume != sfxVolume.DefaultValue);
+        sfxVolumeSlider.UpdateSlider(volume, volume + "%", sfxVolume.NotDefault());
         float dB = Mathf.Log10(Mathf.Max(volume / 100, 0.0001f)) * 20f;
         audioMixer.SetFloat("SoundEffectsVolume", dB);
     }
     //---CONTROLS SETTINGS---
+    //TO DO: merge these two?
     public void SetMouseSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
         mouseSensitivity.CurrentValue = sensitivity;
-        mouseSensitivitySlider.UpdateSlider(
-            sensitivity,
-            (mouseSensitivity.CurrentValue / 10).ToString(),
-            sensitivity != mouseSensitivity.DefaultValue);
+        mouseSensitivitySlider.UpdateSlider(sensitivity, (mouseSensitivity.CurrentValue / 10).ToString(), mouseSensitivity.NotDefault());
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.mouseSensitivity = sensitivity / 10;
+            PlayerController.Instance.UpdateSensitivity();
+        }
     }
-    public void RebindJump(bool isforKeyboard)
+    public void SetGamepadSensitivity(float sensitivity) // Parameter: 1-30 -> 0,1-3,0
     {
-        BeginRebind(jumpAction, jumpKeyboard, isforKeyboard, jumpButtonText);
+        gamepadSensitivity.CurrentValue = sensitivity;
+        gamepadSensitivitySlider.UpdateSlider(sensitivity, (gamepadSensitivity.CurrentValue / 10).ToString(), gamepadSensitivity.NotDefault());
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.gamepadSensitivity = sensitivity / 10;
+            PlayerController.Instance.UpdateSensitivity();
+        }
     }
-    public void RebindInteract(bool isforKeyboard)
+    public void SetInvertedLookDirection(int value) // 0 = off, 1 = on
     {
-        BeginRebind(interactAction, interactKeyboard, isforKeyboard, interactButtonText);
+        gamepadInvertY.CurrentValue = value;
+        gamepadInvertYToggle.SetIsOnWithoutNotify(value == 1);
+        if (PlayerController.Instance != null)
+        {
+            PlayerController.Instance.invertGamepadY = value == 1;
+            PlayerController.Instance.UpdateSensitivity();
+        }
     }
+    public void SetInvertedLookDirection(bool isOn)
+    {
+        SetInvertedLookDirection(isOn ? 1 : 0);
+    }
+    // Rebinds are made entirely via AddListener, so they don't need to be written here
     //---INTERNAL FUNCTIONS---
     private void ApplySavedValues() // Update settings & UI to match SAVED values.
     {
@@ -260,94 +284,6 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
         }
         return false;
     }
-    private int FindBinding(InputAction action, string device)
-    {
-        for (int i = 0; i < action.bindings.Count; i++)
-        {
-            string path = action.bindings[i].path;
-            if (path.StartsWith(device)) return i;
-        }
-        Debug.LogError("Input action path not found!");
-        return -1;
-    }
-    private StringSetting CreateBindingSetting(InputAction action, string device, string key)
-    {
-        int bindingIndex = FindBinding(action, device);
-        return new StringSetting(
-            key,
-            action.bindings[bindingIndex].path,
-            value => action.ApplyBindingOverride(bindingIndex, value));
-    }
-    private string GetBindingDisplayName(string bindingPath)
-    {
-        return bindingPath.Replace("<Keyboard>/", string.Empty).Replace("<Gamepad>/", string.Empty).ToUpper();
-    }
-    private void BeginRebind(InputAction action, StringSetting setting, bool isForKeyboard, TextMeshProUGUI buttonText)
-    {
-        string device = string.Empty;
-        string cancelKey = string.Empty;
-        if (isForKeyboard)
-        {
-            device = "<Keyboard>";
-            cancelKey = "<Keyboard>/escape";
-        }
-        else // assume it's for Gamepad
-        {
-            device = "<Gamepad>";
-            cancelKey = "<Gamepad>/start";
-        }
-        int bindingIndex = FindBinding(action, device);
-        if (bindingIndex < 0) return;
-
-        action.Disable();
-
-        // Oh my goodness gracious
-        // https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/api/UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperation.html
-        action.PerformInteractiveRebinding(bindingIndex)
-            .WithControlsHavingToMatchPath(device)
-            .WithCancelingThrough(cancelKey)
-            .OnComplete(operation =>
-            {
-                string newBinding = action.bindings[bindingIndex].overridePath;
-                setting.CurrentValue = newBinding;
-                Debug.Log($"{action.name} rebound to {newBinding}");
-                buttonText.text = GetBindingDisplayName(newBinding);
-                operation.Dispose();
-                action.Enable();
-            })
-            .OnCancel(operation =>
-            {
-                operation.Dispose();
-                action.Enable();
-                Debug.Log("Rebinding cancelled.");
-            })
-            .Start();
-    }
-    private void UpdateKeyRebindButtons()
-    {
-        // Check what device is detected. Game only supports gamepad and keyboardMouse, so either detected gamepad or use default keyboard
-        jumpButton.onClick.RemoveAllListeners();
-        interactButton.onClick.RemoveAllListeners();
-
-        Debug.Log(playerInput.currentControlScheme);
-        if (playerInput.currentControlScheme == "Gamepad")
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "GAMEPAD DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(false));
-            interactButton.onClick.AddListener(() => RebindInteract(false));
-            jumpButtonText.text = GetBindingDisplayName(jumpGamepad.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactGamepad.CurrentValue);
-        }
-        else
-        {
-            deviceDetectedLocalizedText.StringReference.TableEntryReference = "KEYBOARD AND MOUSE DETECTED";
-            jumpButton.onClick.AddListener(() => RebindJump(true));
-            interactButton.onClick.AddListener(() => RebindInteract(true));
-            jumpButtonText.text = GetBindingDisplayName(jumpKeyboard.CurrentValue);
-            interactButtonText.text = GetBindingDisplayName(interactKeyboard.CurrentValue);
-        }
-        deviceDetectedLocalizedText.RefreshString();
-    }
     private void UpdateAvailableResolutions() // Update the availableResolutions list (with available resolutions) and the resolution dropdown options
     {
         var seen = new HashSet<(int, int)>(); // To keep track of unique width/height pairs
@@ -380,20 +316,11 @@ public partial class OptionsMenu : Singleton<OptionsMenu>
     }
     public void PrintAllSettingValues()
     {
-        Debug.Log(
-        $"Settings loaded. Values:\n" +
-        $"Master Volume: {masterVolume.SavedValue}\n" +
-        $"Music Volume: {musicVolume.SavedValue}\n" +
-        $"SFX Volume: {sfxVolume.SavedValue}\n" +
-        $"Language: {language.SavedValue}\n" +
-        $"Mouse Sensitivity: {mouseSensitivity.SavedValue}\n" +
-        $"jumpKeyboard: {jumpKeyboard.SavedValue}\n" +
-        $"interactKeyboard: {interactKeyboard.SavedValue}\n" +
-        $"jumpGamepad: {jumpGamepad.SavedValue}\n" +
-        $"interactGamepad: {interactGamepad.SavedValue}\n" +
-        $"FOV: {fov.SavedValue}\n" +
-        $"Resolution: {resolution.SavedValue}\n" +
-        $"Window Mode: {windowMode.SavedValue}\n" +
-        $"Render Scale: {renderScale.SavedValue}");
+        var sb = new System.Text.StringBuilder("Settings loaded. Values:\n");
+        foreach (var setting in allSettings)
+        {
+            sb.AppendLine(setting.DebugLine());
+        }
+        Debug.Log(sb.ToString());
     }
 }

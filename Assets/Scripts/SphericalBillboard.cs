@@ -1,9 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// Gives the object the classic DOOM "2D sprite in a 3D world" effect
+/// Rotates the whole sprite in all directions, always facing the player.
+/// Uses: particle effects(?)
 /// </summary>
-public class Billboard : MonoBehaviour
+public class SphericalBillboard : MonoBehaviour
 {
     private Transform cameraTransform;
 
@@ -11,7 +12,6 @@ public class Billboard : MonoBehaviour
     {
         cameraTransform = PlayerController.Instance.camera.transform;
     }
-
     private void LateUpdate()
     {
         transform.forward = cameraTransform.forward;

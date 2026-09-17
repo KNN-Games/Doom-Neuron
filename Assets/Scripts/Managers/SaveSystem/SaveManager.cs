@@ -145,16 +145,10 @@ public class SaveManager : Singleton<SaveManager>
         GameManager.Instance.SetDifficulty(data.difficulty);
         saveSlot = data.saveSlot;
     }
-    //------
-    public void PrintCurrentSaveInfo()
+    //---DELETING---
+    public void DeleteSave()
     {
-        SaveData data = Load(saveSlot);
-        if (data == null)
-        {
-            Debug.LogWarning($"No save data found in slot {saveSlot}");
-            return;
-        }
-        data.PrintSaveInfo();
+        DeleteSave(saveSlot);
     }
     public void DeleteSave(int slot) // Used in main menu slot selection screen via mainMenu.cs
     {
@@ -168,8 +162,19 @@ public class SaveManager : Singleton<SaveManager>
             Debug.LogWarning($"Save file not found at {path}");
         }
     }
+    //------
     public int GetSaveCount()
     {
         return Directory.GetFiles(SaveFolder, "save_*.json").Length;
+    }
+    public void PrintCurrentSaveInfo()
+    {
+        SaveData data = Load(saveSlot);
+        if (data == null)
+        {
+            Debug.LogWarning($"No save data found in slot {saveSlot}");
+            return;
+        }
+        data.PrintSaveInfo();
     }
 }

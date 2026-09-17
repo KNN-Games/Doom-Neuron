@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b727f8b85c8ce034b84974386b8c5432
+guid: f80252b44860e444287ce464fb1d9e2c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,13 +43,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteBorder: {x: 3, y: 13, z: 68, w: 15}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: krzak_0
+      name: legacy_checkpoint_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 0
-        width: 54
-        height: 29
+        x: 3
+        y: 12
+        width: 57
+        height: 101
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -112,8 +112,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9af37224caa0c694bae0a478acdec9df
-      internalID: 1127979580
+      spriteID: bf6801fd1fe6ba041b9a420621d4ac3d
+      internalID: -1292157815
       vertices: []
       indices: 
       edges: []
@@ -122,8 +122,8 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 2e13c4505e67e1c4c8ed9421c6706de4
-    internalID: 0
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -134,7 +134,7 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      krzak_0: 1127979580
+      legacy_checkpoint_0: -1292157815
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
