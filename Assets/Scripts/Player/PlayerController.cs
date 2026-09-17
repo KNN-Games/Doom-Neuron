@@ -106,7 +106,7 @@ public class PlayerController : Singleton<PlayerController>
         bool isGamepad = InputManager.Instance.CurrentDevice == "Gamepad";
         lookSensitivity = isGamepad ? gamepadSensitivity : mouseSensitivity;
         lookInvertY = (int)((isGamepad && invertGamepadY) ? -1f : 1f);
-        Debug.Log("Updated sensitivity");
+        //Debug.Log("Updated sensitivity");
     }
     // Used to get and set player location
     public void SetRotation(Vector3 rotation)

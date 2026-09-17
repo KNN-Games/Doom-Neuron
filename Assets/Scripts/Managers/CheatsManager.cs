@@ -16,7 +16,7 @@ public class CheatsManager : Singleton<CheatsManager>
     [SerializeField] private TMP_Text outputText;
     [SerializeField] private ScrollRect scrollRect;
     // Dictionary to hold command names and their corresponding actions
-    private Dictionary<string, System.Action<string[]>> commands;
+    private Dictionary<string, System.Action<string[]>> commands; // If we update the engine I'm pretty sure we can [SerializeField] this
     private bool isOpen = false;
     private bool IsPlayerPresent => PlayerController.Instance != null;
     private void Start()

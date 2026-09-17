@@ -13,7 +13,7 @@ public partial class OptionsMenu
     // These dictionaries hold "the input name that Unity will detect", "what to write in the TMPRO text"
     private static readonly Dictionary<string, string> xboxButtonNames = new() // Why doesn't this shit format properly?
 {
-    { "buttonSouth", "<sprite name=\"xbox_a\">" },
+    { "buttonSouth", "<sprite name=\"xbox_a\">" }, // If we update the engine I'm pretty sure we can [SerializeField] this instead
     { "buttonNorth", "<sprite name=\"xbox_y\">" },
     { "buttonEast", "<sprite name=\"xbox_b\">" },
     { "buttonWest", "<sprite name=\"xbox_x\">" },

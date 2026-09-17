@@ -64,7 +64,7 @@ public class PlayerUI : Singleton<PlayerUI>
         InputManager.Instance.UpdateCursorState();
         hud.SetActive(false);
         InputManager.Instance.SetActiveInputMap("UI");
-        Debug.Log("Paused Game");
+        //Debug.Log("Paused Game");
     }
     public void UnpauseGame()
     {
@@ -74,7 +74,7 @@ public class PlayerUI : Singleton<PlayerUI>
         InputManager.Instance.UpdateCursorState();
         hud.SetActive(true);
         InputManager.Instance.SetActiveInputMap("Gameplay");
-        Debug.Log("Unpaused Game");
+        //Debug.Log("Unpaused Game");
     }
     //---BACK TO MENU PROMPT---
     public void OpenBackToMainMenuPrompt()

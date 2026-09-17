@@ -44,12 +44,12 @@ public class InputManager : Singleton<InputManager>
             case "Gameplay":
                 playerInput.actions.FindActionMap("Gameplay").Enable();
                 playerInput.actions.FindActionMap("UI").Disable();
-                Debug.Log("Gameplay map enabled");
+                //Debug.Log("Gameplay map enabled");
                 break;
             case "UI":
                 playerInput.actions.FindActionMap("UI").Enable();
                 playerInput.actions.FindActionMap("Gameplay").Disable();
-                Debug.Log("UI map enabled");
+                //Debug.Log("UI map enabled");
                 break;
             default:
                 Debug.LogError("Action map not found");
@@ -110,10 +110,14 @@ public class InputManager : Singleton<InputManager>
         playerController.Interact();
     }
     // UI map
-    public void OnConfirm(InputAction.CallbackContext context)
+    public void OnConfirm(InputAction.CallbackContext context) // TO DO: If this function gets too long replace this with something more optimized! 
     {
         if (!context.started) return;
-        CheatsManager.Instance.SubmitCommand(); // If cheats menu is open: Submit command
+        if(CheatsManager.Instance.IsConsoleActive) // If cheats menu is open: Submit command
+        {
+            CheatsManager.Instance.SubmitCommand(); 
+            return;
+        }
         if (OptionsMenu.Instance.IsOptionsMenuOpen) // If options menu is open: Save changes
         {
             OptionsMenu.Instance.SaveChanges();
@@ -122,6 +126,7 @@ public class InputManager : Singleton<InputManager>
         if (MainMenu.Instance.isInSplashScreen) // If splash screen is open: skip it
         {
             MainMenu.Instance.EndSplashScreen();
+            return;
         }
     }
     // Global map
