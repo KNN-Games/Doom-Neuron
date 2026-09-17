@@ -9,7 +9,7 @@ public class DamageZone : MonoBehaviour
 {
     [SerializeField] private int damage;
     [SerializeField] private int hardDamage;
-    [SerializeField] private float interval;
+    [SerializeField] private float interval = 1f;
     private readonly Dictionary<Collider, float> nextDamageTime = new();
 
     private void OnTriggerStay(Collider other)

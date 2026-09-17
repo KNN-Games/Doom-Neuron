@@ -1,15 +1,19 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Handles player health, hard damage and dying
 /// </summary>
 /// <remarks>
-/// We coudl eadily change lose health + gain health into a single function, but I fear this might make this just more confusing.
+/// We could easily change lose health + gain health into a single function, but I fear this might make this just more confusing.
 /// Same with black bile
 /// </remarks>
 public class PlayerHealth : Singleton<PlayerHealth>
 {
+    [Header("References")]
+    [SerializeField] private Image bloodBar;
+    [SerializeField] private Image blackBileBar;
     [Header("Stats")]
     public int maxBlood;
     public bool isInvulnerable = false;
@@ -23,6 +27,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     {
         CurrentBlood = maxBlood;
         CurrentBlackBile = 0;
+        UpdateHealthBar();
     }
     // Health
     public void TakeDamage(int damage)
@@ -30,6 +35,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
         if (isInvulnerable || IsDead || damage <= 0) return;
         CurrentBlood -= Mathf.RoundToInt(damage * (1 - damageReduction));
         CurrentBlood = Mathf.Max(0, CurrentBlood); // Never go negative
+        UpdateHealthBar();
         if (CurrentBlood <= 0) Die();
     }
     public void RegenerateHealth(int amount)
@@ -37,6 +43,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
         if(amount <= 0) return;
         // Maybe we could make it so that RegenerateHealth() while dead causes Resurrect()? But that would require for death to not cause pause.
         CurrentBlood += Math.Clamp(amount, 0, maxBlood - CurrentBlackBile - CurrentBlood);
+        UpdateHealthBar();
     }
     // Hard damage/black damage/black bile. We really should decide on the name!
     public void TakeHardDamage(int damage)
@@ -44,6 +51,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
         if (isInvulnerable || IsDead || damage <= 0) return;
         CurrentBlackBile = Math.Clamp(CurrentBlackBile + damage, 0, maxBlood); // Keep bile in valid range
         CurrentBlood = Math.Clamp(CurrentBlood, 0, maxBlood - CurrentBlackBile);
+        UpdateHealthBar();
         if (CurrentBlood <= 0) Die();
     }
     public void LoseHardDamage(int amount)
@@ -51,6 +59,13 @@ public class PlayerHealth : Singleton<PlayerHealth>
         if(amount <= 0) return;
         CurrentBlackBile -= amount;
         CurrentBlackBile = Math.Clamp(CurrentBlackBile, 0, maxBlood);
+        UpdateHealthBar();
+    }
+    // Health bar
+    private void UpdateHealthBar()
+    {
+        bloodBar.fillAmount = CurrentBlood / (float)maxBlood;
+        blackBileBar.fillAmount = CurrentBlackBile / (float)maxBlood;
     }
     // Death
     public void Die()
@@ -73,7 +88,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     // Damage reduction
     public void ChangeDamageReduction(float value)
     {
-        damageReduction = Math.Clamp(damageReduction + value, 0, 1); // clamp the total, allow negative deltas to remove buffs
+        damageReduction = Math.Clamp(damageReduction + value, 0, 1);
         if (damageReduction >= 1f)
         {
             Debug.LogWarning("damage reduction made the player invincible. Is this intended?");
