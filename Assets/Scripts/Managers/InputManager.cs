@@ -110,6 +110,43 @@ public class InputManager : Singleton<InputManager>
         if (!context.started) return;
         playerController.Interact();
     }
+    public void OnPrimaryFire(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            WeaponsManager.Instance.SetPrimaryFireStatus(true);
+        }
+        else if (context.canceled)
+        {
+            WeaponsManager.Instance.SetPrimaryFireStatus(false);
+        }
+    }
+    public void OnSecondaryFire(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            WeaponsManager.Instance.SetSecondaryFireStatus(true);
+        }
+        else if (context.canceled)
+        {
+            WeaponsManager.Instance.SetSecondaryFireStatus(false);
+        }
+    }
+    public void OnChangeWeapon1(InputAction.CallbackContext context) // I have not found a way to optimize this. Change this if you do.
+    {
+        if (!context.started) return;
+        WeaponsManager.Instance.ChangeWeapon(0);
+    }
+    public void OnChangeWeapon2(InputAction.CallbackContext context)
+    {
+        if (!context.started) return;
+        WeaponsManager.Instance.ChangeWeapon(1);
+    }
+    public void OnChangeWeapon3(InputAction.CallbackContext context)
+    {
+        if (!context.started) return;
+        WeaponsManager.Instance.ChangeWeapon(2);
+    }
     // UI map
     public void OnConfirm(InputAction.CallbackContext context) // TO DO: If this function gets too long replace this with something more optimized! And by that I means change it to UnityEvents
     {

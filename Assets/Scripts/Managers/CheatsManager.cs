@@ -33,7 +33,8 @@ public class CheatsManager : Singleton<CheatsManager>
             {"saveinfo", PrintSaveInfo},
             {"whole", Resurrect},
             {"difficulty", SetDifficulty},
-            {"diff", SetDifficulty}
+            {"diff", SetDifficulty},
+            {"weaponinfo", PrintWeaponInfo}
         };
     }
     //---CONSOLE MANAGEMENT---
@@ -173,6 +174,16 @@ public class CheatsManager : Singleton<CheatsManager>
             return;
         }
         SaveManager.Instance.PrintCurrentSaveInfo();
+        Write("Look in the console to see the values");
+    }
+    private void PrintWeaponInfo(string[] args)
+    {
+        if (!IsPlayerPresent)
+        {
+            Write("You cannot print weapon info if you don't exist");
+            return;
+        }
+        WeaponsManager.Instance.PrintWeaponInfo();
         Write("Look in the console to see the values");
     }
     private void SetDifficulty(string[] args) // Sets the difficulty. Usage: difficulty <level>
