@@ -9,7 +9,7 @@ using UnityEngine.UI;
 /// We could easily change lose health + gain health into a single function, but I fear this might make this just more confusing.
 /// Same with black bile
 /// </remarks>
-public class PlayerHealth : Singleton<PlayerHealth>
+public class PlayerHealth : Singleton<PlayerHealth>, IDamageable
 {
     [Header("References")]
     [SerializeField] private Image bloodBar;

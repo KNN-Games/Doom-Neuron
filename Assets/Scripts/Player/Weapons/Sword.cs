@@ -2,22 +2,27 @@ using UnityEngine;
 
 public class Sword : Weapon
 {
-    // Primary fire
+    // Primary fire begin/end
     public override void StartPrimary()
     {
-        animator.SetBool(Primary, true);
+
     }
     public override void EndPrimary()
     {
-        animator.SetBool(Primary, false);
+
     }
-    // Secondary fire
+    // Secondary fire begin/end
     public override void StartSecondary()
     {
-        animator.SetBool(Secondary, true);
+
     }
     public override void EndSecondary()
     {
-        animator.SetBool(Secondary, false);
+
+    }
+    // Attack used by animation event
+    public override void Attack()
+    {
+        throw new System.NotImplementedException();
     }
 }

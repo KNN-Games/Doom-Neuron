@@ -8,4 +8,8 @@ AnimatorOverrideController:
   m_PrefabAsset: {fileID: 0}
   m_Name: PiercingBlood
   m_Controller: {fileID: 9100000, guid: 500f9ca5f810c2f4f83b58d1a11b4b4f, type: 2}
-  m_Clips: []
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 1e4cb146cd54de74d8f2e402b82b7562, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: f5429c15b2035bb40bbb030b02f0b02a, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: f5429c15b2035bb40bbb030b02f0b02a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 1e4cb146cd54de74d8f2e402b82b7562, type: 2}

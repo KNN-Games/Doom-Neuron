@@ -44,6 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bde224c35aeaef4eaaff3a5151305c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Orb
-  id: 1
   displayName: Orb
-  animatorOverride: {fileID: 22100000, guid: 5027e0cb812f5d347b05f76eaad07d42, type: 2}
+  description: Shoots an orb
+  animatorController: {fileID: 9100000, guid: 500f9ca5f810c2f4f83b58d1a11b4b4f, type: 2}
+  projectilePrefab: {fileID: 8564151920022886456, guid: 301697f7c2f430640a20b8d447adab75, type: 3}
+  projectileSpeed: 25
+  damage: 20
