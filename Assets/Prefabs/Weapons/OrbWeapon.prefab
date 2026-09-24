@@ -46,7 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Orb
   displayName: Orb
   description: Shoots an orb
-  animatorController: {fileID: 9100000, guid: 500f9ca5f810c2f4f83b58d1a11b4b4f, type: 2}
+  animatorController: {fileID: 9100000, guid: 5af228ee71d4a98499350ba995057f77, type: 2}
   projectilePrefab: {fileID: 8564151920022886456, guid: 301697f7c2f430640a20b8d447adab75, type: 3}
+  chargedProjectilePrefab: {fileID: 8564151920022886456, guid: c706844ae3ad5404782155107301f4ea, type: 3}
   projectileSpeed: 25
   damage: 20
+  chargedDamage: 50
+  chargeTime: 1
+  chargeBloodCost: 5

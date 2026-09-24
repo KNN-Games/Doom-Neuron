@@ -9,10 +9,12 @@ public class ExplosiveProjectile : Projectile
     [SerializeField] protected float explosionRadius;
     protected override void OnTriggerEnter(Collider other)
     {
+        
         // Explosion effect
         if (explosionEffect != null)
         {
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+            Explosion explosion = Instantiate(explosionEffect, transform.position, Quaternion.identity).GetComponent<Explosion>();
+            explosion.DrawExplosionRadius(explosionRadius);
         }
         // Damage everything in radius
         Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
@@ -21,6 +23,5 @@ public class ExplosiveProjectile : Projectile
             DamageTarget(nearbyObject);
         }
         Destroy(gameObject);
-
     }
 }

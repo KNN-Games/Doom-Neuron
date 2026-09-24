@@ -2,7 +2,9 @@ using UnityEngine;
 
 public class PiercingBlood : Weapon
 {
-    private static readonly int Secondary = Animator.StringToHash("FireSecondary");
+    [Header("Piercing Blood settings")]
+    [SerializeField] private int damage;
+    [SerializeField] private LayerMask damageableLayers;
     // Primary fire begin/end
     public override void StartPrimary()
     {
@@ -12,22 +14,16 @@ public class PiercingBlood : Weapon
     {
         animator.SetBool(FirePrimaryHash, false);
     }
-    // Secondary fire begin/end
+    // Secondary fire begin/end (unused for not)
     public override void StartSecondary()
     {
-        animator.SetBool(Secondary, true);
     }
     public override void EndSecondary()
     {
-        animator.SetBool(Secondary, false);
     }
     // Attack used by animation event
     public override void Attack()
     {
-        Ray ray = new(firePoint.transform.position, Vector3.zero);
-        Vector3 targetPoint = ray.origin + ray.direction * 100f;
-        Vector3 direction = (targetPoint - firePoint.position).normalized;
-       // GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.LookRotation(direction));
-      //  projectile.GetComponent<Rigidbody>().linearVelocity = direction * bulletSpeed;
+        HitscanAttack(damage, damageableLayers);
     }
 }

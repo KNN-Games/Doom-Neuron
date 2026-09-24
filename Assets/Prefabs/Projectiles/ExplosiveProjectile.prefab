@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 4953817959026750851}
   - component: {fileID: 9008290226300324583}
   - component: {fileID: 5189747545330677323}
-  - component: {fileID: 6816966937253370994}
+  - component: {fileID: 6517048057475965182}
   m_Layer: 0
-  m_Name: Projectile
+  m_Name: ExplosiveProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -141,7 +141,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6816966937253370994
+--- !u!114 &6517048057475965182
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,9 +150,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8564151920022886456}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5df9fa4905d88764dad6b4d58d4e2d1c, type: 3}
+  m_Script: {fileID: 11500000, guid: 34ea25bd38f3517459fae707174bad34, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Projectile
+  m_EditorClassIdentifier: Assembly-CSharp::ExplosiveProjectile
   damageableLayers:
     serializedVersion: 2
     m_Bits: 8
@@ -160,3 +160,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   lifetime: 60
+  explosionEffect: {fileID: 8751992219749059038, guid: b170f9a664dbf9e418dcbbd79697c30f, type: 3}
+  explosionRadius: 2

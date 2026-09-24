@@ -52,6 +52,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
     // Changing weapons, used by InputManager.cs and animation event
     public void ChangeWeapon(int slot) // Begin change weapon sequence (lower current weapon), used by InputManager.cs
     {
+        if(slot == activeSlot) return;
         animator.SetTrigger(ChangeWeaponHash);
         activeSlot = slot;
     }
@@ -59,13 +60,13 @@ public class WeaponsManager : Singleton<WeaponsManager>
     {
         ChangeWeapon(activeSlot + 1);
     }
-    public void RaiseNewWeapon() // Used in animation event
+    public void RaiseNewWeapon() // Used in animation event on the last frame of lowering weapon animation
     {
         animator.runtimeAnimatorController = CurrentWeapon.animatorController;
     }
     //---USED BY CheatsManager.cs---
     public void PrintWeaponInfo()
     {
-        Debug.Log(CurrentWeapon.displayName);
+        Debug.Log(CurrentWeapon.displayName + "; " + CurrentWeapon.description);
     }
 }

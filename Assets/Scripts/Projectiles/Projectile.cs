@@ -10,7 +10,8 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     // Set in prefab
-    [SerializeField] private LayerMask damageableLayers;
+    [SerializeField] protected LayerMask damageableLayers; // Deals damage and destroys the projectile
+    [SerializeField] private LayerMask ignoredLayers; // Passes through silently
     [SerializeField] private float lifetime; // Auto-destroy after this many seconds in case it hits nothing
     // Set in pseudo-constructor Launch
     protected Vector3 velocity;
@@ -32,24 +33,21 @@ public class Projectile : MonoBehaviour
     }
     protected virtual void OnTriggerEnter(Collider other)
     {
-        // If player is not in damageable layer, ignore him completely
-        int layer = other.gameObject.layer;
-        if(!IsLayerInDamageableMask(layer) && layer == LayerMask.NameToLayer("Player")) return;
-        
-        DamageTarget(other);
+        if (IsInMask(other.gameObject.layer, ignoredLayers)) return; // Pass through
+
+        DamageTarget(other); // No-ops if the layer isn't damageable, but the projectile is destroyed either way
         Destroy(gameObject);
     }
     protected void DamageTarget(Collider collider) // Damages if possible, does nothing if not
     {
-        if (IsLayerInDamageableMask(collider.gameObject.layer)) // Is in damageable layer?
-        {
-            // GetComponentInParent in case the collider sits on a child object of the target
-            IDamageable target = collider.GetComponentInParent<IDamageable>();
-            target?.TakeDamage(damage); // Take damage if possible
-        }
+        if (!IsInMask(collider.gameObject.layer, damageableLayers)) return;
+
+        // GetComponentInParent in case the collider sits on a child object of the target
+        IDamageable target = collider.GetComponentInParent<IDamageable>();
+        target?.TakeDamage(damage); // Take damage if possible
     }
-    private bool IsLayerInDamageableMask(int layer)
+    private static bool IsInMask(int layer, LayerMask mask)
     {
-        return (damageableLayers.value & (1 << layer)) != 0;
+        return (mask.value & (1 << layer)) != 0;
     }
 }

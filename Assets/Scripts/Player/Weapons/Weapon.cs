@@ -2,8 +2,7 @@ using UnityEditor.Animations;
 using UnityEngine;
 
 /// <summary>
-/// Base class for every weapon prefab. Each weapon is its own prefab with its own Animator
-/// and its own subclass of this script - some duplicated code between subclasses is expected.
+/// Base class for every weapon prefab. Each weapon is its own prefab.
 /// </summary>
 public abstract class Weapon : MonoBehaviour
 {
@@ -36,21 +35,33 @@ public abstract class Weapon : MonoBehaviour
         playerCamera = PlayerController.Instance.camera;
     }
     // Generic methods you can use to calculate stuff
-    protected Vector3 CalculateDirectionVectorWithCamera(float inaccuracyInDegrees) // Calculate velocity of the projectile - that means "where it should go"
+    protected void ProjectileAttack(GameObject projectilePrefab, float projectileSpeed, int damage, float inaccuracyInDegrees = 0f)
     {
-        Vector3 dirFromCam = GetSpreadDirectionFromCamera(inaccuracyInDegrees); // direction from camera
-        Ray ray = new(firePoint.transform.position, dirFromCam); // Ray from firePoint pointing in direction from camera
+        Projectile projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity).GetComponent<Projectile>();
+        Ray ray = FromFirePointToCamera(inaccuracyInDegrees); // Ray from firePoint pointing in direction from camera
         Vector3 targetPoint = ray.origin + ray.direction * 100f; // Point in ray where the projectile should go to.
-        return (targetPoint - firePoint.position).normalized; // Final direction
+        Vector3 direction = (targetPoint - firePoint.position).normalized; // Velocity of the projectile - that means "where it should go"
+        projectile.Launch(direction * projectileSpeed, damage);
     }
-    private Vector3 GetSpreadDirectionFromCamera(float angleDeg) // Generate random not-perfect accuracy
+    protected void HitscanAttack(int damage, LayerMask damageableLayers, float inaccuracyInDegrees = 0f)
+    {
+        Ray ray = FromFirePointToCamera(inaccuracyInDegrees);
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000)) return; // Nothing in range
+        
+        // TO DO: Copied this code from Projectile.cs, how do I make it not like that?
+        if (!IsInMask(hit.collider.gameObject.layer, damageableLayers)) return;
+        IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
+        target?.TakeDamage(damage); // Take damage if possible
+    }
+    // Internal methods
+    private Ray FromFirePointToCamera(float inaccuracyInDegrees = 0f) // Ray from firePoint pointing in direction from camera
     {
         // Picks a random direction inside a cone around the camera's forward vector.
         // angleDeg = 0 always returns the exact forward direction (no spread).
-        float angleRad = angleDeg * Mathf.Deg2Rad;
+        float angleRad = inaccuracyInDegrees * Mathf.Deg2Rad;
 
         // Random angle around the cone's axis (0-360 deg)
-        float theta = Random.Range(0f, Mathf.PI * 2f);
+        float theta = Random.Range(0f, Mathf.PI * 2f); // Generate random not-perfect accuracy
         // Random distance from the cone's axis, biased so the cone fills evenly (not just its edge)
         float z = Mathf.Cos(angleRad * Random.value);
         float r = Mathf.Sqrt(1 - z * z);
@@ -62,6 +73,11 @@ public abstract class Weapon : MonoBehaviour
         Vector3 localDir = new(x, y, z);
 
         // Rotate the local cone direction into world space using the camera's orientation
-        return playerCamera.transform.TransformDirection(localDir).normalized;
+        Vector3 directionFromCamera = playerCamera.transform.TransformDirection(localDir).normalized;
+        return new(firePoint.transform.position, directionFromCamera);
+    }
+    private static bool IsInMask(int layer, LayerMask mask)
+    {
+        return (mask.value & (1 << layer)) != 0;
     }
 }
