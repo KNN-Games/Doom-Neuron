@@ -7,6 +7,10 @@ using UnityEngine;
 /// This weapon has a charge mechanic:
 /// 1. click quickly to fire a small projectile
 /// 2. hold the fire button for a short while to make the projectile bigger, do more damage and explode on contact
+/// 
+/// This weapon is the reason weapons aren't ScriptableObjects - they don't have their own state in-scene, so charging... well, it is not impossible
+/// to implement it, it just sucks and makes things more complicated than they need to be. 
+/// "Simplicity is the ultimate sophistication" ~ Leonardo Da Vinci
 /// </remarks>
 public class Orb : Weapon
 {

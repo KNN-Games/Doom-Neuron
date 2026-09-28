@@ -2025,7 +2025,7 @@ GameObject:
   - component: {fileID: 6665535442440478691}
   - component: {fileID: 3733757297648061769}
   m_Layer: 6
-  m_Name: Weapon
+  m_Name: CurrentWeaponRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2505,7 +2505,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6923504846505315919}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3670,18 +3670,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 9080876566488402780}
     m_Modifications:
-    - target: {fileID: 3388846535822169379, guid: 2e40fe9a0965fb74f83142a28c1df03f, type: 3}
-      propertyPath: damage
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3388846535822169379, guid: 2e40fe9a0965fb74f83142a28c1df03f, type: 3}
-      propertyPath: description
-      value: Jujutsu Kaisen type shi
-      objectReference: {fileID: 0}
-    - target: {fileID: 3388846535822169379, guid: 2e40fe9a0965fb74f83142a28c1df03f, type: 3}
-      propertyPath: damageableLayers.m_Bits
-      value: 136
-      objectReference: {fileID: 0}
     - target: {fileID: 4361306719699281969, guid: 2e40fe9a0965fb74f83142a28c1df03f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

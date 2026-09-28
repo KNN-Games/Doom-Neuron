@@ -1,4 +1,3 @@
-using UnityEditor.Animations;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +8,7 @@ public abstract class Weapon : MonoBehaviour
     [Header("Identity")]
     public string displayName;
     public string description;
-    public AnimatorController animatorController;
+    public RuntimeAnimatorController animatorController;
     // References
     protected Transform firePoint;
     protected Camera playerCamera;
@@ -46,10 +45,10 @@ public abstract class Weapon : MonoBehaviour
     protected void HitscanAttack(int damage, LayerMask damageableLayers, float inaccuracyInDegrees = 0f)
     {
         Ray ray = FromFirePointToCamera(inaccuracyInDegrees);
-        if (!Physics.Raycast(ray, out RaycastHit hit, 1000)) return; // Nothing in range
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000)) return; // Nothing in range. 1000 is range, this is a really long ray
         
         // TO DO: Copied this code from Projectile.cs, how do I make it not like that?
-        if (!IsInMask(hit.collider.gameObject.layer, damageableLayers)) return;
+        if (!DamageUtility.IsInMask(hit.collider.gameObject.layer, damageableLayers)) return;
         IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
         target?.TakeDamage(damage); // Take damage if possible
     }
@@ -75,9 +74,5 @@ public abstract class Weapon : MonoBehaviour
         // Rotate the local cone direction into world space using the camera's orientation
         Vector3 directionFromCamera = playerCamera.transform.TransformDirection(localDir).normalized;
         return new(firePoint.transform.position, directionFromCamera);
-    }
-    private static bool IsInMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
     }
 }

@@ -33,21 +33,17 @@ public class Projectile : MonoBehaviour
     }
     protected virtual void OnTriggerEnter(Collider other)
     {
-        if (IsInMask(other.gameObject.layer, ignoredLayers)) return; // Pass through
+        if (DamageUtility.IsInMask(other.gameObject.layer, ignoredLayers)) return; // Pass through
 
         DamageTarget(other); // No-ops if the layer isn't damageable, but the projectile is destroyed either way
         Destroy(gameObject);
     }
     protected void DamageTarget(Collider collider) // Damages if possible, does nothing if not
     {
-        if (!IsInMask(collider.gameObject.layer, damageableLayers)) return;
+        if (!DamageUtility.IsInMask(collider.gameObject.layer, damageableLayers)) return;
 
         // GetComponentInParent in case the collider sits on a child object of the target
         IDamageable target = collider.GetComponentInParent<IDamageable>();
         target?.TakeDamage(damage); // Take damage if possible
-    }
-    private static bool IsInMask(int layer, LayerMask mask)
-    {
-        return (mask.value & (1 << layer)) != 0;
     }
 }
