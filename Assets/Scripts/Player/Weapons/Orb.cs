@@ -14,7 +14,7 @@ using UnityEngine;
 /// </remarks>
 public class Orb : Weapon
 {
-    private static readonly int CharheWeaponHash = Animator.StringToHash("ChargeWeapon");
+    private static readonly int ChargeWeaponHash = Animator.StringToHash("ChargeWeapon");
     [Header("Orb settings")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private GameObject chargedProjectilePrefab;
@@ -32,12 +32,12 @@ public class Orb : Weapon
     {
         chargeTimer = 0; // Reset timer, start a new one
         charging = true;
-        animator.SetBool(CharheWeaponHash, true);
+        animator.SetBool(ChargeWeaponHash, true);
     }
     public override void EndPrimary()
     {
         charging = false;
-        animator.SetBool(CharheWeaponHash, false); // the animator will start "FireWeapon" animation immediately due to transition logic
+        animator.SetBool(ChargeWeaponHash, false); // the animator will start "FireWeapon" animation immediately due to transition logic
     }
 
     // Secondary fire begin/end (unused for now, wired up for later)

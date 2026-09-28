@@ -29,4 +29,9 @@ public class Interactable : MonoBehaviour
     {
         SceneManager.LoadScene(levelName);
     }
+    public void PickUpWeapon(Weapon weapon)
+    {
+        WeaponsManager.Instance.PickUpWeapon(weapon);
+        Destroy(gameObject);
+    }
 }
