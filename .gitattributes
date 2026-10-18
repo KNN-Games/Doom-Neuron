@@ -1,0 +1,68 @@
+# Opis: README.md, sekcja "Jak git traktuje pliki"
+
+# --- Końce linii ---
+* text=auto
+
+# Kod i pliki tekstowe
+*.cs            text diff=csharp
+*.shader        text
+*.hlsl          text
+*.cginc         text
+*.shadergraph   text
+*.json          text
+*.inputactions  text
+*.uxml          text
+*.uss           text
+*.tss           text
+*.xsd           text
+*.md            text
+
+# --- Pliki YAML Unity: LF + Smart Merge ---
+*.unity         text eol=lf merge=unityyamlmerge
+*.prefab        text eol=lf merge=unityyamlmerge
+*.asset         text eol=lf merge=unityyamlmerge
+*.mat           text eol=lf merge=unityyamlmerge
+*.anim          text eol=lf merge=unityyamlmerge
+*.controller    text eol=lf merge=unityyamlmerge
+*.overrideController text eol=lf merge=unityyamlmerge
+*.mask          text eol=lf merge=unityyamlmerge
+*.mixer         text eol=lf merge=unityyamlmerge
+*.playable      text eol=lf merge=unityyamlmerge
+*.physicMaterial text eol=lf merge=unityyamlmerge
+*.lighting      text eol=lf merge=unityyamlmerge
+*.meta          text eol=lf merge=unityyamlmerge
+
+# --- Binarne przez Git LFS ---
+# Grafika
+*.png   filter=lfs diff=lfs merge=lfs -text
+*.jpg   filter=lfs diff=lfs merge=lfs -text
+*.jpeg  filter=lfs diff=lfs merge=lfs -text
+*.psd   filter=lfs diff=lfs merge=lfs -text
+*.tga   filter=lfs diff=lfs merge=lfs -text
+*.tif   filter=lfs diff=lfs merge=lfs -text
+*.tiff  filter=lfs diff=lfs merge=lfs -text
+*.exr   filter=lfs diff=lfs merge=lfs -text
+*.hdr   filter=lfs diff=lfs merge=lfs -text
+*.kra   filter=lfs diff=lfs merge=lfs -text
+*.aseprite filter=lfs diff=lfs merge=lfs -text
+# Dźwięk
+*.wav   filter=lfs diff=lfs merge=lfs -text
+*.mp3   filter=lfs diff=lfs merge=lfs -text
+*.ogg   filter=lfs diff=lfs merge=lfs -text
+*.flac  filter=lfs diff=lfs merge=lfs -text
+# Modele
+*.fbx   filter=lfs diff=lfs merge=lfs -text
+*.obj   filter=lfs diff=lfs merge=lfs -text
+*.blend filter=lfs diff=lfs merge=lfs -text
+# Wideo
+*.mp4   filter=lfs diff=lfs merge=lfs -text
+*.webm  filter=lfs diff=lfs merge=lfs -text
+# Czcionki
+*.ttf   filter=lfs diff=lfs merge=lfs -text
+*.otf   filter=lfs diff=lfs merge=lfs -text
+# Inne
+*.dll   filter=lfs diff=lfs merge=lfs -text
+*.zip   filter=lfs diff=lfs merge=lfs -text
+
+# Wypiekane światło jest binarne mimo rozszerzenia .asset (późniejsza reguła wygrywa)
+LightingData.asset filter=lfs diff=lfs merge=lfs -text
