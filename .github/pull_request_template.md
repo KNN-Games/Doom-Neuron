@@ -1,12 +1,12 @@
 Closes #
 
-## Co się zmienia
+## What changes
 
 
-## Jak przetestować
+## How to test
 
 
-## Checklista
-- [ ] Projekt otwiera się bez błędów w konsoli
-- [ ] Brak `Missing` referencji w zmienionych scenach/prefabach
-- [ ] Przetestowane w Play Mode
+## Checklist
+- [ ] Project opens without console errors
+- [ ] No `Missing` references in changed scenes/prefabs
+- [ ] Tested in Play Mode
