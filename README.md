@@ -60,4 +60,4 @@ W Unity Hub wybierz Add i wskaż folder repo. Pierwsze otwarcie trwa długo, bo 
 >
 > **Binarne bez mergowania.** Dwóch wersji obrazka czy dźwięku nie da się połączyć. Przy konflikcie wybiera się jedną z nich (zapewne nowszą) w całości.
 
-Gdy w projekcie pojawia się nowy format pliku, dopisz go do `.gitattributes` w tym samym PR, w którym pojawia się pierwszy taki plik.
+Gdy w projekcie pojawia się nowy format pliku, dopisz go do `.gitattributes` w tym samym PR, w którym pojawia się pierwszy taki plik. Rozszerzenie binarne zapisuj w obu wielkościach liter, np. `*.[wW][aA][vV]`, bo na Linuksie i macOS `*.wav` nie obejmie pliku `.WAV`.

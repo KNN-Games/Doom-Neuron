@@ -11,11 +11,11 @@ CHECK="${1:?Podaj kontrolę: meta | conflicts | large-files | project-version}"
 BASE="${2:-origin/main}"
 MAX_SIZE_MB="${MAX_SIZE_MB:-5}"
 
-git() { command git -c core.quotePath=false "$@"; }
+git() { command git -c core.ignorecase=false -c core.quotePath=false "$@"; }
 
 # Format adnotacji GitHuba; lokalnie to po prostu czytelny wiersz.
-error()   { echo "::error file=$1${3:+,line=$3}::$2"; }
-warning() { echo "::warning file=$1::$2"; }
+error()   { echo "::error file=$1${3:+,line=$3}::$1${3:+:$3}: $2"; }
+warning() { echo "::warning file=$1::$1: $2"; }
 fail()    { echo "::error::$1"; exit 1; }
 
 # Pliki dodane lub zmienione w PR względem bazy, w zmiennej CHANGED (jeden na wiersz).
