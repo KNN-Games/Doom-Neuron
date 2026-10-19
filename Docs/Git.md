@@ -7,7 +7,7 @@
   - typy: `feature`, `fix`, `art`, `level`, `refactor`, `docs`
 - Branch powinien żyć krótko, od kilku dni do tygodnia (im dłużej czekasz ze zmianami tym więcej konfliktów możesz mieć przy próbie zrobienia merge).
 - Gdy `main` pójdzie do przodu, robimy `git merge main` na swoim branchu.
-- Po merge'u PR branch jest usuwany i nie pracujemy na nim dalej.
+- Po merge'u PR branch jest usuwany i nie pracujemy na nim dalej (lokalnie można pozbyć się starych gałęzi przez `git fetch --prune`).
 
 > [!NOTE]
 > **Branch** to osobna linia zmian. Pracujesz na niej, nie przeszkadzając innym, a do `main` trafia ona dopiero przez pull request. Numer (ID) issue w nazwie pozwala od razu znaleźć zadanie, którego branch dotyczy.

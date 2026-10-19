@@ -16,6 +16,8 @@
 *.tss           text
 *.xsd           text
 *.md            text
+*.yml           text
+*.sh            text eol=lf
 
 # --- Pliki YAML Unity: LF + Smart Merge ---
 *.unity         text eol=lf merge=unityyamlmerge

@@ -23,6 +23,7 @@ Gdy coś z roadmapy w Notion idzie do realizacji, zakładamy issue, a w Notion n
   - `Bug`: coś działa źle.
 - **Label**, czyli obszar (jeden lub więcej): `code`, `ui`, `art`, `audio`, `level-design`, `lore` (teksty, dialogi etc), `documentation`.
 - Duże zadanie dzielimy na **sub-issues**. Feature dostaje Taski jako podzadania, a GitHub pokazuje postęp, np. 3/5. Dzielimy, jeśli zadanie zajmie więcej niż kilka dni, jest skomplikowane lub pracować nad nim będzie kilka osób.
+- Każdy błąd znaleziony w grze zgłaszamy jako issue typu `Bug`, także drobny i taki, którego nie zamierzasz naprawiać sam. Zgłoszenie tylko na Discordzie łatwo przeoczyć i nikt go nie przypisze. Zanim założysz nowe, sprawdź, czy takiego issue jeszcze nie ma.
 - Zgłoszenie błędu zawiera kroki do odtworzenia, oczekiwany i faktyczny efekt oraz, jeśli się da, zrzut ekranu/filmik.
 - Dyskusje, pytania i prośby o pomoc prowadzimy na Discordzie. Ustalenia z dyskusji dopisujemy do issue.
 - Issue zamykamy z właściwym powodem: **Close as completed** (zrobione), **Close as not planned** (nie robimy) albo **Close as duplicate** (już jest inne issue).

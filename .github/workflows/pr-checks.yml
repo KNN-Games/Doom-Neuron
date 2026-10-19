@@ -1,0 +1,38 @@
+name: PR checks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Repo checks
+    runs-on: ubuntu-latest
+    env:
+      BASE: ${{ github.event.pull_request.base.sha }}
+    steps:
+      # Bez LFS: wystarczą wskaźniki, a pobieranie binarek zjadałoby limit transferu.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      # Każdy krok ma "if: !cancelled()", żeby błąd w jednym nie ukrywał wyników pozostałych.
+      - name: Missing or orphaned .meta files
+        if: ${{ !cancelled() }}
+        run: bash .github/scripts/pr-checks.sh meta "$BASE"
+
+      - name: Merge conflict markers
+        if: ${{ !cancelled() }}
+        run: bash .github/scripts/pr-checks.sh conflicts "$BASE"
+
+      - name: Large files outside LFS
+        if: ${{ !cancelled() }}
+        run: bash .github/scripts/pr-checks.sh large-files "$BASE"
+
+      - name: Unity version change
+        if: ${{ !cancelled() }}
+        run: bash .github/scripts/pr-checks.sh project-version "$BASE"
