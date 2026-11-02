@@ -26,13 +26,13 @@ git clone https://github.com/KNN-Games/Doom-Neuron.git
 
 ### 3. Zainstaluj Unity
 
-Potrzebujesz dokładnie wersji z [`ProjectSettings/ProjectVersion.txt`](ProjectSettings/ProjectVersion.txt), obecnie **6000.5.2f1**. Najłatwiej zainstalować ją przez Unity Hub > Installs > Install Editor > Archive.
+Potrzebujesz dokładnie wersji z [`ProjectSettings/ProjectVersion.txt`](ProjectSettings/ProjectVersion.txt), obecnie **6000.6.6f1**. Najłatwiej zainstalować ją przez Unity Hub > Installs > Install Editor > Archive.
 > [!NOTE]
 > Otwarcie projektu w innej wersji Unity po cichu przepisuje część plików. Gdy to trafi do repo, wszyscy pozostali muszą się zaktualizować. Wersję zmieniamy tylko wspólnie, zob. [Praca z Unity](Docs/Unity.md#wersja-unity).
 
 ### 4. Podepnij Smart Merge
 
-Uruchom poniższe polecenia w folderze repo (raz). `<UNITY>` zamień na folder edytora, np. `C:/Program Files/Unity/Hub/Editor/6000.5.2f1`. Dokładną ścieżkę znajdziesz w Unity Hub > Installs > "..." przy wersji > Show in Explorer.
+Uruchom poniższe polecenia w folderze repo (raz). `<UNITY>` zamień na folder edytora, np. `C:/Program Files/Unity/Hub/Editor/6000.6.6f1`. Dokładną ścieżkę znajdziesz w Unity Hub > Installs > "..." przy wersji > Show in Explorer.
 ```bash
 git config merge.unityyamlmerge.name "Unity SmartMerge"
 git config merge.unityyamlmerge.driver "'<UNITY>/Editor/Data/Tools/UnityYAMLMerge.exe' merge -h -p --force %O %B %A %A"
