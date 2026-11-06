@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 public class SaveData
 {
     // Do not add a constructor! It will break SaveManager.Load()
-    //ADD HERE: lowest difficulty in save file (for achievements)
     public int saveSlot; // Save slot number
     public Difficulty difficulty; // Difficulty level of the game
     public float playTime; // Total playtime in seconds

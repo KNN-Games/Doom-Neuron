@@ -111,7 +111,7 @@ public class InputManager : Singleton<InputManager>
         playerController.Interact();
     }
     // UI map
-    public void OnConfirm(InputAction.CallbackContext context) // TO DO: If this function gets too long replace this with something more optimized! And by that I means change it to UnityEvents
+    public void OnConfirm(InputAction.CallbackContext context) // TODO(#24) "Optimize InputManager"
     {
         if (!context.started) return;
         if (CheatsManager.Instance.IsConsoleActive) // If cheats menu is open: Submit command
