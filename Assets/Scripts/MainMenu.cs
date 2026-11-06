@@ -67,13 +67,11 @@ public class MainMenu : Singleton<MainMenu>
         mainMenuPanel.SetActive(false);
         OptionsMenu.Instance.OpenOptionsMenu();
     }
-    public void StartCreditsSequence() //Tutaj, Maciej Fedorowicz. W tym miejscu dodaj kod do rozpoczęcia sekwencji napisów końcowych.
+    public void StartCreditsSequence() // TODO(#22) "Create credits sequence"
     {
         // Start the credits sequence
         creditsPanel.SetActive(true);
         mainMenuPanel.SetActive(false);
-
-
     }
     public void ExitGame()
     {

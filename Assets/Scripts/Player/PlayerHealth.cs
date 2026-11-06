@@ -40,7 +40,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void RegenerateHealth(int amount)
     {
-        if(amount <= 0) return;
+        if (amount <= 0) return;
         // Maybe we could make it so that RegenerateHealth() while dead causes Resurrect()? But that would require for death to not cause pause.
         CurrentBlood += Math.Clamp(amount, 0, maxBlood - CurrentBlackBile - CurrentBlood);
         UpdateHealthBar();
@@ -56,7 +56,7 @@ public class PlayerHealth : Singleton<PlayerHealth>
     }
     public void LoseHardDamage(int amount)
     {
-        if(amount <= 0) return;
+        if (amount <= 0) return;
         CurrentBlackBile -= amount;
         CurrentBlackBile = Math.Clamp(CurrentBlackBile, 0, maxBlood);
         UpdateHealthBar();
