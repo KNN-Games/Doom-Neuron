@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f5b5e15c685b0804793528b0087f7bf0
+guid: 77d10e659b9aa01409ab68613b9f6c84
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1622888311007444462
-    second: WI logo_0
+      213: 5099733494419393942
+    second: Neuron logo_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,23 +102,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: WI logo_0
+      name: Intro_Neuron
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 283
-        height: 283
+        width: 1056
+        height: 1274
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2128448fda75a79e0800000000000000
-      internalID: -1622888311007444462
+      spriteID: 69d8708f794e5c640800000000000000
+      internalID: 5099733494419393942
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d370d4b012617504d978a8ec6f86db6e
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      WI logo_0: -1622888311007444462
+      Intro_Neuron: 5099733494419393942
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
