@@ -21,7 +21,7 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    //---DAMAGE SYSTEM---
+    
     public void TakeDamage(int damage)
     {
         Health -= damage;

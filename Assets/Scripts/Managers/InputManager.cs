@@ -63,8 +63,7 @@ public class InputManager : Singleton<InputManager>
         Cursor.lockState = showCursor ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = showCursor;
     }
-    //---HANDLE INPUT ACTIONS---
-    // Special functions
+    #region DEVICE MANAGEMENT
     public void OnDeviceLost()
     {
         if (IsPlayerPresent)
@@ -91,7 +90,10 @@ public class InputManager : Singleton<InputManager>
 
         Debug.Log($"Device change: {CurrentDevice}");
     }
-    // Gameplay map - these do not check if player does not exist so that Unity throws an error if u forget to disable this map when player doesn't exist.
+    #endregion
+
+    #region GAMEPLAY MAP
+    // these do not check if player does not exist so that Unity throws an error if u forget to disable this map when player doesn't exist.
     public void OnMove(InputAction.CallbackContext context)
     {
         playerController.moveInput = context.ReadValue<Vector2>();
@@ -110,7 +112,9 @@ public class InputManager : Singleton<InputManager>
         if (!context.started) return;
         playerController.Interact();
     }
-    // UI map
+    #endregion
+
+    #region UI MAP
     public void OnConfirm(InputAction.CallbackContext context) // TODO(#24) "Optimize InputManager"
     {
         if (!context.started) return;
@@ -130,7 +134,9 @@ public class InputManager : Singleton<InputManager>
             return;
         }
     }
-    // Global map
+    #endregion
+
+    #region GLOBAL MAP
     public void OnTogglePauseMenu(InputAction.CallbackContext context)
     {
         if (!context.started || !IsPlayerPresent || CheatsManager.Instance.IsConsoleActive) return;
@@ -141,4 +147,5 @@ public class InputManager : Singleton<InputManager>
         if (!context.started) return;
         CheatsManager.Instance.ToggleConsole();
     }
+    #endregion
 }

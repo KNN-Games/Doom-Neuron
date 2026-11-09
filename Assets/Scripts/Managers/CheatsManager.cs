@@ -36,7 +36,7 @@ public class CheatsManager : Singleton<CheatsManager>
             {"diff", SetDifficulty}
         };
     }
-    //---CONSOLE MANAGEMENT---
+    #region CONSOLE MANAGEMENT
     public void ToggleConsole()
     {
         isOpen = !isOpen;
@@ -88,7 +88,9 @@ public class CheatsManager : Singleton<CheatsManager>
     {
         outputText.text += text + "\n";
     }
-    //---COMMMANDS---
+    #endregion
+
+    #region COMMANDS
     private void AddHealth(string[] args) // Add blood (as in: HP) to the player. Usage: blood <amount>
     {
         if (!IsPlayerPresent)
@@ -187,4 +189,5 @@ public class CheatsManager : Singleton<CheatsManager>
         GameManager.Instance.SetDifficulty(level);
         Write($"Difficulty set to {GameManager.Instance.Difficulty}");
     }
+    #endregion
 }
