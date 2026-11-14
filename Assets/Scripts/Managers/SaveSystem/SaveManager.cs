@@ -21,11 +21,6 @@ public class SaveManager : Singleton<SaveManager>
         base.Awake();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
-    private void Start()
-    {
-        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
-        Directory.CreateDirectory(SaveFolder);
-    }
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded; // Technically unnessary, but it is "good practice"
@@ -63,6 +58,8 @@ public class SaveManager : Singleton<SaveManager>
     }
     public void Save(int slot) // Over-writes the save slot with new save
     {
+        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
+        Directory.CreateDirectory(SaveFolder);
         // Check if data is viable
         if (slot == 100) return; // 100 means no save slot selected (so you skipped main menu), so don't save
         if (SceneManager.GetActiveScene().name == "MainMenu")
@@ -99,6 +96,8 @@ public class SaveManager : Singleton<SaveManager>
     #region LOADING
     public SaveData Load(int slot) // Returns the save data from the specified slot, or null if no save data exists for that slot
     {
+        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
+        Directory.CreateDirectory(SaveFolder);
         if (slot < 0 || slot > 5)
         {
             Debug.LogError("LOAD FAILURE. INVALID SLOT: " + slot);
