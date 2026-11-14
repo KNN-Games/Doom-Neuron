@@ -18,7 +18,7 @@ public class DamageZone : MonoBehaviour
         bool isEnemy = other.TryGetComponent<Enemy>(out var enemy);
         if (!isPlayer && !isEnemy) return; // If not an enemy or player return
 
-        if (!nextDamageTime.ContainsKey(other)) // Add to dictionary if not already in ti.
+        if (!nextDamageTime.ContainsKey(other)) // Add to dictionary if not already in it
         {
             nextDamageTime[other] = Time.time;
         }

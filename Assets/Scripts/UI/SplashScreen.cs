@@ -2,8 +2,11 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Handles intro fading in and out when opening main menu
+/// Handles intro fading in and out when opening main menu.
 /// </summary>
+/// <remarks>
+/// Ending splash screen is handled by MainMenu.cs
+/// </remarks>
 [RequireComponent(typeof(CanvasGroup))]
 public class SplashScreen : MonoBehaviour
 {

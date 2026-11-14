@@ -1400,7 +1400,7 @@ GameObject:
   - component: {fileID: 1209187118386844078}
   - component: {fileID: -923385847809514161}
   m_Layer: 5
-  m_Name: SelectFile
+  m_Name: UI_SelectFile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
