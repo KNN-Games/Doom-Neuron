@@ -7,11 +7,8 @@
 
 ## Gdzie co trzymamy
 
-- **Notion:** notatki, roadmapa, dokumentacja nietechniczna (lore itp.). W Notion niczego nie przypisujemy i nie śledzimy statusu.
-- **GitHub:** bieżąca praca, czyli issues, PR. To jedyne miejsce, w którym widać, co jest do zrobienia i kto co robi.
+- **GitHub:** bieżąca praca, czyli issues, PR. To jedyne miejsce, w którym widać, co jest do zrobienia i kto co robi. W [Wiki](https://github.com/KNN-Games/Doom-Neuron/wiki) znajduje się cała dokumentacja.
 - **Discord:** dyskusje o pracy.
-
-Gdy coś z roadmapy w Notion idzie do realizacji, zakładamy issue, a w Notion należałoby zostawić do niego link.
 
 ## Issues
 
