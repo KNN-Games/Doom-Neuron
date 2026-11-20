@@ -13,7 +13,6 @@ public class GameManager : Singleton<GameManager>
     // Certain options are stored here because:
     // For example FOV must be applied to player camera, but it does not exist in main menu, so the player needs to get it when he gets created.
     [HideInInspector] public float fov;
-    //private bool IsPlayerPresent => PlayerController.Instance != null;
 
     protected override void Awake()
     {
@@ -25,7 +24,7 @@ public class GameManager : Singleton<GameManager>
         playTime += Time.deltaTime;
         lastSaved += Time.deltaTime; // SaveManager.Save() and SaveManager.LoadGame() resets this when it saves, so we can use this to determine when to save next
     }
-    //---DIFFICULTY MANAGEMENT---
+    // Sets the difficulty level. Can be called from console or from main menu
     public void SetDifficulty(int newDifficulty)
     {
         SetDifficulty((Difficulty)newDifficulty);

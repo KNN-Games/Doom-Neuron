@@ -45,7 +45,7 @@ public class MainMenu : Singleton<MainMenu>
     {
         saveManager = SaveManager.Instance;
     }
-    //---MAIN SCREEN---
+    #region MAIN MENU
     public void OpenSlotSelection()
     {
         // If 0 save files exist start new game immediately for dramatic effect.
@@ -67,20 +67,20 @@ public class MainMenu : Singleton<MainMenu>
         mainMenuPanel.SetActive(false);
         OptionsMenu.Instance.OpenOptionsMenu();
     }
-    public void StartCreditsSequence() //Tutaj, Maciej Fedorowicz. W tym miejscu dodaj kod do rozpoczęcia sekwencji napisów końcowych.
+    public void StartCreditsSequence() // TODO(#22) "Create credits sequence"
     {
         // Start the credits sequence
         creditsPanel.SetActive(true);
         mainMenuPanel.SetActive(false);
-
-
     }
     public void ExitGame()
     {
         Debug.Log("This would exit the game");
         Application.Quit();
     }
-    //---SLOT SELECT SCREEN---
+    #endregion
+    
+    #region SLOT SELECT SCREEN
     public void LoadGame(int slot)
     {
         SaveData data = saveManager.Load(slot);
@@ -111,7 +111,9 @@ public class MainMenu : Singleton<MainMenu>
         UpdateSaveSlotUI();
         saveSlots[saveManager.saveSlot].GetComponent<Button>().Select();
     }
-    //---NEW GAME CONFIG SCREEN---
+    #endregion
+
+    #region NEW GAME CONFIG SCREEN
     public void ConfirmGame() // Start new game
     {
         GameManager.Instance.playTime = 0f;
@@ -129,7 +131,8 @@ public class MainMenu : Singleton<MainMenu>
         }
         GameManager.Instance.SetDifficulty(difficulty);
     }
-    //---HELPER METHODS---
+    #endregion
+    
     public void EndSplashScreen() // Used by SplashScreen.cs
     {
         if (!isInSplashScreen) return;

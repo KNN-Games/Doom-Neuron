@@ -15,7 +15,7 @@ public class SaveManager : Singleton<SaveManager>
     private string SaveFolder => Path.Combine(Application.persistentDataPath, "Saves");  // Path to the save folder
     private SaveData pendingLoadData;
 
-    //---SAVE GAME ON EVERY SCENE CHANGE---
+    // Save game on scene change, if the scene is viable for saving
     protected override void Awake()
     {
         base.Awake();
@@ -36,19 +36,30 @@ public class SaveManager : Singleton<SaveManager>
         }
         Save();
     }
-    //------
-    private void Start()
+    // Info for other scripts
+    public int GetSaveCount()
     {
-        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
-        Directory.CreateDirectory(SaveFolder);
+        return Directory.GetFiles(SaveFolder, "save_*.json").Length;
     }
-    //---SAVING---
+    public void PrintCurrentSaveInfo()
+    {
+        SaveData data = Load(saveSlot);
+        if (data == null)
+        {
+            Debug.LogWarning($"No save data found in slot {saveSlot}");
+            return;
+        }
+        data.PrintSaveInfo();
+    }
+    #region SAVING
     public void Save()
     {
         Save(saveSlot);
     }
     public void Save(int slot) // Over-writes the save slot with new save
     {
+        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
+        Directory.CreateDirectory(SaveFolder);
         // Check if data is viable
         if (slot == 100) return; // 100 means no save slot selected (so you skipped main menu), so don't save
         if (SceneManager.GetActiveScene().name == "MainMenu")
@@ -80,9 +91,13 @@ public class SaveManager : Singleton<SaveManager>
         GameManager.Instance.lastSaved = 0;
         Debug.Log($"Game saved to {path} in slot {slot}");
     }
-    //---LOADING---
+    #endregion
+
+    #region LOADING
     public SaveData Load(int slot) // Returns the save data from the specified slot, or null if no save data exists for that slot
     {
+        // Ensure the save folder exists (no need to check if it exists first, as CreateDirectory will do nothing if it already exists)
+        Directory.CreateDirectory(SaveFolder);
         if (slot < 0 || slot > 5)
         {
             Debug.LogError("LOAD FAILURE. INVALID SLOT: " + slot);
@@ -145,7 +160,9 @@ public class SaveManager : Singleton<SaveManager>
         GameManager.Instance.SetDifficulty(data.difficulty);
         saveSlot = data.saveSlot;
     }
-    //---DELETING---
+    #endregion
+
+    #region DELETING
     public void DeleteSave()
     {
         DeleteSave(saveSlot);
@@ -162,19 +179,5 @@ public class SaveManager : Singleton<SaveManager>
             Debug.LogWarning($"Save file not found at {path}");
         }
     }
-    //------
-    public int GetSaveCount()
-    {
-        return Directory.GetFiles(SaveFolder, "save_*.json").Length;
-    }
-    public void PrintCurrentSaveInfo()
-    {
-        SaveData data = Load(saveSlot);
-        if (data == null)
-        {
-            Debug.LogWarning($"No save data found in slot {saveSlot}");
-            return;
-        }
-        data.PrintSaveInfo();
-    }
+    #endregion
 }

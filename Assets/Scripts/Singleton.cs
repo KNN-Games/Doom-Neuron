@@ -5,6 +5,9 @@ using UnityEngine;
 /// Instead of finding by tag or some other things like that just make a reference to these script by
 /// ScriptName.Instance.FunctionName()
 /// </summary>
+/// <remarks>
+/// Singletons should be used only by stuff that survives scene changes.
+/// </remarks>
 /// <typeparam name="T">Ensure that the parameter is the same as class name, for example GameManager : Singleton<GameManager> </typeparam>
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {

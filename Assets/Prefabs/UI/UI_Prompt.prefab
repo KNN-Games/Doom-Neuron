@@ -334,7 +334,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4436296779623463583}
   m_Layer: 5
-  m_Name: Prompt
+  m_Name: UI_Prompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

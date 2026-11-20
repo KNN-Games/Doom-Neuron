@@ -3,6 +3,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+/// <summary>
+/// A button that requires the user to hold it down for a specified duration before triggering an action.
+/// Currently broken, only works for mouse input.
+/// TODO(#23) "Fix hold button not working with keyboard/gamepad input"
+/// </summary>
 [RequireComponent(typeof(Image))]
 public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IDeselectHandler, ISubmitHandler
 {
@@ -46,7 +51,7 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,
         ResetHold();
     }
     //--- KEYBOARD/GAMEPAD INPUT HANDLERS ---
-    // TO DO: OnSubmit cannot handle holding, we need to find another way to handle this.
+    // OnSubmit cannot handle holding, we need to find another way to handle this.
     // I tried using PlayerInput but Unity throws a warning:
     // Cannot find matching control scheme for DeleteButton (all control schemes are already paired to matching devices)
     public void OnSubmit(BaseEventData eventData)

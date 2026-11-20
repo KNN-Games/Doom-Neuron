@@ -19,11 +19,11 @@ public class Interactable : MonoBehaviour
     {
         onInteraction.Invoke();
     }
-    //generic functions
+    // Generic functions
     public void Save()
     {
         SaveManager.Instance.Save();
-        PlayerHealth.Instance.Resurrect(); // top off player health
+        PlayerHealth.Instance.Resurrect(); // Top off player health
     }
     public void LoadLevel(string levelName)
     {

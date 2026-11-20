@@ -22,7 +22,7 @@ Assets/
 Docs/             dokumentacja techniczna
 ```
 
-- Foldery i pliki nazywamy w PascalCase, **bez spacji i polskich znaków**. Istniejące `UI overrides` i `Map objects` zmienimy w osobnym PR.
+- Foldery i pliki nazywamy w PascalCase, **bez spacji i polskich znaków**.
 - Pliki przenosimy i zmieniamy im nazwy **tylko w edytorze Unity**, nie w Eksploratorze, bo inaczej `.meta` traci powiązanie i referencje się psują.
 - Nie zakładamy nowego folderu najwyższego poziomu bez uzgodnienia z zespołem.
 

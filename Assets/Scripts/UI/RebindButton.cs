@@ -3,6 +3,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+/// <summary>
+/// A special button add-on that simplifies the process of rebinding keys in the options menu.
+/// It allows for easy updating of the button's text and the action it performs when clicked.
+/// </summary>
 public class RebindButton : MonoBehaviour
 {
     [SerializeField] private Button button;

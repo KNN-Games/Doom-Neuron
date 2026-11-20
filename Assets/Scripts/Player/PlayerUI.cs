@@ -21,6 +21,30 @@ public class PlayerUI : Singleton<PlayerUI>
     [SerializeField] private Button respawnButton;
     [SerializeField] private GameObject deviceLostPrompt;
     [SerializeField] private Button deviceLostPromptButton;
+
+    #region PAUSE
+    public void PauseGame()
+    {
+        isPaused = true;
+        Time.timeScale = 0f;
+        InputManager.Instance.UpdateCursorState();
+        hud.SetActive(false);
+        InputManager.Instance.SetActiveInputMap("UI");
+        //Debug.Log("Paused Game");
+    }
+    public void UnpauseGame()
+    {
+        if (PlayerHealth.Instance.IsDead) return; // Do not allow unpause if player is dead
+        isPaused = false;
+        Time.timeScale = 1f;
+        InputManager.Instance.UpdateCursorState();
+        hud.SetActive(true);
+        InputManager.Instance.SetActiveInputMap("Gameplay");
+        //Debug.Log("Unpaused Game");
+    }
+    #endregion
+    
+    #region PAUSE MENU
     public void TogglePauseMenu()
     {
         if (!isPaused) //open menu
@@ -32,7 +56,6 @@ public class PlayerUI : Singleton<PlayerUI>
             ClosePauseMenu();
         }
     }
-    //---PAUSE MENU---
     public void OpenPauseMenu()
     {
         if (OptionsMenu.Instance.IsOptionsMenuOpen) return; // If options are active don't do anything
@@ -56,27 +79,9 @@ public class PlayerUI : Singleton<PlayerUI>
     {
         OptionsMenu.Instance.OpenOptionsMenu();
     }
-    //---DIRECT PAUSE---
-    public void PauseGame()
-    {
-        isPaused = true;
-        Time.timeScale = 0f;
-        InputManager.Instance.UpdateCursorState();
-        hud.SetActive(false);
-        InputManager.Instance.SetActiveInputMap("UI");
-        //Debug.Log("Paused Game");
-    }
-    public void UnpauseGame()
-    {
-        if (PlayerHealth.Instance.IsDead) return; // Do not allow unpause if player is dead
-        isPaused = false;
-        Time.timeScale = 1f;
-        InputManager.Instance.UpdateCursorState();
-        hud.SetActive(true);
-        InputManager.Instance.SetActiveInputMap("Gameplay");
-        //Debug.Log("Unpaused Game");
-    }
-    //---BACK TO MENU PROMPT---
+    #endregion
+
+    #region BACK TO MENU PROMPT
     public void OpenBackToMainMenuPrompt()
     {
         backToMainMenuPrompt.SetActive(true);
@@ -104,7 +109,9 @@ public class PlayerUI : Singleton<PlayerUI>
             time.Seconds
         );
     }
-    //---DEATH SCREEN---
+    #endregion
+
+    #region DEATH SCREEN
     public void BackToCheckpoint() // Activated via Canvas button
     {
         PlayerHealth.Instance.Resurrect();
@@ -122,7 +129,9 @@ public class PlayerUI : Singleton<PlayerUI>
         UnpauseGame();
         deathScreen.SetActive(false);
     }
-    //---DEVICE LOST PROMPT---
+    #endregion
+
+    #region DEVICE LOST PROMPT
     public void OpenDeviceLostPrompt()
     {
         OpenPauseMenu();
@@ -134,4 +143,5 @@ public class PlayerUI : Singleton<PlayerUI>
         deviceLostPrompt.SetActive(false);
         resumeButton.Select();
     }
+    #endregion
 }
