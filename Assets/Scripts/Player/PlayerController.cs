@@ -22,15 +22,16 @@ public class PlayerController : Singleton<PlayerController>
     // Get these from InputManager.cs
     [HideInInspector] public Vector2 moveInput;
     [HideInInspector] public Vector2 lookInput;
-    // Get these from settings
-    [HideInInspector] public float mouseSensitivity = 1f;
-    [HideInInspector] public float gamepadSensitivity = 1f;
-    [HideInInspector] public bool invertGamepadY = false;
+    // Settings
+    private float mouseSensitivity = 1f;
+    private float gamepadSensitivity = 1f;
+    private bool invertGamepadY = false;
+    // other
     private CharacterController characterController;
     private Vector3 velocity;
     private float xRotation;
     private Interactable interactable;
-    private float lookSensitivity = 1f; 
+    private float lookSensitivity = 1f;
     private int lookInvertY = 1; // works only on gamepad, 1f = normal, -1f = inverted
 
     protected override void Awake()
@@ -43,12 +44,7 @@ public class PlayerController : Singleton<PlayerController>
         playerTransform = GetComponent<Transform>();
         characterController = GetComponent<CharacterController>();
         InputManager.Instance.UpdateCursorState();
-        camera.fieldOfView = GameManager.Instance.fov;
-        // These are also changed if player does stuff in OptionsMenu during gameplay (not in main menu)
-        mouseSensitivity = PlayerPrefs.GetFloat("mouseSensitivity", 10f) / 10;
-        gamepadSensitivity = PlayerPrefs.GetFloat("gamepadSensitivity", 10f) / 10;
-        invertGamepadY = PlayerPrefs.GetInt("invertGamepadY", 0) == 1;
-
+        InputManager.Instance.DeviceChanged += UpdateSensitivity;
         UpdateSensitivity();
     }
     private void Update()
@@ -90,6 +86,13 @@ public class PlayerController : Singleton<PlayerController>
             interactable = null;
         }
     }
+    private void OnDestroy()
+    {
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.DeviceChanged -= UpdateSensitivity;
+        }
+    }
     // Functions used by InputManager.cs
     public void Jump()
     {
@@ -103,13 +106,6 @@ public class PlayerController : Singleton<PlayerController>
         if (interactable == null) return;
         interactable.Interact();
     }
-    public void UpdateSensitivity()
-    {
-        bool isGamepad = InputManager.Instance.CurrentDevice == "Gamepad";
-        lookSensitivity = isGamepad ? gamepadSensitivity : mouseSensitivity;
-        lookInvertY = (int)((isGamepad && invertGamepadY) ? -1f : 1f);
-        //Debug.Log("Updated sensitivity");
-    }
     // Used to get and set player location
     public void SetRotation(Vector3 rotation)
     {
@@ -120,5 +116,29 @@ public class PlayerController : Singleton<PlayerController>
     public Vector3 GetRotation()
     {
         return new Vector3(xRotation, transform.eulerAngles.y, 0f);
+    }
+    #region APPLY SETTINGS
+    private void OnEnable()
+    {
+        SettingsService.Instance.Changed += ApplySettings;
+        ApplySettings(SettingsService.Instance.Current, false);
+    }
+    private void OnDisable() => SettingsService.Instance.Changed -= ApplySettings;
+
+    private void ApplySettings(GameSettings s, bool isPreview)
+    {
+        camera.fieldOfView = s.fov;
+        mouseSensitivity = s.mouseSensitivity;
+        gamepadSensitivity = s.gamepadSensitivity;
+        invertGamepadY = s.gamepadInvertY;
+        if (InputManager.Instance != null) UpdateSensitivity(); // InputManager may not exist yet in OnEnable, Start() covers that case
+    }
+    #endregion
+    private void UpdateSensitivity()
+    {
+        bool isGamepad = InputManager.Instance.CurrentDevice == "Gamepad";
+        lookSensitivity = isGamepad ? gamepadSensitivity : mouseSensitivity;
+        lookInvertY = (isGamepad && invertGamepadY) ? -1 : 1;
+        //Debug.Log("Updated sensitivity");
     }
 }

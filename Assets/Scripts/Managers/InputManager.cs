@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class InputManager : Singleton<InputManager>
 {
+    public event System.Action DeviceChanged; // Fired when the player switches between keyboard and gamepad
     public string CurrentDevice { get; private set; }
     [HideInInspector] public PlayerInput playerInput;
     private bool IsPlayerPresent => playerController != null;
@@ -78,15 +79,12 @@ public class InputManager : Singleton<InputManager>
     }
     public void OnDeviceChange()
     {
-        if (playerInput == null) return; // Prevents errors if playerInput is null (before Awake()??? weird)
-        if (playerInput.currentControlScheme == CurrentDevice) return; // Prevent spamming the log if the device is the same as last time
+        if (playerInput == null) return;
+        if (playerInput.currentControlScheme == CurrentDevice) return;
 
         CurrentDevice = playerInput.currentControlScheme;
         UpdateCursorState();
-        if (IsPlayerPresent)
-        {
-            PlayerController.Instance.UpdateSensitivity();
-        }
+        DeviceChanged?.Invoke(); // Whoever cares (player, UI) reacts on its own
 
         Debug.Log($"Device change: {CurrentDevice}");
     }

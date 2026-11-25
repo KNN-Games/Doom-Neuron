@@ -10,9 +10,6 @@ public class GameManager : Singleton<GameManager>
     public float playTime; // Total playtime in seconds
     public float lastSaved;
     public Difficulty Difficulty { get; private set; } // current difficulty level
-    // Certain options are stored here because:
-    // For example FOV must be applied to player camera, but it does not exist in main menu, so the player needs to get it when he gets created.
-    [HideInInspector] public float fov;
 
     protected override void Awake()
     {
